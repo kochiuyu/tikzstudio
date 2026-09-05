@@ -1,0 +1,224 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450" fill="none">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="800" y2="450" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#1e293b" />
+    </linearGradient>
+    <linearGradient id="curveD" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#60a5fa" />
+      <stop offset="100%" stop-color="#3b82f6" />
+    </linearGradient>
+    <linearGradient id="curveS" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0%" stop-color="#34d399" />
+      <stop offset="100%" stop-color="#10b981" />
+    </linearGradient>
+    <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.18" />
+      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.0" />
+    </linearGradient>
+    <pattern id="dotGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1" fill="#334155" opacity="0.6" />
+    </pattern>
+    <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.4" />
+    </filter>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="800" height="450" fill="url(#bgGrad)" />
+  <rect width="800" height="450" fill="url(#dotGrid)" />
+
+  <!-- App Window Container Mockup -->
+  <g filter="url(#cardShadow)">
+    <rect x="24" y="20" width="752" height="410" rx="12" fill="#ffffff" stroke="#334155" stroke-width="1" />
+    
+    <!-- Window Header Bar -->
+    <path d="M 24 32 Q 24 20 36 20 L 764 20 Q 776 20 776 32 L 776 56 L 24 56 Z" fill="#f8fafc" />
+    <line x1="24" y1="56" x2="776" y2="56" stroke="#e2e8f0" stroke-width="1" />
+    <circle cx="44" cy="38" r="5" fill="#ef4444" />
+    <circle cx="60" cy="38" r="5" fill="#f59e0b" />
+    <circle cx="76" cy="38" r="5" fill="#10b981" />
+    
+    <text x="100" y="42" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="12" font-weight="600" fill="#475569">
+      Coordinate Studio — Equilibrium Model (P*, Q*)
+    </text>
+
+    <!-- Toolbar Pills -->
+    <rect x="520" y="29" width="72" height="20" rx="4" fill="#eef2ff" stroke="#c7d2fe" />
+    <text x="532" y="43" font-family="'Inter', sans-serif" font-size="10.5" font-weight="600" fill="#4f46e5">Preset: S &amp; D</text>
+
+    <rect x="600" y="29" width="60" height="20" rx="4" fill="#4f46e5" />
+    <text x="612" y="43" font-family="'Inter', sans-serif" font-size="10.5" font-weight="600" fill="#ffffff">Draw TikZ</text>
+
+    <rect x="668" y="29" width="96" height="20" rx="4" fill="#0f172a" />
+    <text x="678" y="43" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="500" fill="#38bdf8">Overleaf Ready</text>
+  </g>
+
+  <!-- Left Sidebar Controls Panel -->
+  <g transform="translate(36, 68)">
+    <rect width="210" height="348" rx="8" fill="#f8fafc" stroke="#e2e8f0" />
+    
+    <!-- Section 1: Axes -->
+    <text x="12" y="22" font-family="'Inter', sans-serif" font-size="11" font-weight="700" fill="#0f172a">AXIS &amp; TICKS</text>
+    
+    <!-- X-Axis label -->
+    <text x="12" y="42" font-family="'Inter', sans-serif" font-size="10" fill="#64748b">X-Axis (Qty):</text>
+    <rect x="80" y="30" width="40" height="18" rx="3" fill="#ffffff" stroke="#cbd5e1" />
+    <text x="96" y="43" font-family="'Inter', sans-serif" font-size="10" font-weight="600" fill="#0f172a" text-anchor="middle">10</text>
+    <rect x="126" y="30" width="72" height="18" rx="3" fill="#ffffff" stroke="#cbd5e1" />
+    <text x="132" y="43" font-family="'Inter', sans-serif" font-size="9.5" fill="#334155">Quantity (Q)</text>
+
+    <!-- Y-Axis label -->
+    <text x="12" y="66" font-family="'Inter', sans-serif" font-size="10" fill="#64748b">Y-Axis (Price):</text>
+    <rect x="80" y="54" width="40" height="18" rx="3" fill="#ffffff" stroke="#cbd5e1" />
+    <text x="96" y="67" font-family="'Inter', sans-serif" font-size="10" font-weight="600" fill="#0f172a" text-anchor="middle">10</text>
+    <rect x="126" y="54" width="72" height="18" rx="3" fill="#ffffff" stroke="#cbd5e1" />
+    <text x="132" y="67" font-family="'Inter', sans-serif" font-size="9.5" fill="#334155">Price (P)</text>
+
+    <line x1="12" y1="82" x2="198" y2="82" stroke="#e2e8f0" />
+
+    <!-- Section 2: Curves -->
+    <text x="12" y="100" font-family="'Inter', sans-serif" font-size="11" font-weight="700" fill="#0f172a">ACTIVE CURVES</text>
+    
+    <!-- Curve 1: Demand -->
+    <rect x="12" y="110" width="186" height="60" rx="6" fill="#ffffff" stroke="#bfdbfe" />
+    <circle cx="24" cy="124" r="4" fill="#3b82f6" />
+    <text x="34" y="127" font-family="'Inter', sans-serif" font-size="10.5" font-weight="600" fill="#1e3a8a">Curve 1: Demand D(P)</text>
+    <text x="24" y="144" font-family="'JetBrains Mono', monospace" font-size="9" fill="#64748b">(1, 8.5) -> (8.5, 1.2)</text>
+    <rect x="24" y="152" width="48" height="12" rx="2" fill="#eff6ff" />
+    <text x="28" y="161" font-family="'Inter', sans-serif" font-size="8.5" font-weight="600" fill="#2563eb">Bézier Spline</text>
+
+    <!-- Curve 2: Supply -->
+    <rect x="12" y="178" width="186" height="60" rx="6" fill="#ffffff" stroke="#a7f3d0" />
+    <circle cx="24" cy="192" r="4" fill="#10b981" />
+    <text x="34" y="195" font-family="'Inter', sans-serif" font-size="10.5" font-weight="600" fill="#065f46">Curve 2: Supply S(P)</text>
+    <text x="24" y="212" font-family="'JetBrains Mono', monospace" font-size="9" fill="#64748b">(1, 1.2) -> (8.5, 8.2)</text>
+    <rect x="24" y="220" width="48" height="12" rx="2" fill="#ecfdf5" />
+    <text x="28" y="229" font-family="'Inter', sans-serif" font-size="8.5" font-weight="600" fill="#059669">Bézier Spline</text>
+
+    <line x1="12" y1="248" x2="198" y2="248" stroke="#e2e8f0" />
+
+    <!-- Equilibrium Info Box -->
+    <rect x="12" y="258" width="186" height="78" rx="6" fill="#eff6ff" stroke="#c7d2fe" />
+    <text x="22" y="274" font-family="'Inter', sans-serif" font-size="10" font-weight="700" fill="#3730a3">EQUILIBRIUM POINT</text>
+    <text x="22" y="292" font-family="'JetBrains Mono', monospace" font-size="9.5" font-weight="600" fill="#1e1b4b">E* = (4.75, 4.80)</text>
+    <text x="22" y="308" font-family="'Inter', sans-serif" font-size="8.5" fill="#475569">P* = $4.80 · Q* = 475 units</text>
+    <text x="22" y="324" font-family="'Inter', sans-serif" font-size="8.5" font-weight="600" fill="#10b981">✓ Market Cleared</text>
+  </g>
+
+  <!-- Center Stage: Cartesian Plane Canvas -->
+  <g transform="translate(260, 68)">
+    <rect width="280" height="348" rx="8" fill="#ffffff" stroke="#cbd5e1" />
+    
+    <!-- Canvas Grid Lines -->
+    <g stroke="#f1f5f9" stroke-width="1">
+      <line x1="20" y1="40" x2="260" y2="40" />
+      <line x1="20" y1="80" x2="260" y2="80" />
+      <line x1="20" y1="120" x2="260" y2="120" />
+      <line x1="20" y1="160" x2="260" y2="160" />
+      <line x1="20" y1="200" x2="260" y2="200" />
+      <line x1="20" y1="240" x2="260" y2="240" />
+      <line x1="20" y1="280" x2="260" y2="280" />
+
+      <line x1="60" y1="20" x2="60" y2="310" />
+      <line x1="100" y1="20" x2="100" y2="310" />
+      <line x1="140" y1="20" x2="140" y2="310" />
+      <line x1="180" y1="20" x2="180" y2="310" />
+      <line x1="220" y1="20" x2="220" y2="310" />
+    </g>
+
+    <!-- Consumer Surplus Shaded Region -->
+    <path d="M 40 160 L 40 50 Q 100 90 148 160 Z" fill="url(#areaGrad)" />
+
+    <!-- Axes Lines -->
+    <!-- X-Axis (Bottom) -->
+    <line x1="38" y1="280" x2="262" y2="280" stroke="#0f172a" stroke-width="2" />
+    <polygon points="262,276 270,280 262,284" fill="#0f172a" />
+    <text x="254" y="300" font-family="'Inter', sans-serif" font-size="11" font-weight="700" fill="#0f172a">Q</text>
+    
+    <!-- Y-Axis (Left) -->
+    <line x1="40" y1="282" x2="40" y2="24" stroke="#0f172a" stroke-width="2" />
+    <polygon points="36,24 40,16 44,24" fill="#0f172a" />
+    <text x="24" y="24" font-family="'Inter', sans-serif" font-size="11" font-weight="700" fill="#0f172a">P</text>
+
+    <!-- Origin 0 -->
+    <text x="26" y="294" font-family="'Inter', sans-serif" font-size="10" fill="#64748b">0</text>
+
+    <!-- Dashed Projections from E* -->
+    <line x1="148" y1="160" x2="148" y2="280" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4,3" />
+    <line x1="148" y1="160" x2="40" y2="160" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4,3" />
+
+    <!-- Axis Tick Marks -->
+    <line x1="148" y1="277" x2="148" y2="283" stroke="#0f172a" stroke-width="1.5" />
+    <text x="148" y="296" font-family="'JetBrains Mono', monospace" font-size="9.5" font-weight="700" fill="#ef4444" text-anchor="middle">Q*</text>
+
+    <line x1="37" y1="160" x2="43" y2="160" stroke="#0f172a" stroke-width="1.5" />
+    <text x="20" y="164" font-family="'JetBrains Mono', monospace" font-size="9.5" font-weight="700" fill="#ef4444">P*</text>
+
+    <!-- Demand Curve (Blue Spline) -->
+    <path d="M 50 50 Q 95 105 148 160 T 240 250" fill="none" stroke="url(#curveD)" stroke-width="3" stroke-linecap="round" />
+    <rect x="236" y="254" width="16" height="16" rx="3" fill="#3b82f6" />
+    <text x="240" y="266" font-family="'Inter', sans-serif" font-size="10" font-weight="700" fill="#ffffff">D</text>
+
+    <!-- Supply Curve (Green Spline) -->
+    <path d="M 50 250 Q 100 205 148 160 T 240 50" fill="none" stroke="url(#curveS)" stroke-width="3" stroke-linecap="round" />
+    <rect x="236" y="36" width="16" height="16" rx="3" fill="#10b981" />
+    <text x="241" y="48" font-family="'Inter', sans-serif" font-size="10" font-weight="700" fill="#ffffff">S</text>
+
+    <!-- Equilibrium Point E* -->
+    <circle cx="148" cy="160" r="5" fill="#ef4444" stroke="#ffffff" stroke-width="2" />
+    <rect x="156" y="142" width="48" height="18" rx="4" fill="#0f172a" />
+    <text x="162" y="155" font-family="'JetBrains Mono', monospace" font-size="9.5" font-weight="700" fill="#ffffff">E (P*,Q*)</text>
+
+    <text x="52" y="112" font-family="'Inter', sans-serif" font-size="8.5" font-weight="600" fill="#2563eb">Consumer Surplus</text>
+    <text x="20" y="335" font-family="'Inter', sans-serif" font-size="9.5" fill="#64748b">TikZ 2D Graph Engine &bull; Vector Precision</text>
+  </g>
+
+  <!-- Right Panel: Modern Dark LaTeX TikZ Code Viewport -->
+  <g transform="translate(552, 68)">
+    <rect width="212" height="348" rx="8" fill="#0f172a" stroke="#1e293b" />
+    
+    <!-- Header of Code Box -->
+    <rect width="212" height="28" rx="8" fill="#1e293b" />
+    <path d="M 0 20 L 0 28 L 212 28 L 212 20 Z" fill="#1e293b" />
+    <text x="12" y="18" font-family="'JetBrains Mono', monospace" font-size="9.5" font-weight="600" fill="#e2e8f0">tikz-export.tex</text>
+    <rect x="156" y="6" width="46" height="16" rx="3" fill="#334155" />
+    <text x="162" y="18" font-family="'Inter', sans-serif" font-size="8.5" font-weight="600" fill="#f8fafc">Copy</text>
+
+    <!-- Code Content -->
+    <g transform="translate(10, 44)" font-family="'JetBrains Mono', monospace" font-size="8.5" line-height="1.5">
+      <text y="0" fill="#818cf8">\documentclass<tspan fill="#cbd5e1">{</tspan><tspan fill="#38bdf8">article</tspan><tspan fill="#cbd5e1">}</tspan></text>
+      <text y="15" fill="#818cf8">\usepackage<tspan fill="#cbd5e1">{</tspan><tspan fill="#38bdf8">tikz</tspan><tspan fill="#cbd5e1">}</tspan></text>
+      <text y="30" fill="#818cf8">\begin<tspan fill="#cbd5e1">{</tspan><tspan fill="#38bdf8">tikzpicture</tspan><tspan fill="#cbd5e1">}</tspan>[scale=0.8]</text>
+
+      <text y="48" fill="#64748b">% Axes</text>
+      <text y="61" fill="#818cf8">\draw</text>
+      <text x="35" y="61" fill="#e2e8f0">[->, thick] (0,0)</text>
+      <text y="74" fill="#e2e8f0"> -- (6,0) node[right] {$Q$};</text>
+      <text y="88" fill="#818cf8">\draw</text>
+      <text x="35" y="88" fill="#e2e8f0">[->, thick] (0,0)</text>
+      <text y="101" fill="#e2e8f0"> -- (0,5) node[above] {$P$};</text>
+
+      <text y="120" fill="#64748b">% Demand &amp; Supply</text>
+      <text y="133" fill="#818cf8">\draw</text>
+      <text x="35" y="133" fill="#e2e8f0">[blue, thick]</text>
+      <text y="146" fill="#e2e8f0"> (0.8,4.2) to[out=-25,</text>
+      <text y="159" fill="#e2e8f0"> in=115] (5.2,1) node {$D$};</text>
+
+      <text y="176" fill="#818cf8">\draw</text>
+      <text x="35" y="176" fill="#e2e8f0">[green!60!black, thick]</text>
+      <text y="189" fill="#e2e8f0"> (0.8,0.8) to[out=25,</text>
+      <text y="202" fill="#e2e8f0"> in=-115] (5.2,4.5) node {$S$};</text>
+
+      <text y="222" fill="#64748b">% Equilibrium</text>
+      <text y="235" fill="#818cf8">\draw</text>
+      <text x="35" y="235" fill="#e2e8f0">[dashed, red]</text>
+      <text y="248" fill="#e2e8f0"> (2.9,0) |- (0,2.4);</text>
+      <text y="262" fill="#818cf8">\fill</text>
+      <text x="30" y="262" fill="#e2e8f0">[red] (2.9,2.4)</text>
+      <text y="275" fill="#e2e8f0"> circle (2pt) node {$E^*$};</text>
+
+      <text y="294" fill="#818cf8">\end<tspan fill="#cbd5e1">{</tspan><tspan fill="#38bdf8">tikzpicture</tspan><tspan fill="#cbd5e1">}</tspan></text>
+    </g>
+  </g>
+</svg>

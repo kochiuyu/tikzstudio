@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Timeline Guide &amp; Docs - TikZ Studio</title>
+  <meta name="description" content="Step-by-step guide and walkthrough for building chronological event timelines and exporting TikZ LaTeX code." />
+
+  <link rel="stylesheet" href="css/modern.css">
+  <link rel="stylesheet" href="css/scroll.css">
+
+  <script type="text/javascript" src="js/import.js"></script>
+  <script type="text/javascript" src="js/jquery-1.11.0.min.js"></script>
+  <script type="text/javascript" src="js/jquery.min.js"></script>
+  <script type="text/javascript" src="js/jquery.hoverIntent.min.js"></script>
+  <script type="text/javascript" src="js/jquery.hoveraccordion.min.js"></script>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="app-header">
+    <div class="header-container">
+      <a href="index.html" class="brand-logo" id="brand-link">
+        <div class="brand-icon">T</div>
+        <div class="brand-text">
+          <span class="brand-title">TikZ Studio</span>
+          <span class="brand-subtitle">Timeline Guide</span>
+        </div>
+      </a>
+      <ul class="nav-links">
+        <li class="nav-item"><a href="index.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Homepage
+        </a></li>
+        <li class="nav-item"><a href="Coordinate.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+          Coordinate Axis
+        </a></li>
+        <li class="nav-item"><a href="Timeline.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Timeline
+        </a></li>
+        <li class="nav-item active"><a href="Help-Timeline.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Docs &amp; Help
+        </a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main class="main-wrapper">
+
+    <!-- Header info banner -->
+    <div style="text-align: center; max-width: 800px; margin: 1.5rem auto 2.5rem;">
+      <span class="nav-badge" style="margin-bottom: 0.75rem;">Timeline Studio User Guide</span>
+      <h1 style="font-size: 2rem; font-weight: 800; color: var(--color-text-main); margin-bottom: 0.5rem; letter-spacing: -0.02em;">
+        Timeline Studio Walkthrough &amp; Instructions
+      </h1>
+      <p style="color: var(--color-text-muted); font-size: 1rem; line-height: 1.6;">
+        Build horizontal or vertical milestone timelines for historical documents, project plans, and academic papers.
+      </p>
+    </div>
+
+    <!-- Step-by-Step Quick Guide -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
+      <div style="background: #ffffff; border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 1.5rem;">
+        <div style="font-weight: 700; color: var(--color-primary); font-size: 1.1rem; margin-bottom: 0.5rem;">1. Set Year Range &amp; Scale</div>
+        <p style="font-size: 0.875rem; color: var(--color-text-muted); line-height: 1.5;">
+          Specify the starting year, ending year, and pixel scale (e.g. 5 pixels per year). Choose horizontal or vertical orientation.
+        </p>
+      </div>
+
+      <div style="background: #ffffff; border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 1.5rem;">
+        <div style="font-weight: 700; color: var(--color-primary); font-size: 1.1rem; margin-bottom: 0.5rem;">2. Add Milestone Events</div>
+        <p style="font-size: 0.875rem; color: var(--color-text-muted); line-height: 1.5;">
+          Enter the numerical year and event description, then hit Enter or click <strong>Add Event</strong>. Events are automatically arranged and plotted along the time axis.
+        </p>
+      </div>
+
+      <div style="background: #ffffff; border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 1.5rem;">
+        <div style="font-weight: 700; color: var(--color-primary); font-size: 1.1rem; margin-bottom: 0.5rem;">3. Generate &amp; Export TikZ</div>
+        <p style="font-size: 0.875rem; color: var(--color-text-muted); line-height: 1.5;">
+          Click <strong>Generate Timeline</strong> to draw. The TikZ code block updates in real time, ready to copy or download as a <code style="font-family: var(--font-mono); background:#eef2ff; color:#4f46e5; padding: 0.1rem 0.3rem; border-radius: 4px;">.tex</code> file.
+        </p>
+      </div>
+    </div>
+
+    <!-- Visual Carousel Section -->
+    <div style="background: #ffffff; border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 3rem; box-shadow: var(--shadow-sm);">
+      <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 1rem; text-align: center;">
+        Visual Feature Gallery &amp; Screenshots
+      </h2>
+
+      <div class="lanrenzhijia" style="margin: 0 auto; box-shadow: 0 4px 12px rgba(0,0,0,0.06); border-radius: 8px; overflow: hidden;"> 
+        <span id="prev" class="mybtn prev"></span> 
+        <span id="next" class="mybtn next"></span> 
+        <span id="prevTop" class="mybtn prev"></span> 
+        <span id="nextTop" class="mybtn next"></span>
+
+        <div id="picBox" class="picBox">
+          <ul class="cf">
+            <li><a href="javascript:;"><img src="images/1.jpg" alt="Economic Figures"/><span>Economic Figures Example</span></a></li>
+            <li><a href="javascript:;"><img src="images/13.jpg" alt="Homepage Overview"/><span>Homepage Overview</span></a></li>
+            <li><a href="javascript:;"><img src="images/2.jpg" alt="Coordinate Axis"/><span>Coordinate Axis Interface</span></a></li>
+            <li><a href="javascript:;"><img src="images/3.jpg" alt="Coordinate Axis Canvas"/><span>Interactive Canvas</span></a></li>
+            <li><a href="javascript:;"><img src="images/4.jpg" alt="Drawing Curves"/><span>Drawing Curves &amp; Lines</span></a></li>
+            <li><a href="javascript:;"><img src="images/5.jpg" alt="Axis and Labels"/><span>Coordinate Axis - Axis and Labels</span></a></li>
+            <li><a href="javascript:;"><img src="images/6.jpg" alt="Rectangles"/><span>Coordinate Axis - Rectangles</span></a></li>
+            <li><a href="javascript:;"><img src="images/7.jpg" alt="Straight Lines"/><span>Coordinate Axis - Lines</span></a></li>
+            <li><a href="javascript:;"><img src="images/8.jpg" alt="Bezier Curves"/><span>Coordinate Axis - Curves</span></a></li>
+            <li><a href="javascript:;"><img src="images/9.jpg" alt="Graph Examples"/><span>Coordinate Axis - Examples</span></a></li>
+            <li><a href="javascript:;"><img src="images/10.jpg" alt="Export and Import"/><span>Coordinate Axis - Export and Import</span></a></li>
+            <li><a href="javascript:;"><img src="images/11.jpg" alt="CSV Export"/><span>CSV &amp; HTML Export</span></a></li>
+            <li><a href="javascript:;"><img src="images/12.jpg" alt="Overleaf Integration"/><span>LaTeX Compilation</span></a></li>
+          </ul>
+        </div>
+        
+        <div id="listBox" class="listBox">
+          <ul class="cf">
+            <li class="on"><i class="arr2"></i><img src="images/1.jpg" alt="Thumb 1"/></li>
+            <li><i class="arr2"></i><img src="images/13.jpg" alt="Thumb 2"/></li>
+            <li><i class="arr2"></i><img src="images/2.jpg" alt="Thumb 3"/></li>
+            <li><i class="arr2"></i><img src="images/3.jpg" alt="Thumb 4"/></li>
+            <li><i class="arr2"></i><img src="images/4.jpg" alt="Thumb 5"/></li>
+            <li><i class="arr2"></i><img src="images/5.jpg" alt="Thumb 6"/></li>
+            <li><i class="arr2"></i><img src="images/6.jpg" alt="Thumb 7"/></li>
+            <li><i class="arr2"></i><img src="images/7.jpg" alt="Thumb 8"/></li>
+            <li><i class="arr2"></i><img src="images/8.jpg" alt="Thumb 9"/></li>
+            <li><i class="arr2"></i><img src="images/9.jpg" alt="Thumb 10"/></li>
+            <li><i class="arr2"></i><img src="images/10.jpg" alt="Thumb 11"/></li>
+            <li><i class="arr2"></i><img src="images/11.jpg" alt="Thumb 12"/></li>
+            <li><i class="arr2"></i><img src="images/12.jpg" alt="Thumb 13"/></li> 
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="app-footer">
+    <div class="footer-inner">
+      <div>
+        <strong>TikZ Studio Documentation</strong> &mdash; Built for LaTeX and Overleaf researchers.
+      </div>
+      <div class="footer-nav">
+        <a href="index.html">Homepage</a>
+        <a href="Coordinate.html">Coordinate Axis</a>
+        <a href="Timeline.html">Timeline</a>
+        <a href="Help-Coordinate.html">Coordinate Docs</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/scroll.js"></script>
+
+</body>
+</html>

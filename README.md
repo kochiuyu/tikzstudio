@@ -1,11 +1,8 @@
-<div align="center">
+# tikz
+Tikz is a drawing language commonly used in LaTex. The following contains a large number of templates for commonly used economic diagrams. You are welcome to use it. If you have developed some nice templates, I would be very happy to post it here if you are willing to share.
 
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+This is a tool that allow user to generate simple diagram. 
 
-  <h1>Built with AI Studio</h2>
+##Acknowledgement
 
-  <p>The fastest path from prompt to production with Gemini.</p>
-
-  <a href="https://aistudio.google.com/apps">Start building</a>
-
-</div>
+Some graphics are created with financial support from NUS Education Enhancement Grant (TEG) under the project titled "I hear I forget, I see I remember, I draw I understand''---Development of Easily customizable templates for visual organizers and graphical illustrations. I would like to thank research assistant by Ren Yunfei and Zhang Jin (for generator), Zhan Mingjie, Cao Wanzhong and Zhang Jin (for templates).

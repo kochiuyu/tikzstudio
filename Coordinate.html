@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coordinate Axis Studio - TikZ Diagram Generator</title>
+  <meta name="description" content="Interactive 2D coordinate graph and curves generator for LaTeX TikZ diagrams." />
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/modern.css">
+  <link rel="stylesheet" href="css/latex.css">
+
+  <!-- jQuery & Plugins -->
+  <script type="text/javascript" src="js/jquery-1.11.0.min.js"></script>
+  <script type="text/javascript" src="js/jquery.hoverIntent.min.js"></script>
+  <script type="text/javascript" src="js/jquery.hoveraccordion.min.js"></script>
+
+  <!-- Core Applet Scripts -->
+  <script type="text/javascript" src="js/Examples.js"></script>
+  <script type="text/javascript" src="js/input-addline.js"></script>
+  <script type="text/javascript" src="js/input-addCurve.js"></script>
+  <script type="text/javascript" src="js/input-addRectangle.js"></script>
+  <script type="text/javascript" src="js/Draw Tikz Line.js"></script>
+  <script type="text/javascript" src="js/input-addPoints.js"></script>
+  <script type="text/javascript" src="js/PrintLine.js"></script>
+  <script type="text/javascript" src="js/PrintCurve.js"></script>
+  <script type="text/javascript" src="js/Rectangle.js"></script>
+  <script type="text/javascript" src="js/DrawGrid.js"></script>
+  <script type="text/javascript" src="js/ChoosePoints.js"></script>
+  <script type="text/javascript" src="js/DrawGraph.js"></script>
+  <script type="text/javascript" src="js/interactive-drawing.js"></script>
+  <script type="text/javascript" src="js/individualClear.js"></script>
+  <script type="text/javascript" src="js/Export(new).js"></script>
+  <script type="text/javascript" src="js/exportCsv.js"></script>
+  <script type="text/javascript" src="js/import.js"></script>
+  <script type="text/javascript" src="js/modern-ui.js"></script>
+  <script type="text/javascript" src="js/export-png.js"></script>
+
+  <script type="text/javascript">
+    var counter_i = 5; // counter of number of straight line
+    var counter_j = 3; // counter for number of curves
+    var counter_z = 2; // counter for number of rectangle
+    var scale = 35;    // scale of the preview graph
+    var x_offset = scale * 0.8;
+    var y_offset = scale * 0.8;
+    var ps_j = 4;
+
+    var mouse_history = [];
+    var drawingline = true;
+    var onlyonepoint = false;
+    var nowColor = "#FFFFFF";
+
+    $(document).ready(function(){
+      $('#example2').hoverAccordion({
+        activateitem: '1',
+        speed: 'fast'
+      });
+      $('#example2').children('li:first').addClass('firstitem');
+      $('#example2').children('li:last').addClass('lastitem');
+      if (typeof DrawGraph === 'function') {
+        DrawGraph();
+      }
+    });
+  </script>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="app-header">
+    <div class="header-container">
+      <a href="index.html" class="brand-logo" id="brand-link">
+        <div class="brand-icon">T</div>
+        <div class="brand-text">
+          <span class="brand-title">TikZ Studio</span>
+          <span class="brand-subtitle">2D Coordinate Generator</span>
+        </div>
+      </a>
+      <ul class="nav-links">
+        <li class="nav-item"><a href="index.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Homepage
+        </a></li>
+        <li class="nav-item active"><a href="Coordinate.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+          Coordinate Axis
+        </a></li>
+        <li class="nav-item"><a href="Timeline.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Timeline
+        </a></li>
+        <li class="nav-item"><a href="Help-Coordinate.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Docs & Help
+        </a></li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- Main Studio Workspace -->
+  <main class="main-wrapper">
+
+    <!-- Action Toolbar -->
+    <div class="toolbar-card">
+      <div class="toolbar-title-group">
+        <h1 class="toolbar-title">Coordinate Axis & Curves</h1>
+        <span class="nav-badge">Canvas 600&times;580</span>
+      </div>
+
+      <!-- Quick Preset Buttons -->
+      <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+        <span style="font-size: 0.8rem; font-weight: 600; color: var(--color-text-muted);">Presets:</span>
+        <button type="button" class="btn-modern btn-modern-secondary btn-modern-sm" onclick="Example1(); DrawGraph();" title="Load Supply and Demand Model">
+          Supply & Demand
+        </button>
+        <button type="button" class="btn-modern btn-modern-secondary btn-modern-sm" onclick="Example2(); DrawGraph();" title="Load Growth Model">
+          Growth
+        </button>
+        <button type="button" class="btn-modern btn-modern-secondary btn-modern-sm" onclick="Example3(); DrawGraph();" title="Load Cost Curves">
+          Cost Curve
+        </button>
+        <button type="button" class="btn-modern btn-modern-secondary btn-modern-sm" onclick="Example4(); DrawGraph();" title="Load Utility Maximization">
+          Utility Max
+        </button>
+      </div>
+
+      <!-- Canvas & Drawing Controls -->
+      <div class="toolbar-controls">
+        <div class="scale-control-group">
+          <span>Scale:</span>
+          <input type="text" id="graph_scale" class="scale-input" value="35" title="Pixels per unit" />
+        </div>
+
+        <button type="button" class="btn-modern btn-modern-primary" onclick="DrawGraph()" id="btn-draw-graph">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg>
+          Draw Graph
+        </button>
+
+        <button type="button" class="btn-modern btn-modern-secondary" onclick="drawGrid()" id="btn-toggle-grid">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+          Grid
+        </button>
+
+        <button type="button" class="btn-modern btn-modern-danger" onclick="location.reload(true)" id="btn-clear-canvas" title="Clear all and reset">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          Reset
+        </button>
+      </div>
+    </div>
+
+    <!-- 2-Column Studio Grid -->
+    <div class="studio-grid">
+
+      <!-- Left Column: Controls & Elements -->
+      <div class="content-left" style="min-width: 0;">
+        <!-- Hierarchy Clarification Banner: Canvas is Primary, Forms are Secondary -->
+        <div class="sidebar-role-banner">
+          <div class="role-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            Secondary Fine-Tuning &amp; LaTeX Controls
+          </div>
+          <div class="role-desc">
+            Use the <strong>canvas rubberband</strong> as your main drawing tool. These form cards automatically synchronize to allow precise numeric adjustments.
+          </div>
+        </div>
+
+        <a name="ex2" id="ex2"></a>
+        <ul id="example2">
+
+          <!-- 1. Axis and Label Section -->
+          <li>
+            <a href="#">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="19" x2="19" y2="19"/><polyline points="15 15 19 19 15 23"/><line x1="5" y1="19" x2="5" y2="5"/><polyline points="1 9 5 5 9 9"/></svg>
+              Axis &amp; Points Configuration
+            </a>
+            <ul>
+              <li>
+                <form class="inputsize" id="axisform" action="" method="get">
+                  
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                    <span style="font-size: 0.85rem; font-weight: 600; color: var(--color-text-muted);">X/Y Axes, origin &amp; tick markers</span>
+                    <button type="button" class="btn-modern btn-modern-primary btn-modern-sm" onclick="activateAxisOnCanvas()" title="Interactively configure axis and ticks on canvas">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="21" x2="21" y2="21"/><polyline points="17 17 21 21 17 25"/><line x1="3" y1="21" x2="3" y2="3"/><polyline points="-1 7 3 3 7 7"/></svg>
+                      Configure on Canvas
+                    </button>
+                  </div>
+
+                  <div class="form-section">
+                    <div class="form-section-title">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
+                      Axis Boundaries &amp; Labels
+                    </div>
+                    <div class="form-row">
+                      <span class="form-label">X-Axis Max:</span>
+                      <input type="text" id="xsize" class="input-modern" size="5" value="0" style="width: 48px; text-align: center;" oninput="if(window.updateAxisCardUI) window.updateAxisCardUI(); DrawGraph(); if(window.renderAllOverlays) window.renderAllOverlays();">
+                      <span class="form-label">Label:</span>
+                      <input type="text" id="xname" class="input-modern" size="8" value="" placeholder="e.g. Quantity" style="width: 100px;" oninput="if(window.updateAxisCardUI) window.updateAxisCardUI(); DrawGraph(); if(window.renderAllOverlays) window.renderAllOverlays();">
+                    </div>
+                    <div class="form-row">
+                      <span class="form-label">Y-Axis Max:</span>
+                      <input type="text" id="ysize" class="input-modern" size="5" value="0" style="width: 48px; text-align: center;" oninput="if(window.updateAxisCardUI) window.updateAxisCardUI(); DrawGraph(); if(window.renderAllOverlays) window.renderAllOverlays();">
+                      <span class="form-label">Label:</span>
+                      <input type="text" id="yname" class="input-modern" size="8" value="" placeholder="e.g. Price" style="width: 100px;" oninput="if(window.updateAxisCardUI) window.updateAxisCardUI(); DrawGraph(); if(window.renderAllOverlays) window.renderAllOverlays();">
+                    </div>
+                    <div class="form-row">
+                      <span class="form-label">Origin Label:</span>
+                      <input type="text" id="label_origin_name" class="input-modern" size="5" value="" placeholder="e.g. 0 or O" style="width: 70px;" oninput="if(window.updateAxisCardUI) window.updateAxisCardUI(); DrawGraph(); if(window.renderAllOverlays) window.renderAllOverlays();">
+                    </div>
+                  </div>
+
+                  <div class="form-section">
+                    <div class="form-section-title">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/></svg>
+                      Axis Tick Markers
+                    </div>
+                    <div class="form-row">
+                      <span class="form-label">X Tick 1:</span>
+                      <input type="text" id="label_x_1_name" class="input-modern" size="4" value="" placeholder="x1" style="width: 50px;" oninput="if(window.updateAxisCardUI) window.updateAxisCardUI(); DrawGraph(); if(window.renderAllOverlays) window.renderAllOverlays();">
+                      <span class="form-label">at</span>
+                      <input type="text" id="label_x_1" class="input-modern" size="4" value="0" style="width: 45px; text-align: center;" oninput="if(window.updateAxisCardUI) window.updateAxisCardUI(); DrawGraph(); if(window.renderAllOverlays) window.renderAllOverlays();">
+                      <span class="form-label" style="margin-left: 0.5rem;">X Tick 2:</span>
+                      <input type="text" id="label_x_2_name" class="input-modern" size="4" value="" placeholder="x2" style="width: 50px;" oninput="if(window.updateAxisCardUI) window.updateAxisCardUI(); DrawGraph(); if(window.renderAllOverlays) window.renderAllOverlays();">
+                      <span class="form-label">at</span>
+                      <input type="text" id="label_x_2" class="input-modern" size="4" value="0" style="width: 45px; text-align: center;" oninput="if(window.updateAxisCardUI) window.updateAxisCardUI(); DrawGraph(); if(window.renderAllOverlays) window.renderAllOverlays();">
+                    </div>
+                    <div class="form-row">
+                      <span class="form-label">Y Tick 1:</span>
+                      <input type="text" id="label_y_1_name" class="input-modern" size="4" value="" placeholder="y1" style="width: 50px;" oninput="if(window.updateAxisCardUI) window.updateAxisCardUI(); DrawGraph(); if(window.renderAllOverlays) window.renderAllOverlays();">
+                      <span class="form-label">at</span>
+                      <input type="text" id="label_y_1" class="input-modern" size="4" value="0" style="width: 45px; text-align: center;" oninput="if(window.updateAxisCardUI) window.updateAxisCardUI(); DrawGraph(); if(window.renderAllOverlays) window.renderAllOverlays();">
+                      <span class="form-label" style="margin-left: 0.5rem;">Y Tick 2:</span>
+                      <input type="text" id="label_y_2_name" class="input-modern" size="4" value="" placeholder="y2" style="width: 50px;" oninput="if(window.updateAxisCardUI) window.updateAxisCardUI(); DrawGraph(); if(window.renderAllOverlays) window.renderAllOverlays();">
+                      <span class="form-label">at</span>
+                      <input type="text" id="label_y_2" class="input-modern" size="4" value="0" style="width: 45px; text-align: center;" oninput="if(window.updateAxisCardUI) window.updateAxisCardUI(); DrawGraph(); if(window.renderAllOverlays) window.renderAllOverlays();">
+                    </div>
+                  </div>
+
+                </form>
+              </li>
+            </ul>
+          </li>
+
+          <!-- 2. Points & Labels Section -->
+          <li>
+            <a href="#">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2"/></svg>
+              Points &amp; Labels
+            </a>
+            <ul>
+              <li>
+                <form id="pointform" name="myform4" action="" method="get">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                    <span style="font-size: 0.82rem; font-weight: 600; color: var(--color-text-muted);">Points, coordinates &amp; text annotations</span>
+                    <button type="button" class="btn-modern btn-modern-secondary btn-modern-sm" onclick="AddPoints(this.form)">
+                      + Add Point / Label
+                    </button>
+                  </div>
+
+                  <!-- Point Cards list container -->
+                  <div id="point-cards-container">
+                    <!-- Point Card 1 -->
+                    <div class="item-card" id="point_card_1">
+                      <div class="item-card-header">
+                        <div style="display: flex; align-items: center; gap: 0.4rem; min-width: 0;">
+                          <span class="item-badge" style="background: rgba(14, 165, 233, 0.12); color: #0284c7; border: 1px solid rgba(14, 165, 233, 0.25);">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2"/></svg>
+                            Point 1
+                          </span>
+                          <span class="item-title" id="point_title_1" style="font-size: 0.8rem; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">(Empty)</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.35rem;">
+                          <button type="button" class="btn-item-delete" onclick="RemovePoint(1)" title="Clear or remove this point">&times;</button>
+                        </div>
+                      </div>
+
+                      <div class="item-card-body">
+                        <div class="form-row" style="margin-bottom: 0.4rem;">
+                          <span class="form-label" style="min-width: 65px;">Label Text:</span>
+                          <input type="text" id="p_name_1" class="input-modern" value="" placeholder="e.g. A, (2, 3), Max, \alpha" style="flex: 1; font-weight: 500;" oninput="updatePointCardHeader(1); DrawGraph();">
+                        </div>
+                        <div class="form-row" style="margin-bottom: 0.4rem;">
+                          <span class="form-label" style="min-width: 65px;">Coords:</span>
+                          <span class="coord-box">
+                            (<input type="text" id="p_1" value="0" style="width: 42px; text-align: center;" oninput="DrawGraph();">,
+                             <input type="text" id="q_1" value="0" style="width: 42px; text-align: center;" oninput="DrawGraph();">)
+                          </span>
+                          <span class="form-label" style="margin-left: 0.4rem;">Pos:</span>
+                          <select id="pointpos_1" class="select-modern" style="padding: 0.15rem 0.35rem; font-size: 0.75rem;" onchange="DrawGraph();">
+                            <option value="above_right" selected>Above Right</option>
+                            <option value="above">Above</option>
+                            <option value="right">Right</option>
+                            <option value="below_right">Below Right</option>
+                            <option value="below">Below</option>
+                            <option value="below_left">Below Left</option>
+                            <option value="left">Left</option>
+                            <option value="above_left">Above Left</option>
+                            <option value="center">Center</option>
+                          </select>
+                        </div>
+                        <div class="card-controls" style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.4rem; padding-top: 0.35rem; border-top: 1px solid var(--color-border);">
+                          <div style="display: flex; align-items: center; gap: 0.45rem;">
+                            <select id="pointColor_1" class="select-modern" style="padding: 0.15rem 0.35rem; font-size: 0.75rem;" onchange="DrawGraph();">
+                              <option value="black" selected>Black</option>
+                              <option value="blue">Blue</option>
+                              <option value="red">Red</option>
+                              <option value="green">Green</option>
+                              <option value="purple">Purple</option>
+                              <option value="orange">Orange</option>
+                              <option value="teal">Teal</option>
+                            </select>
+                            <label class="checkbox-label" style="font-size: 0.75rem;" title="Render small filled dot at point coordinate">
+                              <input type="checkbox" id="pointdot_1" checked onchange="DrawGraph();"> Dot
+                            </label>
+                            <label class="checkbox-label" style="font-size: 0.75rem;" title="Show or hide this point/label">
+                              <input type="checkbox" id="pointshow_1" checked onchange="DrawGraph();"> Show
+                            </label>
+                          </div>
+                          <button type="button" class="btn-tool-action" onclick="window.setDrawTool('point', 1)" title="Click on canvas to reposition this point" style="padding: 0.2rem 0.45rem; font-size: 0.72rem;">
+                            📍 Pick on Canvas
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Point Card 2 -->
+                    <div class="item-card" id="point_card_2">
+                      <div class="item-card-header">
+                        <div style="display: flex; align-items: center; gap: 0.4rem; min-width: 0;">
+                          <span class="item-badge" style="background: rgba(14, 165, 233, 0.12); color: #0284c7; border: 1px solid rgba(14, 165, 233, 0.25);">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2"/></svg>
+                            Point 2
+                          </span>
+                          <span class="item-title" id="point_title_2" style="font-size: 0.8rem; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">(Empty)</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.35rem;">
+                          <button type="button" class="btn-item-delete" onclick="RemovePoint(2)" title="Clear or remove this point">&times;</button>
+                        </div>
+                      </div>
+
+                      <div class="item-card-body">
+                        <div class="form-row" style="margin-bottom: 0.4rem;">
+                          <span class="form-label" style="min-width: 65px;">Label Text:</span>
+                          <input type="text" id="p_name_2" class="input-modern" value="" placeholder="e.g. A, (2, 3), Max, \alpha" style="flex: 1; font-weight: 500;" oninput="updatePointCardHeader(2); DrawGraph();">
+                        </div>
+                        <div class="form-row" style="margin-bottom: 0.4rem;">
+                          <span class="form-label" style="min-width: 65px;">Coords:</span>
+                          <span class="coord-box">
+                            (<input type="text" id="p_2" value="0" style="width: 42px; text-align: center;" oninput="DrawGraph();">,
+                             <input type="text" id="q_2" value="0" style="width: 42px; text-align: center;" oninput="DrawGraph();">)
+                          </span>
+                          <span class="form-label" style="margin-left: 0.4rem;">Pos:</span>
+                          <select id="pointpos_2" class="select-modern" style="padding: 0.15rem 0.35rem; font-size: 0.75rem;" onchange="DrawGraph();">
+                            <option value="above_right" selected>Above Right</option>
+                            <option value="above">Above</option>
+                            <option value="right">Right</option>
+                            <option value="below_right">Below Right</option>
+                            <option value="below">Below</option>
+                            <option value="below_left">Below Left</option>
+                            <option value="left">Left</option>
+                            <option value="above_left">Above Left</option>
+                            <option value="center">Center</option>
+                          </select>
+                        </div>
+                        <div class="card-controls" style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.4rem; padding-top: 0.35rem; border-top: 1px solid var(--color-border);">
+                          <div style="display: flex; align-items: center; gap: 0.45rem;">
+                            <select id="pointColor_2" class="select-modern" style="padding: 0.15rem 0.35rem; font-size: 0.75rem;" onchange="DrawGraph();">
+                              <option value="black" selected>Black</option>
+                              <option value="blue">Blue</option>
+                              <option value="red">Red</option>
+                              <option value="green">Green</option>
+                              <option value="purple">Purple</option>
+                              <option value="orange">Orange</option>
+                              <option value="teal">Teal</option>
+                            </select>
+                            <label class="checkbox-label" style="font-size: 0.75rem;" title="Render small filled dot at point coordinate">
+                              <input type="checkbox" id="pointdot_2" checked onchange="DrawGraph();"> Dot
+                            </label>
+                            <label class="checkbox-label" style="font-size: 0.75rem;" title="Show or hide this point/label">
+                              <input type="checkbox" id="pointshow_2" checked onchange="DrawGraph();"> Show
+                            </label>
+                          </div>
+                          <button type="button" class="btn-tool-action" onclick="window.setDrawTool('point', 2)" title="Click on canvas to reposition this point" style="padding: 0.2rem 0.45rem; font-size: 0.72rem;">
+                            📍 Pick on Canvas
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Point Card 3 -->
+                    <div class="item-card" id="point_card_3">
+                      <div class="item-card-header">
+                        <div style="display: flex; align-items: center; gap: 0.4rem; min-width: 0;">
+                          <span class="item-badge" style="background: rgba(14, 165, 233, 0.12); color: #0284c7; border: 1px solid rgba(14, 165, 233, 0.25);">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2"/></svg>
+                            Point 3
+                          </span>
+                          <span class="item-title" id="point_title_3" style="font-size: 0.8rem; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">(Empty)</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.35rem;">
+                          <button type="button" class="btn-item-delete" onclick="RemovePoint(3)" title="Clear or remove this point">&times;</button>
+                        </div>
+                      </div>
+
+                      <div class="item-card-body">
+                        <div class="form-row" style="margin-bottom: 0.4rem;">
+                          <span class="form-label" style="min-width: 65px;">Label Text:</span>
+                          <input type="text" id="p_name_3" class="input-modern" value="" placeholder="e.g. A, (2, 3), Max, \alpha" style="flex: 1; font-weight: 500;" oninput="updatePointCardHeader(3); DrawGraph();">
+                        </div>
+                        <div class="form-row" style="margin-bottom: 0.4rem;">
+                          <span class="form-label" style="min-width: 65px;">Coords:</span>
+                          <span class="coord-box">
+                            (<input type="text" id="p_3" value="0" style="width: 42px; text-align: center;" oninput="DrawGraph();">,
+                             <input type="text" id="q_3" value="0" style="width: 42px; text-align: center;" oninput="DrawGraph();">)
+                          </span>
+                          <span class="form-label" style="margin-left: 0.4rem;">Pos:</span>
+                          <select id="pointpos_3" class="select-modern" style="padding: 0.15rem 0.35rem; font-size: 0.75rem;" onchange="DrawGraph();">
+                            <option value="above_right" selected>Above Right</option>
+                            <option value="above">Above</option>
+                            <option value="right">Right</option>
+                            <option value="below_right">Below Right</option>
+                            <option value="below">Below</option>
+                            <option value="below_left">Below Left</option>
+                            <option value="left">Left</option>
+                            <option value="above_left">Above Left</option>
+                            <option value="center">Center</option>
+                          </select>
+                        </div>
+                        <div class="card-controls" style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.4rem; padding-top: 0.35rem; border-top: 1px solid var(--color-border);">
+                          <div style="display: flex; align-items: center; gap: 0.45rem;">
+                            <select id="pointColor_3" class="select-modern" style="padding: 0.15rem 0.35rem; font-size: 0.75rem;" onchange="DrawGraph();">
+                              <option value="black" selected>Black</option>
+                              <option value="blue">Blue</option>
+                              <option value="red">Red</option>
+                              <option value="green">Green</option>
+                              <option value="purple">Purple</option>
+                              <option value="orange">Orange</option>
+                              <option value="teal">Teal</option>
+                            </select>
+                            <label class="checkbox-label" style="font-size: 0.75rem;" title="Render small filled dot at point coordinate">
+                              <input type="checkbox" id="pointdot_3" checked onchange="DrawGraph();"> Dot
+                            </label>
+                            <label class="checkbox-label" style="font-size: 0.75rem;" title="Show or hide this point/label">
+                              <input type="checkbox" id="pointshow_3" checked onchange="DrawGraph();"> Show
+                            </label>
+                          </div>
+                          <button type="button" class="btn-tool-action" onclick="window.setDrawTool('point', 3)" title="Click on canvas to reposition this point" style="padding: 0.2rem 0.45rem; font-size: 0.72rem;">
+                            📍 Pick on Canvas
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </form>
+              </li>
+            </ul>
+          </li>
+
+          <!-- 2. Rectangles Section -->
+          <li>
+            <a href="#">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>
+              Rectangles
+            </a>
+            <ul>
+              <li>
+                <form id="Retangularform" name="myform3" action="" method="get">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                    <span style="font-size: 0.85rem; font-weight: 600; color: var(--color-text-muted);">Bounding boxes &amp; shaded zones</span>
+                    <button type="button" class="btn-modern btn-modern-secondary btn-modern-sm" onclick="AddRec(this.form)">
+                      + Add Rectangle
+                    </button>
+                  </div>
+
+                  <!-- Rectangle 1 -->
+                  <div class="item-card" id="rectangle_card_1">
+                    <div class="item-card-header">
+                      <span>Rectangle 1</span>
+                      <div style="display: flex; gap: 0.35rem;">
+                        <button type="button" class="btn-modern btn-modern-secondary btn-modern-sm" onclick="selectShapeOnCanvas('rectangle', 1)" title="Manipulate directly on canvas with drag handles">Canvas Edit</button>
+                        <button type="button" id="1" class="btn-modern btn-modern-danger btn-modern-sm" onclick="delR(this.id); DrawGraph();">Clear</button>
+                      </div>
+                    </div>
+                    <div class="form-row">
+                      <span class="form-label">Coords:</span>
+                      <span class="coord-box">(<input type="text" id="r_1" value="0">,<input type="text" id="s_1" value="0">)</span>
+                      <span style="color: var(--color-text-muted); font-weight: bold;">&mdash;</span>
+                      <span class="coord-box">(<input type="text" id="t_1" value="0">,<input type="text" id="u_1" value="0">)</span>
+                    </div>
+                    <div class="options-row">
+                      <label class="checkbox-label"><input type="checkbox" id="retangularshow_1" checked> Show</label>
+                      <label class="checkbox-label"><input type="checkbox" name="onlyOne" id="mouseDR_1" onclick="test4(0)"> Mouse Draw</label>
+                      <label class="checkbox-label"><input type="checkbox" name="onlyPR" id="retangular_1" onclick="test5(0)"> All</label>
+                      <label class="checkbox-label"><input type="checkbox" name="onlyPR" id="RP1_1" onclick="test5(1)"> Pt 1</label>
+                      <label class="checkbox-label"><input type="checkbox" name="onlyPR" id="RP2_1" onclick="test5(2)"> Pt 2</label>
+                      <label class="checkbox-label"><input type="checkbox" id="retangulardash_1"> Dash</label>
+                    </div>
+                    <div class="form-row" style="margin-top: 0.5rem;">
+                      <span class="form-label">Name:</span>
+                      <input type="text" id="retangularname_1" class="input-modern" size="5" value="" placeholder="Label" style="width: 80px;">
+                      <span class="form-label">Color:</span>
+                      <select id="retangularColor_1" class="select-modern">
+                        <option value="black" selected>black</option>
+                        <option value="yellow">yellow</option>
+                        <option value="red">red</option>
+                        <option value="blue">blue</option>
+                        <option value="purple">purple</option>
+                        <option value="brown">brown</option>
+                        <option value="orange">orange</option>
+                        <option value="green">green</option>
+                      </select>
+                    </div>
+                  </div>
+
+                </form>
+              </li>
+            </ul>
+          </li>
+
+          <!-- 3. Lines Section -->
+          <li>
+            <a href="#">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="19" x2="19" y2="5"/></svg>
+              Straight Lines
+            </a>
+            <ul>
+              <li>
+                <form id="lineform" name="myform" action="" method="get">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                    <span style="font-size: 0.85rem; font-weight: 600; color: var(--color-text-muted);">Configurable straight segments</span>
+                    <button type="button" class="btn-modern btn-modern-secondary btn-modern-sm" onclick="AddLine(this.form)">
+                      + Add Line
+                    </button>
+                  </div>
+
+                  <!-- Line 1 -->
+                  <div class="item-card" id="line_card_1">
+                    <div class="item-card-header">
+                      <span>Line 1</span>
+                      <div style="display: flex; gap: 0.35rem;">
+                        <button type="button" class="btn-modern btn-modern-secondary btn-modern-sm" onclick="selectShapeOnCanvas('line', 1)" title="Manipulate directly on canvas with drag handles">Canvas Edit</button>
+                        <button type="button" id="1" class="btn-modern btn-modern-danger btn-modern-sm" onclick="del(this.id); DrawGraph();">Clear</button>
+                      </div>
+                    </div>
+                    <div class="form-row">
+                      <span class="form-label">Coords:</span>
+                      <span class="coord-box">(<input type="text" id="a_1" value="0">,<input type="text" id="b_1" value="0">)</span>
+                      <span style="color: var(--color-text-muted); font-weight: bold;">&mdash;</span>
+                      <span class="coord-box">(<input type="text" id="c_1" value="0">,<input type="text" id="d_1" value="0">)</span>
+                    </div>
+                    <div class="options-row">
+                      <label class="checkbox-label"><input type="checkbox" id="lineshow_1" checked> Show</label>
+                      <label class="checkbox-label"><input type="checkbox" name="onlyOne" id="mouseDL_1" onclick="test(0)"> Mouse Draw</label>
+                      <label class="checkbox-label"><input type="checkbox" name="onlyP" id="lin_1" onclick="test1(0)"> All</label>
+                      <label class="checkbox-label"><input type="checkbox" name="onlyP" id="LP1_1" onclick="test1(1)"> Pt 1</label>
+                      <label class="checkbox-label"><input type="checkbox" name="onlyP" id="LP2_1" onclick="test1(2)"> Pt 2</label>
+                      <label class="checkbox-label"><input type="checkbox" id="linedash_1"> Dash</label>
+                    </div>
+                    <div class="form-row" style="margin-top: 0.5rem;">
+                      <span class="form-label">Label:</span>
+                      <input type="text" id="linename_1" class="input-modern" size="5" value="" placeholder="Name" style="width: 80px;">
+                      <span class="form-label">Color:</span>
+                      <select id="lineColor_1" class="select-modern">
+                        <option value="black" selected>black</option>
+                        <option value="yellow">yellow</option>
+                        <option value="red">red</option>
+                        <option value="blue">blue</option>
+                        <option value="purple">purple</option>
+                        <option value="brown">brown</option>
+                        <option value="orange">orange</option>
+                        <option value="green">green</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- Line 2 -->
+                  <div class="item-card" id="line_card_2">
+                    <div class="item-card-header">
+                      <span>Line 2</span>
+                      <div style="display: flex; gap: 0.35rem;">
+                        <button type="button" class="btn-modern btn-modern-secondary btn-modern-sm" onclick="selectShapeOnCanvas('line', 2)" title="Manipulate directly on canvas with drag handles">Canvas Edit</button>
+                        <button type="button" id="2" class="btn-modern btn-modern-danger btn-modern-sm" onclick="del(this.id); DrawGraph();">Clear</button>
+                      </div>
+                    </div>
+                    <div class="form-row">
+                      <span class="form-label">Coords:</span>
+                      <span class="coord-box">(<input type="text" id="a_2" value="0">,<input type="text" id="b_2" value="0">)</span>
+                      <span style="color: var(--color-text-muted); font-weight: bold;">&mdash;</span>
+                      <span class="coord-box">(<input type="text" id="c_2" value="0">,<input type="text" id="d_2" value="0">)</span>
+                    </div>
+                    <div class="options-row">
+                      <label class="checkbox-label"><input type="checkbox" id="lineshow_2"> Show</label>
+                      <label class="checkbox-label"><input type="checkbox" name="onlyOne" id="mouseDL_2" onclick="test(1)"> Mouse Draw</label>
+                      <label class="checkbox-label"><input type="checkbox" name="onlyP" id="lin_2" onclick="test1(3)"> All</label>
+                      <label class="checkbox-label"><input type="checkbox" name="onlyP" id="LP1_2" onclick="test1(4)"> Pt 1</label>
+                      <label class="checkbox-label"><input type="checkbox" name="onlyP" id="LP2_2" onclick="test1(5)"> Pt 2</label>
+                      <label class="checkbox-label"><input type="checkbox" id="linedash_2"> Dash</label>
+                    </div>
+                    <div class="form-row" style="margin-top: 0.5rem;">
+                      <span class="form-label">Label:</span>
+                      <input type="text" id="linename_2" class="input-modern" size="5" value="" placeholder="Name" style="width: 80px;">
+                      <span class="form-label">Color:</span>
+                      <select id="lineColor_2" class="select-modern">
+                        <option value="black" selected>black</option>
+                        <option value="yellow">yellow</option>
+                        <option value="red">red</option>
+                        <option value="blue">blue</option>
+                        <option value="purple">purple</option>
+                        <option value="brown">brown</option>
+                        <option value="orange">orange</option>
+                        <option value="green">green</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- Line 3 -->
+                  <div class="item-card" id="line_card_3">
+                    <div class="item-card-header">
+                      <span>Line 3</span>
+                      <div style="display: flex; gap: 0.35rem;">
+                        <button type="button" class="btn-modern btn-modern-secondary btn-modern-sm" onclick="selectShapeOnCanvas('line', 3)" title="Manipulate directly on canvas with drag handles">Canvas Edit</button>
+                        <button type="button" id="3" class="btn-modern btn-modern-danger btn-modern-sm" onclick="del(this.id); DrawGraph();">Clear</button>
+                      </div>
+                    </div>
+                    <div class="form-row">
+                      <span class="form-label">Coords:</span>
+                      <span class="coord-box">(<input type="text" id="a_3" value="0">,<input type="text" id="b_3" value="0">)</span>
+                      <span style="color: var(--color-text-muted); font-weight: bold;">&mdash;</span>
+                      <span class="coord-box">(<input type="text" id="c_3" value="0">,<input type="text" id="d_3" value="0">)</span>
+                    </div>
+                    <div class="options-row">
+                      <label class="checkbox-label"><input type="checkbox" id="lineshow_3"> Show</label>
+                      <label class="checkbox-label"><input type="checkbox" name="onlyOne" id="mouseDL_3" onclick="test(2)"> Mouse Draw</label>
+                      <label class="checkbox-label"><input type="checkbox" name="onlyP" id="lin_3" onclick="test1(6)"> All</label>
+                      <label class="checkbox-label"><input type="checkbox" name="onlyP" id="LP1_3" onclick="test1(7)"> Pt 1</label>
+                      <label class="checkbox-label"><input type="checkbox" name="onlyP" id="LP2_3" onclick="test1(8)"> Pt 2</label>
+                      <label class="checkbox-label"><input type="checkbox" id="linedash_3"> Dash</label>
+                    </div>
+                    <div class="form-row" style="margin-top: 0.5rem;">
+                      <span class="form-label">Label:</span>
+                      <input type="text" id="linename_3" class="input-modern" size="5" value="" placeholder="Name" style="width: 80px;">
+                      <span class="form-label">Color:</span>
+                      <select id="lineColor_3" class="select-modern">
+                        <option value="black" selected>black</option>
+                        <option value="yellow">yellow</option>
+                        <option value="red">red</option>
+                        <option value="blue">blue</option>
+                        <option value="purple">purple</option>
+                        <option value="brown">brown</option>
+                        <option value="orange">orange</option>
+                        <option value="green">green</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- Line 4 -->
+                  <div class="item-card" id="line_card_4">
+                    <div class="item-card-header">
+                      <span>Line 4</span>
+                      <div style="display: flex; gap: 0.35rem;">
+                        <button type="button" class="btn-modern btn-modern-secondary btn-modern-sm" onclick="selectShapeOnCanvas('line', 4)" title="Manipulate directly on canvas with drag handles">Canvas Edit</button>
+                        <button type="button" id="4" class="btn-modern btn-modern-danger btn-modern-sm" onclick="del(this.id); DrawGraph();">Clear</button>
+                      </div>
+                    </div>
+                    <div class="form-row">
+                      <span class="form-label">Coords:</span>
+                      <span class="coord-box">(<input type="text" id="a_4" value="0">,<input type="text" id="b_4" value="0">)</span>
+                      <span style="color: var(--color-text-muted); font-weight: bold;">&mdash;</span>
+                      <span class="coord-box">(<input type="text" id="c_4" value="0">,<input type="text" id="d_4" value="0">)</span>
+                    </div>
+                    <div class="options-row">
+                      <label class="checkbox-label"><input type="checkbox" id="lineshow_4"> Show</label>
+                      <label class="checkbox-label"><input type="checkbox" name="onlyOne" id="mouseDL_4" onclick="test(3)"> Mouse Draw</label>
+                      <label class="checkbox-label"><input type="checkbox" name="onlyP" id="lin_4" onclick="test1(9)"> All</label>
+                      <label class="checkbox-label"><input type="checkbox" name="onlyP" id="LP1_4" onclick="test1(10)"> Pt 1</label>
+                      <label class="checkbox-label"><input type="checkbox" name="onlyP" id="LP2_4" onclick="test1(11)"> Pt 2</label>
+                      <label class="checkbox-label"><input type="checkbox" id="linedash_4"> Dash</label>
+                    </div>
+                    <div class="form-row" style="margin-top: 0.5rem;">
+                      <span class="form-label">Label:</span>
+                      <input type="text" id="linename_4" class="input-modern" size="5" value="" placeholder="Name" style="width: 80px;">
+                      <span class="form-label">Color:</span>
+                      <select id="lineColor_4" class="select-modern">
+                        <option value="black" selected>black</option>
+                        <option value="yellow">yellow</option>
+                        <option value="red">red</option>
+                        <option value="blue">blue</option>
+                        <option value="purple">purple</option>
+                        <option value="brown">brown</option>
+                        <option value="orange">orange</option>
+                        <option value="green">green</option>
+                      </select>
+                    </div>
+                  </div>
+
+                </form>
+              </li>
+            </ul>
+          </li>
+
+          <!-- 4. Curves Section -->
+          <li>
+            <a href="#">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17c3-8 9-8 12 0s9 8 12 0"/></svg>
+              B&eacute;zier Curves
+            </a>
+            <ul>
+              <li>
+                <form id="curveform" name="myform2" action="" method="get">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                    <span style="font-size: 0.85rem; font-weight: 600; color: var(--color-text-muted);">Cubic B&eacute;zier splines</span>
+                    <button type="button" class="btn-modern btn-modern-secondary btn-modern-sm" onclick="AddCurve(this.form)">
+                      + Add Curve
+                    </button>
+                  </div>
+
+                  <!-- Curve 1 -->
+                  <div class="item-card" id="curve_card_1">
+                    <div class="item-card-header">
+                      <span>Curve 1</span>
+                      <button type="button" class="btn-modern btn-modern-secondary btn-modern-sm" onclick="selectShapeOnCanvas('curve', 1)" title="Manipulate directly on canvas with drag handles">Canvas Edit</button>
+                      <button type="button" id="1" class="btn-modern btn-modern-danger btn-modern-sm" onclick="delC(this.id); DrawGraph();">Clear</button>
+                    </div>
+                    <div class="form-row">
+                      <span class="form-label">Start / Ctrl / End:</span>
+                    </div>
+                    <div class="form-row">
+                      <span class="coord-box">P1: (<input type="text" id="e_1" value="0">,<input type="text" id="f_1" value="0">)</span>
+                      <span class="coord-box">C1: (<input type="text" id="g_1" value="0">,<input type="text" id="h_1" value="0">)</span>
+                    </div>
+                    <div class="form-row">
+                      <span class="coord-box">C2: (<input type="text" id="i_1" value="0">,<input type="text" id="j_1" value="0">)</span>
+                      <span class="coord-box">P2: (<input type="text" id="k_1" value="0">,<input type="text" id="l_1" value="0">)</span>
+                    </div>
+                    <div class="options-row">
+                      <label class="checkbox-label"><input type="checkbox" id="curveshow_1" checked> Show</label>
+                      <label class="checkbox-label"><input type="checkbox" id="mouseDC_1" name="onlyOne" onclick="test2(0)"> Mouse Draw</label>
+                      <label class="checkbox-label"><input type="checkbox" id="cm_1" name="onlyPC" onclick="test3(0)"> All</label>
+                      <label class="checkbox-label"><input type="checkbox" id="CP1_1" name="onlyPC" onclick="test3(1)" value="1"> P1</label>
+                      <label class="checkbox-label"><input type="checkbox" id="CP2_1" name="onlyPC" onclick="test3(2)" value="2"> C1</label>
+                      <label class="checkbox-label"><input type="checkbox" id="CP3_1" name="onlyPC" onclick="test3(3)" value="3"> C2</label>
+                      <label class="checkbox-label"><input type="checkbox" id="CP4_1" name="onlyPC" onclick="test3(4)" value="4"> P2</label>
+                      <label class="checkbox-label"><input type="checkbox" id="curvedash_1"> Dash</label>
+                      <label class="checkbox-label"><input type="checkbox" id="curveguide_1"> Guides</label>
+                    </div>
+                    <div class="form-row" style="margin-top: 0.5rem;">
+                      <span class="form-label">Label:</span>
+                      <input type="text" id="curvename_1" class="input-modern" size="5" value="" placeholder="Name" style="width: 80px;">
+                      <span class="form-label">Color:</span>
+                      <select id="curveColor_1" class="select-modern">
+                        <option value="black" selected>black</option>
+                        <option value="yellow">yellow</option>
+                        <option value="red">red</option>
+                        <option value="blue">blue</option>
+                        <option value="purple">purple</option>
+                        <option value="brown">brown</option>
+                        <option value="orange">orange</option>
+                        <option value="green">green</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- Curve 2 -->
+                  <div class="item-card">
+                    <div class="item-card-header">
+                      <span>Curve 2</span>
+                      <button type="button" id="2" class="btn-modern btn-modern-danger btn-modern-sm" onclick="delC(this.id); DrawGraph();">Clear</button>
+                    </div>
+                    <div class="form-row">
+                      <span class="form-label">Start / Ctrl / End:</span>
+                    </div>
+                    <div class="form-row">
+                      <span class="coord-box">P1: (<input type="text" id="e_2" value="0">,<input type="text" id="f_2" value="0">)</span>
+                      <span class="coord-box">C1: (<input type="text" id="g_2" value="0">,<input type="text" id="h_2" value="0">)</span>
+                    </div>
+                    <div class="form-row">
+                      <span class="coord-box">C2: (<input type="text" id="i_2" value="0">,<input type="text" id="j_2" value="0">)</span>
+                      <span class="coord-box">P2: (<input type="text" id="k_2" value="0">,<input type="text" id="l_2" value="0">)</span>
+                    </div>
+                    <div class="options-row">
+                      <label class="checkbox-label"><input type="checkbox" id="curveshow_2"> Show</label>
+                      <label class="checkbox-label"><input type="checkbox" id="mouseDC_2" name="onlyOne" onclick="test2(1)"> Mouse Draw</label>
+                      <label class="checkbox-label"><input type="checkbox" id="cm_2" name="onlyPC" onclick="test3(5)"> All</label>
+                      <label class="checkbox-label"><input type="checkbox" id="CP1_2" name="onlyPC" onclick="test3(6)" value="1"> P1</label>
+                      <label class="checkbox-label"><input type="checkbox" id="CP2_2" name="onlyPC" onclick="test3(7)" value="2"> C1</label>
+                      <label class="checkbox-label"><input type="checkbox" id="CP3_2" name="onlyPC" onclick="test3(8)" value="3"> C2</label>
+                      <label class="checkbox-label"><input type="checkbox" id="CP4_2" name="onlyPC" onclick="test3(9)" value="4"> P2</label>
+                      <label class="checkbox-label"><input type="checkbox" id="curvedash_2"> Dash</label>
+                      <label class="checkbox-label"><input type="checkbox" id="curveguide_2"> Guides</label>
+                    </div>
+                    <div class="form-row" style="margin-top: 0.5rem;">
+                      <span class="form-label">Label:</span>
+                      <input type="text" id="curvename_2" class="input-modern" size="5" value="" placeholder="Name" style="width: 80px;">
+                      <span class="form-label">Color:</span>
+                      <select id="curveColor_2" class="select-modern">
+                        <option value="black" selected>black</option>
+                        <option value="yellow">yellow</option>
+                        <option value="red">red</option>
+                        <option value="blue">blue</option>
+                        <option value="purple">purple</option>
+                        <option value="brown">brown</option>
+                        <option value="orange">orange</option>
+                        <option value="green">green</option>
+                      </select>
+                    </div>
+                  </div>
+
+                </form>
+              </li>
+            </ul>
+          </li>
+
+          <!-- 5. Graph Examples Section -->
+          <li>
+            <a href="#">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              Example Models
+            </a>
+            <ul>
+              <li>
+                <p style="font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 0.75rem;">
+                  Click any model below to pre-populate and render a scientific or economic figure:
+                </p>
+                <div class="preset-grid">
+                  <button type="button" class="preset-card-btn" onclick="Example1(); DrawGraph();">
+                    <strong>Demand &amp; Supply</strong>
+                    <span>Equilibrium with intersecting curves &amp; labels</span>
+                  </button>
+                  <button type="button" class="preset-card-btn" onclick="Example2(); DrawGraph();">
+                    <strong>Economic Growth</strong>
+                    <span>Production curve shift over time</span>
+                  </button>
+                  <button type="button" class="preset-card-btn" onclick="Example3(); DrawGraph();">
+                    <strong>Cost Curves</strong>
+                    <span>MC, ATC, and AVC microeconomic curves</span>
+                  </button>
+                  <button type="button" class="preset-card-btn" onclick="Example4(); DrawGraph();">
+                    <strong>Utility Maximization</strong>
+                    <span>Budget line tangent to indifference curve</span>
+                  </button>
+                </div>
+              </li>
+            </ul>
+          </li>
+
+          <!-- 6. Export and Import Section -->
+          <li>
+            <a href="#">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Export &amp; Import
+            </a>
+            <ul>
+              <li>
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                  <button type="button" class="btn-modern btn-modern-secondary" onclick="pt()">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    Export to HTML Format
+                  </button>
+
+                  <div style="border-top: 1px solid var(--color-border); padding-top: 0.75rem;">
+                    <div class="form-label" style="margin-bottom: 0.4rem;">Export CSV File:</div>
+                    <a href="#" id="export" class="btn-modern btn-modern-primary btn-modern-sm" style="display: inline-flex;">
+                      Download CSV Data
+                    </a>
+                  </div>
+
+                  <div style="border-top: 1px solid var(--color-border); padding-top: 0.75rem;">
+                    <div class="form-label" style="margin-bottom: 0.4rem;">Import Data File:</div>
+                    <input type="file" id="file" class="input-modern" onchange="handleFiles(this.files)" style="width: 100%;">
+                  </div>
+                </div>
+
+                <!-- Hidden table used for CSV serialization -->
+                <div id="dvData" style="display:none;">
+                  <table> 
+                    <tr><td id="axisLableC"></td></tr>
+                    <tr><td id="axisCopy"></td></tr>
+                    <tr><td id="lineLableC"></td></tr>
+                    <tr><td id="lineCopy"></td></tr>
+                    <tr><td id="curveLableC"></td></tr>
+                    <tr><td id="curveCopy"></td></tr>
+                    <tr><td id="rectangleLableC"></td></tr>
+                    <tr><td id="rectangleCopy"></td></tr> 
+                  </table>
+                  
+                  <script type="text/javascript">
+                    $(document).ready(function () {
+                      function exportTableToCSV($table, filename) {
+                        var $headers = $table.find('tr:has(th)'),
+                            $rows = $table.find('tr:has(td)'),
+                            tmpColDelim = String.fromCharCode(11),
+                            tmpRowDelim = String.fromCharCode(0),
+                            colDelim = '","',
+                            rowDelim = '"\r\n"';
+
+                        var csv = '"';
+                        csv += formatRows($headers.map(grabRow));
+                        csv += rowDelim;
+                        csv += formatRows($rows.map(grabRow)) + '"';
+                        var csvData = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csv);
+
+                        $(this).attr({
+                          'download': filename,
+                          'href': csvData
+                        });
+
+                        function formatRows(rows){
+                          return rows.get().join(tmpRowDelim)
+                            .split(tmpRowDelim).join(rowDelim)
+                            .split(tmpColDelim).join(colDelim);
+                        }
+                        function grabRow(i,row){
+                          var $row = $(row);
+                          var $cols = $row.find('td'); 
+                          if(!$cols.length) $cols = $row.find('th');  
+                          return $cols.map(grabCol).get().join(tmpColDelim);
+                        }
+                        function grabCol(j,col){
+                          var $col = $(col),
+                              $text = $col.text();
+                          return $text.replace('"', '""');
+                        }
+                      }
+
+                      $("#export").click(function (event) {
+                        exportTableToCSV.apply(this, [$('#dvData>table'), 'tikz_coordinate_export.csv']);
+                      });
+                    });
+                  </script>
+                </div>
+              </li>
+            </ul>
+          </li>
+
+        </ul>
+      </div>
+
+      <!-- Right Column: Interactive Canvas & TikZ Output -->
+      <div class="content-right" style="min-width: 0;">
+
+        <!-- Canvas Card -->
+        <div class="canvas-card">
+          <div class="canvas-header">
+            <div class="canvas-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg>
+              Canvas Viewport
+            </div>
+
+            <!-- Canvas Drawing Quick Toolbar (Canvas-First Workflow) -->
+            <div class="canvas-draw-toolbar" id="canvas-draw-toolbar">
+              <button type="button" class="tool-btn" id="tool-btn-inspect" onclick="setDrawTool('select')" title="Select, move &amp; tweak shapes on canvas">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l7 18 3-7 7-3L3 3z"/></svg>
+                Select &amp; Edit
+              </button>
+              <button type="button" class="tool-btn" id="tool-btn-axis" onclick="setDrawTool('axis')" title="Interactively adjust X/Y limits, ticks, and labels on canvas (A)">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="21" x2="21" y2="21"/><polyline points="17 17 21 21 17 25"/><line x1="3" y1="21" x2="3" y2="3"/><polyline points="-1 7 3 3 7 7"/></svg>
+                Axis
+              </button>
+              <button type="button" class="tool-btn active" id="tool-btn-rectangle" onclick="setDrawTool('rectangle')" title="Rubberband drag rectangle on canvas (R)">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+                Rectangle
+              </button>
+              <button type="button" class="tool-btn" id="tool-btn-line" onclick="setDrawTool('line')" title="Rubberband drag straight line on canvas">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="19" x2="19" y2="5"/></svg>
+                Line
+              </button>
+              <button type="button" class="tool-btn" id="tool-btn-curve" onclick="setDrawTool('curve')" title="Interactive 4-point Bézier curve">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17c6-10 12-10 18 0"/></svg>
+                Curve
+              </button>
+              <button type="button" class="tool-btn" id="tool-btn-point" onclick="setDrawTool('point')" title="Click on canvas to place a named point">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/></svg>
+                Point
+              </button>
+              <button type="button" class="tool-btn tool-btn-snap" id="tool-btn-snap" onclick="toggleSnapGrid()" title="Toggle snapping to grid intervals">
+                Snap: <span id="snap-val">0.5</span>
+              </button>
+              <button type="button" class="tool-btn tool-btn-confirm" id="tool-btn-confirm" onclick="toggleConfirmMode()" title="Toggle final confirmation popover after rubberband drawing">
+                Confirm: <span id="confirm-mode-val" class="badge-confirm-on">ON</span>
+              </button>
+
+              <div class="toolbar-separator"></div>
+
+              <!-- High-Resolution PNG Export Button & Settings -->
+              <div class="download-btn-group" id="canvas-download-group">
+                <button type="button" class="tool-btn tool-btn-download" id="tool-btn-download-png" onclick="downloadCanvasAsPNG()" title="Download drawing as high-resolution PNG image">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                  </svg>
+                  <span>Download as PNG</span>
+                </button>
+                <button type="button" class="tool-btn tool-btn-options" id="btn-png-options-toggle" onclick="togglePngExportOptions(event)" title="PNG Export Options (Resolution, Background, Grid)">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"/>
+                  </svg>
+                </button>
+
+                <!-- Export Options Dropdown -->
+                <div class="png-options-dropdown" id="png-options-menu" style="display: none;">
+                  <div class="png-opt-header">PNG Export Options</div>
+                  <div class="png-opt-row">
+                    <label class="png-opt-label" for="png-scale-select">Resolution:</label>
+                    <select id="png-scale-select" class="png-opt-select" onchange="updatePngScalePreference(this.value)">
+                      <option value="1">1x Standard (600 &times; 580 px)</option>
+                      <option value="2">2x Retina (1200 &times; 1160 px)</option>
+                      <option value="3" selected>3x High-Res (1800 &times; 1740 px)</option>
+                      <option value="4">4x Ultra-Res (2400 &times; 2320 px)</option>
+                    </select>
+                  </div>
+                  <div class="png-opt-row">
+                    <label class="png-opt-label" for="png-bg-select">Background:</label>
+                    <select id="png-bg-select" class="png-opt-select" onchange="updatePngBgPreference(this.value)">
+                      <option value="#ffffff" selected>White Canvas</option>
+                      <option value="transparent">Transparent Canvas</option>
+                    </select>
+                  </div>
+                  <div class="png-opt-row">
+                    <label class="png-opt-label" for="png-grid-select">Grid Lines:</label>
+                    <select id="png-grid-select" class="png-opt-select" onchange="updatePngGridPreference(this.value)">
+                      <option value="auto" selected>Auto (Include if shown)</option>
+                      <option value="yes">Always Include Grid</option>
+                      <option value="no">Do Not Include Grid</option>
+                    </select>
+                  </div>
+                  <button type="button" class="btn-modern btn-modern-primary" style="width: 100%; margin-top: 0.5rem; justify-content: center; padding: 0.35rem 0.5rem; font-size: 0.75rem;" onclick="togglePngExportOptions(); downloadCanvasAsPNG();">
+                    Download PNG
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div id="canvas-coord-hud" class="canvas-hud">
+              Cursor: (x, y)
+            </div>
+          </div>
+
+          <!-- Drawing Guide Assistant Banner -->
+          <div id="drawing-guide-banner" class="drawing-guide-banner" style="display: none;">
+            <span class="guide-badge" id="drawing-guide-badge">✏️ Canvas Tool</span>
+            <div id="curve-step-indicators" style="display: none; align-items: center; gap: 0.35rem; margin: 0 0.25rem;">
+              <span id="curve-step-1" class="curve-step-chip active">1. Start P₁</span>
+              <span id="curve-step-2" class="curve-step-chip">2. End P₂</span>
+              <span id="curve-step-3" class="curve-step-chip">3. Ctrl C₁</span>
+              <span id="curve-step-4" class="curve-step-chip">4. Ctrl C₂</span>
+            </div>
+            <span id="drawing-guide-text" class="guide-text">Click &amp; drag on canvas, or click two points to create shape.</span>
+            <div style="display: flex; align-items: center; gap: 0.35rem; margin-left: auto;">
+              <button type="button" id="curve-match-ctrl-btn" class="guide-cancel-btn" style="display: none; background: #f59e0b; color: #1e1b4b; font-weight: 600; border-color: #d97706;" onclick="finishCurveAsSingleControl()" title="Set C₂ = C₁ (Single Control Point Arc)">Match C₂ = C₁ (Arc)</button>
+              <button type="button" id="curve-undo-step-btn" class="guide-cancel-btn" style="display: none; background: #3b82f6; color: #ffffff; border-color: #2563eb;" onclick="undoLastCurvePoint()" title="Undo previous point (Backspace)">↶ Undo Step</button>
+              <button type="button" class="guide-cancel-btn" onclick="cancelDrawingMode()" title="Cancel drawing tool (Esc)">Cancel (Esc)</button>
+            </div>
+          </div>
+
+          <div class="canvas-stage-wrapper">
+            <div class="canvas-stage">
+              <!-- Overlay mouse drawing canvas -->
+              <canvas id="myCanvas" width="600" height="580" style="position: absolute; top: 0; left: 0; z-index: 10;"></canvas>
+              <!-- Interactive live preview & rubberband canvas -->
+              <canvas id="previewCanvas" width="600" height="580" style="position: absolute; top: 0; left: 0; z-index: 15; pointer-events: none;"></canvas>
+              <!-- Background grid & persistent lines canvas -->
+              <canvas id="bgcanvas" width="600" height="580" style="position: absolute; top: 0; left: 0; z-index: 5;"></canvas>
+            </div>
+
+            <!-- Floating On-Canvas Final Confirmation Card -->
+            <div id="shape-confirm-card" class="shape-confirm-card" style="display: none;">
+              <div class="confirm-header">
+                <div class="confirm-title-area">
+                  <span class="confirm-badge" id="confirm-type-badge">Rectangle</span>
+                  <span class="confirm-coords" id="confirm-coords-text">(2.0, 1.0) &rarr; (6.5, 5.0)</span>
+                </div>
+                <button type="button" class="confirm-close-btn" onclick="cancelCandidateShape()" title="Discard (Esc)">&times;</button>
+              </div>
+
+              <div class="confirm-body">
+                <div class="confirm-stat-row">
+                  <span id="confirm-dimension-text" class="confirm-dim-pill">4.5 &times; 4.0 units</span>
+                  <button type="button" id="confirm-curve-match-btn" class="btn-modern btn-modern-secondary btn-modern-sm" style="display: none; margin-left: 0.5rem;" onclick="makeCandidateCurveSingleControl()" title="Set C₂ equal to C₁ for a smooth single-control arc">Match C₂ = C₁ (Arc)</button>
+                  <span class="confirm-hint">Drag handles on canvas to fine-tune</span>
+                </div>
+
+                <div class="confirm-props-row">
+                  <div class="confirm-field" style="flex: 1.2;">
+                    <label for="confirm-shape-label" id="confirm-label-heading">Label Name:</label>
+                    <input type="text" id="confirm-shape-label" placeholder="e.g. Region A" class="confirm-input">
+                    <!-- Quick chips for Point / Label tool -->
+                    <div id="confirm-quick-labels" style="display: none; align-items: center; gap: 0.25rem; flex-wrap: wrap; margin-top: 0.3rem;">
+                      <span style="font-size: 0.68rem; font-weight: 600; color: #64748b;">Quick:</span>
+                      <button type="button" class="quick-chip" onclick="setQuickPointLabel('A')">A</button>
+                      <button type="button" class="quick-chip" onclick="setQuickPointLabel('B')">B</button>
+                      <button type="button" class="quick-chip" onclick="setQuickPointLabel('P')">P</button>
+                      <button type="button" class="quick-chip" onclick="setQuickPointLabel('E₁')">E₁</button>
+                      <button type="button" class="quick-chip" onclick="setQuickPointLabel('Max')">Max</button>
+                      <button type="button" class="quick-chip" onclick="setQuickPointLabel('coords')">(x, y)</button>
+                      <button type="button" class="quick-chip" onclick="setQuickPointLabel('')">Clear</button>
+                    </div>
+                  </div>
+                  <!-- Line style toggle for lines, rectangles, curves -->
+                  <div class="confirm-field" id="confirm-field-line-style" style="flex: 1;">
+                    <label>Line Style:</label>
+                    <div class="confirm-style-toggle">
+                      <button type="button" id="confirm-style-solid" class="style-toggle-btn active" onclick="setCandidateStyle('solid')">Solid</button>
+                      <button type="button" id="confirm-style-dashed" class="style-toggle-btn" onclick="setCandidateStyle('dashed')">Dash</button>
+                    </div>
+                  </div>
+                  <!-- Position / Anchor selector for Point / Label -->
+                  <div class="confirm-field" id="confirm-field-point-pos" style="display: none; flex: 1;">
+                    <label for="confirm-point-pos">Position / Anchor:</label>
+                    <select id="confirm-point-pos" class="confirm-slot-select" onchange="updateCandidatePointAnchor(this.value)">
+                      <option value="above_right" selected>Above Right</option>
+                      <option value="above">Above</option>
+                      <option value="right">Right</option>
+                      <option value="below_right">Below Right</option>
+                      <option value="below">Below</option>
+                      <option value="below_left">Below Left</option>
+                      <option value="left">Left</option>
+                      <option value="above_left">Above Left</option>
+                      <option value="center">Center</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="confirm-row-flex">
+                  <div class="confirm-field" style="flex: 1.3;">
+                    <label>Color:</label>
+                    <div class="confirm-color-swatches" id="confirm-color-swatches">
+                      <button type="button" class="color-swatch active" data-color="black" style="background:#0f172a;" title="black" onclick="setCandidateColor('black')"></button>
+                      <button type="button" class="color-swatch" data-color="blue" style="background:#2563eb;" title="blue" onclick="setCandidateColor('blue')"></button>
+                      <button type="button" class="color-swatch" data-color="red" style="background:#dc2626;" title="red" onclick="setCandidateColor('red')"></button>
+                      <button type="button" class="color-swatch" data-color="green" style="background:#16a34a;" title="green" onclick="setCandidateColor('green')"></button>
+                      <button type="button" class="color-swatch" data-color="purple" style="background:#9333ea;" title="purple" onclick="setCandidateColor('purple')"></button>
+                      <button type="button" class="color-swatch" data-color="orange" style="background:#ea580c;" title="orange" onclick="setCandidateColor('orange')"></button>
+                    </div>
+                  </div>
+                  <div class="confirm-field" style="flex: 1;">
+                    <label for="confirm-target-slot">Target Form Slot:</label>
+                    <select id="confirm-target-slot" class="confirm-slot-select">
+                      <option value="auto">Auto (Next Available)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Point dot toggle for points -->
+                <div id="confirm-field-point-dot" style="display: none; padding-top: 0.35rem; border-top: 1px solid #f1f5f9;">
+                  <label class="checkbox-label" style="font-size: 0.76rem; font-weight: 600; color: #334155;">
+                    <input type="checkbox" id="confirm-point-dot-chk" checked onchange="updateCandidatePointDot(this.checked)">
+                    Render filled point dot marker (&bull;)
+                  </label>
+                </div>
+              </div>
+
+              <div class="confirm-actions">
+                <button type="button" class="btn-confirm-discard" onclick="cancelCandidateShape()">
+                  Discard (Esc)
+                </button>
+                <button type="button" class="btn-confirm-apply" onclick="confirmCandidateShape()">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  Confirm &amp; Add (Enter)
+                </button>
+              </div>
+            </div>
+
+            <!-- Floating On-Canvas Axis Inspector & Quick Adjust Card -->
+            <div id="axis-confirm-card" class="shape-confirm-card" style="display: none; width: 340px;">
+              <div class="confirm-header">
+                <div class="confirm-title-area">
+                  <span class="confirm-badge" style="background: #e0e7ff; color: #3730a3; border-color: #c7d2fe;">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right: 3px;"><line x1="3" y1="21" x2="21" y2="21"/><polyline points="17 17 21 21 17 25"/><line x1="3" y1="21" x2="3" y2="3"/><polyline points="-1 7 3 3 7 7"/></svg>
+                    Coordinate Axis
+                  </span>
+                  <span class="confirm-coords" id="axis-card-limits">X: 0 &rarr; 10 | Y: 0 &rarr; 10</span>
+                </div>
+                <button type="button" class="confirm-close-btn" onclick="closeAxisCard()" title="Close (Esc)">&times;</button>
+              </div>
+
+              <div class="confirm-body">
+                <!-- Quick Dimensions Presets -->
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.35rem; margin-bottom: 0.2rem;">
+                  <span style="font-size: 0.68rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Presets:</span>
+                  <div style="display: flex; gap: 0.25rem;">
+                    <button type="button" class="quick-chip" onclick="setAxisPreset(10, 10)">10 &times; 10</button>
+                    <button type="button" class="quick-chip" onclick="setAxisPreset(12, 8)">12 &times; 8</button>
+                    <button type="button" class="quick-chip" onclick="setAxisPreset(8, 8)">8 &times; 8</button>
+                    <button type="button" class="quick-chip" onclick="setAxisPreset(6, 6)">6 &times; 6</button>
+                  </div>
+                </div>
+
+                <!-- Boundaries & Labels -->
+                <div class="confirm-props-row" style="gap: 0.4rem;">
+                  <div class="confirm-field" style="flex: 1;">
+                    <label for="axis-card-xsize">X Max:</label>
+                    <input type="number" id="axis-card-xsize" step="0.5" min="1" max="100" class="confirm-input" style="text-align: center; font-weight: 700;" oninput="syncAxisFromCard('xsize', this.value)">
+                  </div>
+                  <div class="confirm-field" style="flex: 1.4;">
+                    <label for="axis-card-xname">X Label:</label>
+                    <input type="text" id="axis-card-xname" placeholder="e.g. Quantity or Q" class="confirm-input" oninput="syncAxisFromCard('xname', this.value)">
+                    <div style="display: flex; gap: 0.2rem; margin-top: 0.2rem;">
+                      <button type="button" class="quick-chip" onclick="setQuickAxisLabel('xname', 'Q')">Q</button>
+                      <button type="button" class="quick-chip" onclick="setQuickAxisLabel('xname', 'x')">x</button>
+                      <button type="button" class="quick-chip" onclick="setQuickAxisLabel('xname', 'Quantity')">Qty</button>
+                      <button type="button" class="quick-chip" onclick="setQuickAxisLabel('xname', 'Output')">Y</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="confirm-props-row" style="gap: 0.4rem;">
+                  <div class="confirm-field" style="flex: 1;">
+                    <label for="axis-card-ysize">Y Max:</label>
+                    <input type="number" id="axis-card-ysize" step="0.5" min="1" max="100" class="confirm-input" style="text-align: center; font-weight: 700;" oninput="syncAxisFromCard('ysize', this.value)">
+                  </div>
+                  <div class="confirm-field" style="flex: 1.4;">
+                    <label for="axis-card-yname">Y Label:</label>
+                    <input type="text" id="axis-card-yname" placeholder="e.g. Price or P" class="confirm-input" oninput="syncAxisFromCard('yname', this.value)">
+                    <div style="display: flex; gap: 0.2rem; margin-top: 0.2rem;">
+                      <button type="button" class="quick-chip" onclick="setQuickAxisLabel('yname', 'P')">P</button>
+                      <button type="button" class="quick-chip" onclick="setQuickAxisLabel('yname', 'y')">y</button>
+                      <button type="button" class="quick-chip" onclick="setQuickAxisLabel('yname', 'Price')">Price</button>
+                      <button type="button" class="quick-chip" onclick="setQuickAxisLabel('yname', 'Interest')">r</button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Origin & Canvas Drag Hint -->
+                <div class="confirm-props-row" style="gap: 0.4rem; padding-top: 0.35rem; border-top: 1px solid #f1f5f9;">
+                  <div class="confirm-field" style="flex: 1;">
+                    <label for="axis-card-origin">Origin Label:</label>
+                    <input type="text" id="axis-card-origin" placeholder="0 or O" class="confirm-input" oninput="syncAxisFromCard('origin', this.value)">
+                    <div style="display: flex; gap: 0.2rem; margin-top: 0.2rem;">
+                      <button type="button" class="quick-chip" onclick="setQuickAxisLabel('origin', '0')">0</button>
+                      <button type="button" class="quick-chip" onclick="setQuickAxisLabel('origin', 'O')">O</button>
+                      <button type="button" class="quick-chip" onclick="setQuickAxisLabel('origin', 'origin')">origin</button>
+                    </div>
+                  </div>
+                  <div class="confirm-field" style="flex: 1.2; justify-content: flex-end;">
+                    <span class="confirm-hint" style="line-height: 1.3;">Drag arrowheads, corner, or tick pins on canvas to resize</span>
+                  </div>
+                </div>
+
+                <!-- Axis Ticks Section -->
+                <div style="padding-top: 0.35rem; border-top: 1px solid #f1f5f9;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                    <span style="font-size: 0.68rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Tick Markers (or drag pins on canvas):</span>
+                  </div>
+                  <div class="confirm-props-row" style="gap: 0.35rem; margin-bottom: 0.35rem;">
+                    <span style="font-size: 0.72rem; font-weight: 600; color: #334155; width: 30px;">X Ticks:</span>
+                    <input type="text" id="axis-card-x1-name" placeholder="x₁" style="width: 44px;" class="confirm-input" oninput="syncAxisFromCard('x1_name', this.value)">
+                    <span style="font-size: 0.72rem; color: #64748b;">at</span>
+                    <input type="number" id="axis-card-x1-val" step="0.5" style="width: 48px; text-align: center;" class="confirm-input" oninput="syncAxisFromCard('x1_val', this.value)">
+                    <input type="text" id="axis-card-x2-name" placeholder="x₂" style="width: 44px; margin-left: 0.35rem;" class="confirm-input" oninput="syncAxisFromCard('x2_name', this.value)">
+                    <span style="font-size: 0.72rem; color: #64748b;">at</span>
+                    <input type="number" id="axis-card-x2-val" step="0.5" style="width: 48px; text-align: center;" class="confirm-input" oninput="syncAxisFromCard('x2_val', this.value)">
+                  </div>
+                  <div class="confirm-props-row" style="gap: 0.35rem;">
+                    <span style="font-size: 0.72rem; font-weight: 600; color: #334155; width: 30px;">Y Ticks:</span>
+                    <input type="text" id="axis-card-y1-name" placeholder="y₁" style="width: 44px;" class="confirm-input" oninput="syncAxisFromCard('y1_name', this.value)">
+                    <span style="font-size: 0.72rem; color: #64748b;">at</span>
+                    <input type="number" id="axis-card-y1-val" step="0.5" style="width: 48px; text-align: center;" class="confirm-input" oninput="syncAxisFromCard('y1_val', this.value)">
+                    <input type="text" id="axis-card-y2-name" placeholder="y₂" style="width: 44px; margin-left: 0.35rem;" class="confirm-input" oninput="syncAxisFromCard('y2_name', this.value)">
+                    <span style="font-size: 0.72rem; color: #64748b;">at</span>
+                    <input type="number" id="axis-card-y2-val" step="0.5" style="width: 48px; text-align: center;" class="confirm-input" oninput="syncAxisFromCard('y2_val', this.value)">
+                  </div>
+                </div>
+              </div>
+
+              <div class="confirm-actions">
+                <button type="button" class="btn-confirm-discard" onclick="closeAxisCard()">
+                  Close (Esc)
+                </button>
+                <button type="button" class="btn-confirm-apply" onclick="confirmAxisCard()">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  Done
+                </button>
+              </div>
+            </div>
+
+            <!-- Floating Shape Selection Actions (When Shape is Clicked on Canvas) -->
+            <div id="shape-selected-card" class="shape-selected-card" style="display: none;">
+              <div class="selected-info">
+                <span class="selected-badge" id="selected-badge-text">Line 1</span>
+                <span class="selected-coords" id="selected-coords-text">Selected on canvas</span>
+              </div>
+              <div class="selected-actions">
+                <button type="button" class="btn-selected-scroll" onclick="scrollToSelectedCard()" title="Scroll &amp; highlight in secondary form">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                  Secondary Form
+                </button>
+                <button type="button" class="btn-selected-delete" onclick="deleteSelectedShape()" title="Clear this shape">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+                  Clear
+                </button>
+                <button type="button" class="btn-selected-close" onclick="deselectShape()" title="Deselect">&times;</button>
+              </div>
+            </div>
+        </div>
+
+        <!-- LaTeX TikZ Output Card -->
+        <div class="code-card" id="result-box">
+          <div class="code-card-header">
+            <div class="code-card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+              TikZ / LaTeX Code
+              <span class="code-badge">PGF / TikZ</span>
+            </div>
+            <div class="code-actions">
+              <button type="button" id="btn-copy-code" class="btn-copy">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                Copy LaTeX
+              </button>
+              <button type="button" id="btn-download-tex" class="btn-copy">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Download .tex
+              </button>
+              <button type="button" id="btn-download-png-action" class="btn-copy" onclick="downloadCanvasAsPNG()" title="Download current drawing as high-resolution PNG">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Download PNG
+              </button>
+            </div>
+          </div>
+
+          <div class="code-viewport">
+            <pre class="line-numbers language-Tex"><code class="language-Tex"><span class="token-cmd">\documentclass</span><span class="token-brace">{</span><span class="token-pkg">minimal</span><span class="token-brace">}</span>
+<span class="token-cmd">\usepackage</span><span class="token-brace">{</span><span class="token-pkg">tikz</span><span class="token-brace">}</span>
+<span class="token-cmd">\begin</span><span class="token-brace">{</span><span class="token-pkg">document</span><span class="token-brace">}</span>
+<span class="token-cmd">\begin</span><span class="token-brace">{</span><span class="token-pkg">tikzpicture</span><span class="token-brace">}</span>
+
+<span id="answer"></span>
+<span class="token-cmd">\end</span><span class="token-brace">{</span><span class="token-pkg">tikzpicture</span><span class="token-brace">}</span>
+<span class="token-cmd">\end</span><span class="token-brace">{</span><span class="token-pkg">document</span><span class="token-brace">}</span>
+</code></pre>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Modern Footer -->
+  <footer class="app-footer">
+    <div class="footer-inner">
+      <div>
+        <strong>TikZ Studio</strong> &mdash; 2D Coordinate Graph Generator for LaTeX.
+      </div>
+      <div class="footer-nav">
+        <a href="index.html">Homepage</a>
+        <a href="Coordinate.html">Coordinate Axis</a>
+        <a href="Timeline.html">Timeline</a>
+        <a href="Help-Coordinate.html">Docs &amp; Help</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

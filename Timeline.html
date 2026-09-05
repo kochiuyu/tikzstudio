@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Timeline Studio - TikZ Diagram Generator</title>
+  <meta name="description" content="Interactive chronological timeline generator for LaTeX TikZ diagrams." />
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/modern.css">
+  <link rel="stylesheet" href="css/latex.css">
+
+  <!-- Core Scripts -->
+  <script type="text/javascript" src="js/jquery-1.11.0.min.js"></script>
+  <script type="text/javascript" src="js/jquery.min.js"></script>
+  <script type="text/javascript" src="js/modern-ui.js"></script>
+  <script type="text/javascript" src="js/export-png.js"></script>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="app-header">
+    <div class="header-container">
+      <a href="index.html" class="brand-logo" id="brand-link">
+        <div class="brand-icon">T</div>
+        <div class="brand-text">
+          <span class="brand-title">TikZ Studio</span>
+          <span class="brand-subtitle">Timeline Generator</span>
+        </div>
+      </a>
+      <ul class="nav-links">
+        <li class="nav-item"><a href="index.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Homepage
+        </a></li>
+        <li class="nav-item"><a href="Coordinate.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+          Coordinate Axis
+        </a></li>
+        <li class="nav-item active"><a href="Timeline.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Timeline
+        </a></li>
+        <li class="nav-item"><a href="Help-Timeline.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Docs &amp; Help
+        </a></li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- Main Studio Workspace -->
+  <main class="main-wrapper">
+
+    <!-- Action Toolbar -->
+    <div class="toolbar-card">
+      <div class="toolbar-title-group">
+        <h1 class="toolbar-title">Interactive Timeline Studio</h1>
+        <span class="nav-badge">Canvas 1200&times;800</span>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+        <span style="font-size: 0.8rem; font-weight: 600; color: var(--color-text-muted);">Presets:</span>
+        <button type="button" class="btn-modern btn-modern-secondary btn-modern-sm" onclick="loadSampleEvents(); draw();">
+          Load 20th Century Events
+        </button>
+        <button type="button" class="btn-modern btn-modern-secondary btn-modern-sm" onclick="clearAllEvents(); draw();">
+          Clear Events
+        </button>
+      </div>
+
+      <div class="toolbar-controls">
+        <button type="button" class="btn-modern btn-modern-primary" onclick="draw()" id="btn-draw-timeline">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Generate Timeline
+        </button>
+        <button type="button" class="btn-modern btn-modern-danger" onclick="location.reload(true)" title="Reset entire page">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          Reset
+        </button>
+      </div>
+    </div>
+
+    <!-- 2-Column Grid -->
+    <div class="timeline-grid">
+
+      <!-- Left Column: Settings, Event Entry, and List -->
+      <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+
+        <!-- Card 1: Timeline Settings -->
+        <div class="control-card" style="background: #ffffff;">
+          <div class="control-card-header">
+            <span class="control-card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              Timeline Configuration
+            </span>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+            <div>
+              <span class="form-label">Start Year:</span>
+              <input type="text" value="1900" id="beginTime" class="input-modern" style="width: 100%; margin-top: 0.25rem;">
+            </div>
+            <div>
+              <span class="form-label">End Year:</span>
+              <input type="text" value="2015" id="endTime" class="input-modern" style="width: 100%; margin-top: 0.25rem;">
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+            <div>
+              <span class="form-label">Scale (px/yr):</span>
+              <input type="text" value="5" id="scale" class="input-modern" style="width: 100%; margin-top: 0.25rem;">
+            </div>
+            <div>
+              <span class="form-label">Font Size:</span>
+              <select id="fontsize" class="select-modern" style="width: 100%; margin-top: 0.25rem;">
+                <option value="8px">8px</option>
+                <option value="12px" selected>12px</option>
+                <option value="16px">16px</option>
+                <option value="20px">20px</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 0.75rem;">
+            <span class="form-label">Orientation:</span>
+            <select id="coordinate" class="select-modern" style="width: 100%; margin-top: 0.25rem;">
+              <option value="x" selected>Horizontal Coordinate</option>
+              <option value="y">Vertical Coordinate</option>
+            </select>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+            <div>
+              <span class="form-label">Line Color:</span>
+              <select id="linecolor" class="select-modern" style="width: 100%; margin-top: 0.25rem;">
+                <option value="black" selected>black</option>
+                <option value="blue">blue</option>
+                <option value="red">red</option>
+                <option value="green">green</option>
+                <option value="purple">purple</option>
+                <option value="orange">orange</option>
+                <option value="brown">brown</option>
+              </select>
+            </div>
+            <div>
+              <span class="form-label">Point Color:</span>
+              <select id="pointcolor" class="select-modern" style="width: 100%; margin-top: 0.25rem;">
+                <option value="black" selected>black</option>
+                <option value="red">red</option>
+                <option value="blue">blue</option>
+                <option value="green">green</option>
+                <option value="purple">purple</option>
+                <option value="orange">orange</option>
+                <option value="brown">brown</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: Add Milestone Event -->
+        <div class="control-card" style="background: #ffffff;">
+          <div class="control-card-header">
+            <span class="control-card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add Milestone Event
+            </span>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 85px 1fr; gap: 0.6rem; margin-bottom: 0.75rem;">
+            <div>
+              <span class="form-label">Year:</span>
+              <input type="text" id="eyear" class="input-modern" placeholder="e.g. 1969" style="width: 100%; margin-top: 0.25rem;">
+            </div>
+            <div>
+              <span class="form-label">Description:</span>
+              <input type="text" id="edesc" class="input-modern" placeholder="e.g. Moon Landing" style="width: 100%; margin-top: 0.25rem;">
+            </div>
+          </div>
+
+          <button type="button" class="btn-modern btn-modern-primary" style="width: 100%;" onclick="add()">
+            + Add Milestone Event
+          </button>
+        </div>
+
+        <!-- Card 3: Events List -->
+        <div class="control-card" style="background: #ffffff;">
+          <div class="control-card-header">
+            <span class="control-card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+              Events on Timeline
+            </span>
+          </div>
+
+          <div id="result" style="max-height: 260px; overflow-y: auto;">
+            <!-- Initial pre-populated events -->
+            <div class="event-chip">
+              <div class="event-chip-info">
+                <span class="event-year-badge myyear">1914</span>
+                <span class="mydesc" style="font-weight: 500; color: var(--color-text-main);">WWI Begins</span>
+              </div>
+              <button type="button" class="btn-delete-chip" onclick="deleteEvent(this)" title="Delete">&times;</button>
+            </div>
+            <div class="event-chip">
+              <div class="event-chip-info">
+                <span class="event-year-badge myyear">1945</span>
+                <span class="mydesc" style="font-weight: 500; color: var(--color-text-main);">UN Founded</span>
+              </div>
+              <button type="button" class="btn-delete-chip" onclick="deleteEvent(this)" title="Delete">&times;</button>
+            </div>
+            <div class="event-chip">
+              <div class="event-chip-info">
+                <span class="event-year-badge myyear">1969</span>
+                <span class="mydesc" style="font-weight: 500; color: var(--color-text-main);">Apollo 11 Moon Landing</span>
+              </div>
+              <button type="button" class="btn-delete-chip" onclick="deleteEvent(this)" title="Delete">&times;</button>
+            </div>
+            <div class="event-chip">
+              <div class="event-chip-info">
+                <span class="event-year-badge myyear">1989</span>
+                <span class="mydesc" style="font-weight: 500; color: var(--color-text-main);">Fall of Berlin Wall</span>
+              </div>
+              <button type="button" class="btn-delete-chip" onclick="deleteEvent(this)" title="Delete">&times;</button>
+            </div>
+          </div>
+
+          <div style="margin-top: 1rem;">
+            <button type="button" class="btn-modern btn-modern-primary" style="width: 100%;" onclick="draw()">
+              Update &amp; Render Timeline
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Canvas & LaTeX Output -->
+      <div style="min-width: 0; display: flex; flex-direction: column; gap: 1.5rem;">
+
+        <!-- Canvas Card -->
+        <div class="canvas-card">
+          <div class="canvas-header">
+            <div class="canvas-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg>
+              Interactive Canvas Viewport
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <button type="button" class="tool-btn tool-btn-download" id="tool-btn-download-timeline-png" onclick="downloadCanvasAsPNG()" title="Download timeline as PNG">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                <span>Download as PNG</span>
+              </button>
+              <span class="canvas-hud">1200 &times; 800 px (Scrollable)</span>
+            </div>
+          </div>
+
+          <div style="background: #ffffff; padding: 1rem; overflow: auto; max-height: 520px; border-bottom: 1px solid var(--color-border); display: flex; justify-content: flex-start; align-items: flex-start;">
+            <canvas id="myCanvas" width="1200" height="800" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.04);"></canvas>
+          </div>
+        </div>
+
+        <!-- LaTeX Code Card -->
+        <div class="code-card" id="result-box">
+          <div class="code-card-header">
+            <div class="code-card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+              TikZ / LaTeX Code Output
+              <span class="code-badge">LaTeX TikZ</span>
+            </div>
+            <div class="code-actions">
+              <button type="button" id="btn-copy-code" class="btn-copy" onclick="copyLatexCode()">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                Copy LaTeX
+              </button>
+              <button type="button" id="btn-download-tex" class="btn-copy" onclick="downloadTexFile('timeline')">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Download .tex
+              </button>
+              <button type="button" id="btn-download-png-timeline" class="btn-copy" onclick="downloadCanvasAsPNG()" title="Download timeline as high-resolution PNG">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Download PNG
+              </button>
+            </div>
+          </div>
+
+          <div class="code-viewport">
+            <pre class="line-numbers language-Tex"><code class="language-Tex"><span class="token-cmd">\documentclass</span><span class="token-brace">{</span><span class="token-pkg">minimal</span><span class="token-brace">}</span>
+<span class="token-cmd">\usepackage</span><span class="token-brace">{</span><span class="token-pkg">tikz</span><span class="token-brace">}</span>
+<span class="token-cmd">\begin</span><span class="token-brace">{</span><span class="token-pkg">document</span><span class="token-brace">}</span>
+<span class="token-cmd">\begin</span><span class="token-brace">{</span><span class="token-pkg">tikzpicture</span><span class="token-brace">}</span>
+<span id="answer"></span>
+<span class="token-cmd">\end</span><span class="token-brace">{</span><span class="token-pkg">tikzpicture</span><span class="token-brace">}</span>
+<span class="token-cmd">\end</span><span class="token-brace">{</span><span class="token-pkg">document</span><span class="token-brace">}</span>
+</code></pre>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Modern Footer -->
+  <footer class="app-footer">
+    <div class="footer-inner">
+      <div>
+        <strong>TikZ Studio</strong> &mdash; Chronological Timeline Generator for LaTeX.
+      </div>
+      <div class="footer-nav">
+        <a href="index.html">Homepage</a>
+        <a href="Coordinate.html">Coordinate Axis</a>
+        <a href="Timeline.html">Timeline</a>
+        <a href="Help-Timeline.html">Docs &amp; Help</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Inline Core Timeline Script -->
+  <script type="text/javascript">
+    var c = document.getElementById("myCanvas");
+    var ctx = c.getContext("2d");
+    var startyear = null;
+    var endyear = null;
+    var linecolor = null;
+    var pointcolor = null;
+    var scale = null;
+    var fontSize = null;
+    var coordinate = null;
+    var y_coordinate = 300;
+    var answer = null;
+
+    function draw() {
+      ctx.clearRect(0, 0, 1200, 800);
+
+      startyear = document.getElementById('beginTime').value;
+      endyear = document.getElementById('endTime').value;
+      linecolor = document.getElementById('linecolor').value;
+      pointcolor = document.getElementById('pointcolor').value;
+      scale = document.getElementById('scale').value;
+      fontSize = document.getElementById('fontsize').value;
+      coordinate = document.getElementById('coordinate').value;
+      answer = document.getElementById('answer');
+
+      if (!/^\d+$/.test(startyear)) {
+        alert('Start year must be numeric');
+        return;
+      }
+      if (!/^\d+$/.test(endyear)) {
+        alert('End year must be numeric');
+        return;
+      }
+      if (!/^\d+$/.test(scale)) {
+        alert('Scale must be numeric');
+        return;
+      }
+
+      var linewidth = Math.abs(parseInt(scale * (endyear - startyear)));
+
+      if (coordinate == 'x') {
+        // Line
+        ctx.beginPath();
+        ctx.strokeStyle = linecolor;
+        ctx.lineWidth = 2;
+        ctx.moveTo(30, 100);
+        ctx.lineTo(30 + linewidth, 100);
+        ctx.stroke();
+
+        // Arrow head
+        ctx.beginPath();
+        ctx.fillStyle = linecolor;
+        ctx.moveTo(30 + linewidth, 100 - 6);
+        ctx.lineTo(30 + linewidth, 100 + 6);
+        ctx.lineTo(30 + linewidth + 12, 100);
+        ctx.closePath();
+        ctx.fill();
+
+        // Begin year marker
+        ctx.fillStyle = linecolor;
+        ctx.beginPath();
+        ctx.arc(30, 100, 4, 0, Math.PI * 2, true);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.font = fontSize + " 'Inter', sans-serif";
+        ctx.textAlign = 'center';
+        ctx.fillText(startyear, 30, 100 + 22);
+
+        // End year marker
+        ctx.beginPath();
+        ctx.arc(30 + linewidth, 100, 4, 0, Math.PI * 2, true);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillText(endyear, 30 + linewidth, 100 + 22);
+
+        answer.innerHTML = '';
+        answer.innerHTML += '\\draw [->, ' + linecolor + '] (0pt,0pt)--(' + linewidth + 'pt,0pt);\n';
+        answer.innerHTML += '\\node[below] at (0pt,0pt) {' + startyear + '};\n';
+        answer.innerHTML += '\\node[below] at (' + linewidth + 'pt,0pt) {' + endyear + '};\n';
+
+        var myyears = document.getElementsByClassName('myyear');
+        var mydescs = document.getElementsByClassName('mydesc');
+
+        for (var i = 0; i < myyears.length; i++) {
+          drawPoint(myyears[i].innerHTML, mydescs[i].innerHTML, i);
+        }
+      } else {
+        // Vertical line
+        ctx.beginPath();
+        ctx.strokeStyle = linecolor;
+        ctx.lineWidth = 2;
+        ctx.moveTo(y_coordinate, 50);
+        ctx.lineTo(y_coordinate, 50 + linewidth);
+        ctx.stroke();
+
+        // Arrow head
+        ctx.beginPath();
+        ctx.fillStyle = linecolor;
+        ctx.moveTo(y_coordinate - 6, 50 + linewidth);
+        ctx.lineTo(y_coordinate + 6, 50 + linewidth);
+        ctx.lineTo(y_coordinate, 50 + linewidth + 12);
+        ctx.closePath();
+        ctx.fill();
+
+        // Begin year marker
+        ctx.fillStyle = linecolor;
+        ctx.beginPath();
+        ctx.arc(y_coordinate, 50, 4, 0, Math.PI * 2, true);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.font = fontSize + " 'Inter', sans-serif";
+        ctx.textAlign = 'left';
+        ctx.fillText(startyear, y_coordinate + 12, 50 + 4);
+
+        // End year marker
+        ctx.beginPath();
+        ctx.arc(y_coordinate, 50 + linewidth, 4, 0, Math.PI * 2, true);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillText(endyear, y_coordinate + 12, 50 + linewidth + 4);
+
+        answer.innerHTML = '';
+        answer.innerHTML += '\\draw [->, ' + linecolor + '] (0pt,0pt)--(0pt,-' + linewidth + 'pt);\n';
+        answer.innerHTML += '\\node[right] at (0pt,0pt) {' + startyear + '};\n';
+        answer.innerHTML += '\\node[right] at (0pt,-' + linewidth + 'pt) {' + endyear + '};\n';
+
+        var myyears = document.getElementsByClassName('myyear');
+        var mydescs = document.getElementsByClassName('mydesc');
+
+        for (var i = 0; i < myyears.length; i++) {
+          drawPointy(myyears[i].innerHTML, mydescs[i].innerHTML, i);
+        }
+      }
+    }
+
+    function drawPoint(year, description, index) {
+      if (year < startyear || year > endyear) return;
+
+      var yearPoint = scale * (year - startyear);
+      ctx.fillStyle = pointcolor;
+      ctx.beginPath();
+      ctx.arc(30 + yearPoint, 100, 4, 0, Math.PI * 2, true);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.save();
+      ctx.translate(30 + yearPoint, 100);
+      ctx.rotate(-Math.PI / 4);
+      ctx.textAlign = 'left';
+      ctx.fillText(description + " (" + year + ")", 8, -4);
+      ctx.restore();
+
+      if (coordinate == 'x') {
+        answer.innerHTML += '\\node[above, rotate=45, anchor=south west] at(' + yearPoint + 'pt,0pt) {' + description + ' (' + year + ')};\n';
+        answer.innerHTML += '\\fill[' + pointcolor + ']( ' + yearPoint + 'pt,0pt) circle [radius=1.5pt];\n';
+      }
+    }
+
+    function drawPointy(year, description, index) {
+      if (year < startyear || year > endyear) return;
+
+      var yearPoint = scale * (year - startyear);
+      ctx.fillStyle = pointcolor;
+      ctx.beginPath();
+      ctx.arc(y_coordinate, 50 + yearPoint, 4, 0, Math.PI * 2, true);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.textAlign = 'left';
+      ctx.fillText(year, y_coordinate + 12, yearPoint + 54);
+      ctx.textAlign = 'right';
+      ctx.fillText(description, y_coordinate - 12, yearPoint + 54);
+
+      if (coordinate == 'y') {
+        answer.innerHTML += '\\node[left] at(0pt,-' + yearPoint + 'pt) {' + description + '};\n';
+        answer.innerHTML += '\\node[right] at(0pt,-' + yearPoint + 'pt) {' + year + '};\n';
+        answer.innerHTML += '\\fill[' + pointcolor + '](0pt,-' + yearPoint + 'pt) circle [radius=1.5pt];\n';
+      }
+    }
+
+    function add() {
+      var eyearInput = document.getElementById('eyear');
+      var edescInput = document.getElementById('edesc');
+      var eyear = eyearInput.value.trim();
+      var edesc = edescInput.value.trim();
+
+      if (!/^\d+$/.test(eyear)) {
+        alert('Please enter a valid numeric year (e.g. 1969)');
+        eyearInput.focus();
+        return;
+      }
+      if (!edesc) {
+        alert('Please enter an event description');
+        edescInput.focus();
+        return;
+      }
+
+      var tempdiv = document.createElement('div');
+      tempdiv.className = 'event-chip';
+      tempdiv.innerHTML = '<div class="event-chip-info">' +
+        '<span class="event-year-badge myyear">' + eyear + '</span>' +
+        '<span class="mydesc" style="font-weight: 500; color: var(--color-text-main);">' + edesc + '</span>' +
+        '</div>' +
+        '<button type="button" class="btn-delete-chip" onclick="deleteEvent(this)" title="Delete event">&times;</button>';
+      
+      document.getElementById('result').appendChild(tempdiv);
+      eyearInput.value = '';
+      edescInput.value = '';
+      eyearInput.focus();
+      
+      draw();
+      showToast('Added event: ' + edesc + ' (' + eyear + ')');
+    }
+
+    function deleteEvent(obj) {
+      var chip = obj.closest('.event-chip');
+      if (chip) {
+        chip.remove();
+        draw();
+        showToast('Event removed');
+      }
+    }
+
+    function clearAllEvents() {
+      document.getElementById('result').innerHTML = '';
+      draw();
+      showToast('All events cleared');
+    }
+
+    function loadSampleEvents() {
+      var container = document.getElementById('result');
+      container.innerHTML = '';
+      var samples = [
+        { year: 1914, desc: 'WWI Begins' },
+        { year: 1929, desc: 'Wall Street Crash' },
+        { year: 1939, desc: 'WWII Begins' },
+        { year: 1945, desc: 'United Nations Founded' },
+        { year: 1969, desc: 'Apollo 11 Moon Landing' },
+        { year: 1989, desc: 'Fall of Berlin Wall' },
+        { year: 1991, desc: 'World Wide Web Public Launch' }
+      ];
+      samples.forEach(function(s) {
+        var tempdiv = document.createElement('div');
+        tempdiv.className = 'event-chip';
+        tempdiv.innerHTML = '<div class="event-chip-info">' +
+          '<span class="event-year-badge myyear">' + s.year + '</span>' +
+          '<span class="mydesc" style="font-weight: 500; color: var(--color-text-main);">' + s.desc + '</span>' +
+          '</div>' +
+          '<button type="button" class="btn-delete-chip" onclick="deleteEvent(this)" title="Delete">&times;</button>';
+        container.appendChild(tempdiv);
+      });
+      draw();
+      showToast('Loaded 20th Century historical milestones');
+    }
+
+    // Support pressing Enter key to quickly add events
+    document.addEventListener('DOMContentLoaded', function() {
+      var edesc = document.getElementById('edesc');
+      var eyear = document.getElementById('eyear');
+      if (edesc) {
+        edesc.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter') add();
+        });
+      }
+      if (eyear) {
+        eyear.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter') {
+            if (edesc.value.trim()) add();
+            else edesc.focus();
+          }
+        });
+      }
+      // Render initial sample timeline
+      setTimeout(draw, 100);
+    });
+  </script>
+
+</body>
+</html>

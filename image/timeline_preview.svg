@@ -1,0 +1,234 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450" fill="none">
+  <defs>
+    <linearGradient id="timeBgGrad" x1="0" y1="0" x2="800" y2="450" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#1e293b" />
+    </linearGradient>
+    <linearGradient id="axisLineGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#6366f1" />
+      <stop offset="50%" stop-color="#0ea5e9" />
+      <stop offset="100%" stop-color="#10b981" />
+    </linearGradient>
+    <pattern id="dotGridT" width="20" height="20" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1" fill="#334155" opacity="0.6" />
+    </pattern>
+    <filter id="timeShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.4" />
+    </filter>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="800" height="450" fill="url(#timeBgGrad)" />
+  <rect width="800" height="450" fill="url(#dotGridT)" />
+
+  <!-- App Window Container Mockup -->
+  <g filter="url(#timeShadow)">
+    <rect x="24" y="20" width="752" height="410" rx="12" fill="#ffffff" stroke="#334155" stroke-width="1" />
+    
+    <!-- Window Header Bar -->
+    <path d="M 24 32 Q 24 20 36 20 L 764 20 Q 776 20 776 32 L 776 56 L 24 56 Z" fill="#f8fafc" />
+    <line x1="24" y1="56" x2="776" y2="56" stroke="#e2e8f0" stroke-width="1" />
+    <circle cx="44" cy="38" r="5" fill="#ef4444" />
+    <circle cx="60" cy="38" r="5" fill="#f59e0b" />
+    <circle cx="76" cy="38" r="5" fill="#10b981" />
+    
+    <text x="100" y="42" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="12" font-weight="600" fill="#475569">
+      Timeline Studio — 20th Century Historical Milestones (1900–2000)
+    </text>
+
+    <!-- Toolbar Controls -->
+    <rect x="510" y="29" width="80" height="20" rx="4" fill="#eef2ff" stroke="#c7d2fe" />
+    <text x="518" y="43" font-family="'Inter', sans-serif" font-size="10" font-weight="600" fill="#4f46e5">Scale: 5.5 px/yr</text>
+
+    <rect x="600" y="29" width="60" height="20" rx="4" fill="#4f46e5" />
+    <text x="612" y="43" font-family="'Inter', sans-serif" font-size="10.5" font-weight="600" fill="#ffffff">Draw TikZ</text>
+
+    <rect x="668" y="29" width="96" height="20" rx="4" fill="#0f172a" />
+    <text x="678" y="43" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="500" fill="#38bdf8">Overleaf Ready</text>
+  </g>
+
+  <!-- Left Sidebar Controls Panel -->
+  <g transform="translate(36, 68)">
+    <rect width="210" height="348" rx="8" fill="#f8fafc" stroke="#e2e8f0" />
+    
+    <!-- Timeline Config -->
+    <text x="12" y="22" font-family="'Inter', sans-serif" font-size="11" font-weight="700" fill="#0f172a">TIMELINE SETTINGS</text>
+    
+    <text x="12" y="42" font-family="'Inter', sans-serif" font-size="10" fill="#64748b">Range:</text>
+    <rect x="56" y="30" width="48" height="18" rx="3" fill="#ffffff" stroke="#cbd5e1" />
+    <text x="80" y="43" font-family="'Inter', sans-serif" font-size="9.5" font-weight="600" fill="#0f172a" text-anchor="middle">1900</text>
+    <text x="110" y="43" font-family="'Inter', sans-serif" font-size="10" fill="#64748b">to</text>
+    <rect x="126" y="30" width="48" height="18" rx="3" fill="#ffffff" stroke="#cbd5e1" />
+    <text x="150" y="43" font-family="'Inter', sans-serif" font-size="9.5" font-weight="600" fill="#0f172a" text-anchor="middle">2000</text>
+
+    <text x="12" y="66" font-family="'Inter', sans-serif" font-size="10" fill="#64748b">Orientation:</text>
+    <rect x="80" y="54" width="70" height="18" rx="3" fill="#ffffff" stroke="#cbd5e1" />
+    <text x="86" y="67" font-family="'Inter', sans-serif" font-size="9.5" font-weight="500" fill="#334155">Horizontal</text>
+
+    <line x1="12" y1="82" x2="198" y2="82" stroke="#e2e8f0" />
+
+    <!-- Milestones List -->
+    <text x="12" y="100" font-family="'Inter', sans-serif" font-size="11" font-weight="700" fill="#0f172a">MILESTONES (5)</text>
+    
+    <!-- Chip 1 -->
+    <rect x="12" y="110" width="186" height="34" rx="4" fill="#ffffff" stroke="#e2e8f0" />
+    <rect x="18" y="117" width="36" height="18" rx="3" fill="#eef2ff" />
+    <text x="36" y="130" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700" fill="#4f46e5" text-anchor="middle">1914</text>
+    <text x="60" y="130" font-family="'Inter', sans-serif" font-size="9.5" font-weight="600" fill="#1e293b">World War I Begins</text>
+
+    <!-- Chip 2 -->
+    <rect x="12" y="150" width="186" height="34" rx="4" fill="#ffffff" stroke="#e2e8f0" />
+    <rect x="18" y="157" width="36" height="18" rx="3" fill="#fef3c7" />
+    <text x="36" y="170" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700" fill="#b45309" text-anchor="middle">1929</text>
+    <text x="60" y="170" font-family="'Inter', sans-serif" font-size="9.5" font-weight="600" fill="#1e293b">Wall Street Crash</text>
+
+    <!-- Chip 3 -->
+    <rect x="12" y="190" width="186" height="34" rx="4" fill="#ffffff" stroke="#e2e8f0" />
+    <rect x="18" y="197" width="36" height="18" rx="3" fill="#ecfdf5" />
+    <text x="36" y="210" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700" fill="#047857" text-anchor="middle">1945</text>
+    <text x="60" y="210" font-family="'Inter', sans-serif" font-size="9.5" font-weight="600" fill="#1e293b">UN Founded</text>
+
+    <!-- Chip 4 -->
+    <rect x="12" y="230" width="186" height="34" rx="4" fill="#ffffff" stroke="#e2e8f0" />
+    <rect x="18" y="237" width="36" height="18" rx="3" fill="#f3e8ff" />
+    <text x="36" y="250" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700" fill="#7e22ce" text-anchor="middle">1969</text>
+    <text x="60" y="250" font-family="'Inter', sans-serif" font-size="9.5" font-weight="600" fill="#1e293b">Apollo 11 Landing</text>
+
+    <!-- Chip 5 -->
+    <rect x="12" y="270" width="186" height="34" rx="4" fill="#ffffff" stroke="#e2e8f0" />
+    <rect x="18" y="277" width="36" height="18" rx="3" fill="#e0f2fe" />
+    <text x="36" y="290" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700" fill="#0284c7" text-anchor="middle">1989</text>
+    <text x="60" y="290" font-family="'Inter', sans-serif" font-size="9.5" font-weight="600" fill="#1e293b">Berlin Wall Falls</text>
+
+    <rect x="12" y="312" width="186" height="24" rx="4" fill="#f1f5f9" stroke="#cbd5e1" stroke-dasharray="3,2" />
+    <text x="105" y="328" font-family="'Inter', sans-serif" font-size="9" font-weight="600" fill="#64748b" text-anchor="middle">+ Add Custom Milestone</text>
+  </g>
+
+  <!-- Center Stage: Timeline Visual Canvas -->
+  <g transform="translate(260, 68)">
+    <rect width="280" height="348" rx="8" fill="#ffffff" stroke="#cbd5e1" />
+    
+    <text x="16" y="26" font-family="'Inter', sans-serif" font-size="11" font-weight="700" fill="#0f172a">LIVE PREVIEW</text>
+    <rect x="195" y="12" width="70" height="18" rx="9" fill="#f1f5f9" />
+    <text x="230" y="25" font-family="'JetBrains Mono', monospace" font-size="9" fill="#64748b" text-anchor="middle">zoom 100%</text>
+
+    <!-- Main Axis Line -->
+    <line x1="20" y1="210" x2="255" y2="210" stroke="url(#axisLineGrad)" stroke-width="3" stroke-linecap="round" />
+    <polygon points="255,206 264,210 255,214" fill="#10b981" />
+
+    <!-- Axis Graduations -->
+    <!-- 1900 -->
+    <line x1="24" y1="205" x2="24" y2="215" stroke="#0f172a" stroke-width="1.5" />
+    <text x="24" y="230" font-family="'JetBrains Mono', monospace" font-size="8.5" font-weight="600" fill="#475569" text-anchor="middle">1900</text>
+
+    <!-- 1925 -->
+    <line x1="77" y1="207" x2="77" y2="213" stroke="#94a3b8" stroke-width="1" />
+    <text x="77" y="230" font-family="'JetBrains Mono', monospace" font-size="7.5" fill="#94a3b8" text-anchor="middle">1925</text>
+
+    <!-- 1950 -->
+    <line x1="130" y1="205" x2="130" y2="215" stroke="#0f172a" stroke-width="1.5" />
+    <text x="130" y="230" font-family="'JetBrains Mono', monospace" font-size="8.5" font-weight="600" fill="#475569" text-anchor="middle">1950</text>
+
+    <!-- 1975 -->
+    <line x1="183" y1="207" x2="183" y2="213" stroke="#94a3b8" stroke-width="1" />
+    <text x="183" y="230" font-family="'JetBrains Mono', monospace" font-size="7.5" fill="#94a3b8" text-anchor="middle">1975</text>
+
+    <!-- 2000 -->
+    <line x1="236" y1="205" x2="236" y2="215" stroke="#0f172a" stroke-width="1.5" />
+    <text x="236" y="230" font-family="'JetBrains Mono', monospace" font-size="8.5" font-weight="600" fill="#475569" text-anchor="middle">2000</text>
+
+    <!-- Milestone 1: 1914 WWI -->
+    <circle cx="53" cy="210" r="4.5" fill="#ef4444" stroke="#ffffff" stroke-width="1.5" />
+    <line x1="53" y1="210" x2="53" y2="150" stroke="#ef4444" stroke-width="1.2" stroke-dasharray="2,2" />
+    <g transform="translate(53, 146) rotate(-35)">
+      <rect x="0" y="-14" width="80" height="16" rx="3" fill="#fee2e2" stroke="#fecaca" />
+      <text x="6" y="-3" font-family="'Inter', sans-serif" font-size="8" font-weight="700" fill="#b91c1c">1914: WWI</text>
+    </g>
+
+    <!-- Milestone 2: 1929 Crash (below line) -->
+    <circle cx="85" cy="210" r="4.5" fill="#f59e0b" stroke="#ffffff" stroke-width="1.5" />
+    <line x1="85" y1="210" x2="85" y2="265" stroke="#f59e0b" stroke-width="1.2" stroke-dasharray="2,2" />
+    <g transform="translate(85, 270) rotate(35)">
+      <rect x="0" y="-2" width="88" height="16" rx="3" fill="#fef3c7" stroke="#fde68a" />
+      <text x="6" y="9" font-family="'Inter', sans-serif" font-size="8" font-weight="700" fill="#b45309">1929: Crash</text>
+    </g>
+
+    <!-- Milestone 3: 1945 UN Founded (above line) -->
+    <circle cx="119" cy="210" r="4.5" fill="#10b981" stroke="#ffffff" stroke-width="1.5" />
+    <line x1="119" y1="210" x2="119" y2="135" stroke="#10b981" stroke-width="1.2" stroke-dasharray="2,2" />
+    <g transform="translate(119, 131) rotate(-35)">
+      <rect x="0" y="-14" width="84" height="16" rx="3" fill="#ecfdf5" stroke="#a7f3d0" />
+      <text x="6" y="-3" font-family="'Inter', sans-serif" font-size="8" font-weight="700" fill="#047857">1945: UN</text>
+    </g>
+
+    <!-- Milestone 4: 1969 Apollo 11 (above line) -->
+    <circle cx="170" cy="210" r="4.5" fill="#6366f1" stroke="#ffffff" stroke-width="1.5" />
+    <line x1="170" y1="210" x2="170" y2="105" stroke="#6366f1" stroke-width="1.2" stroke-dasharray="2,2" />
+    <g transform="translate(170, 101) rotate(-35)">
+      <rect x="0" y="-14" width="94" height="16" rx="3" fill="#eef2ff" stroke="#c7d2fe" />
+      <text x="6" y="-3" font-family="'Inter', sans-serif" font-size="8" font-weight="700" fill="#4338ca">1969: Apollo 11</text>
+    </g>
+
+    <!-- Milestone 5: 1989 Berlin Wall (below line) -->
+    <circle cx="212" cy="210" r="4.5" fill="#0ea5e9" stroke="#ffffff" stroke-width="1.5" />
+    <line x1="212" y1="210" x2="212" y2="280" stroke="#0ea5e9" stroke-width="1.2" stroke-dasharray="2,2" />
+    <g transform="translate(212, 285) rotate(35)">
+      <rect x="0" y="-2" width="96" height="16" rx="3" fill="#e0f2fe" stroke="#bae6fd" />
+      <text x="6" y="9" font-family="'Inter', sans-serif" font-size="8" font-weight="700" fill="#0369a1">1989: Berlin Wall</text>
+    </g>
+
+    <text x="16" y="335" font-family="'Inter', sans-serif" font-size="9.5" fill="#64748b">TikZ Timeline Engine &bull; Auto Scale &amp; Rotate</text>
+  </g>
+
+  <!-- Right Panel: Modern Dark LaTeX TikZ Code Viewport -->
+  <g transform="translate(552, 68)">
+    <rect width="212" height="348" rx="8" fill="#0f172a" stroke="#1e293b" />
+    
+    <!-- Header of Code Box -->
+    <rect width="212" height="28" rx="8" fill="#1e293b" />
+    <path d="M 0 20 L 0 28 L 212 28 L 212 20 Z" fill="#1e293b" />
+    <text x="12" y="18" font-family="'JetBrains Mono', monospace" font-size="9.5" font-weight="600" fill="#e2e8f0">timeline.tex</text>
+    <rect x="156" y="6" width="46" height="16" rx="3" fill="#334155" />
+    <text x="162" y="18" font-family="'Inter', sans-serif" font-size="8.5" font-weight="600" fill="#f8fafc">Copy</text>
+
+    <!-- Code Content -->
+    <g transform="translate(10, 44)" font-family="'JetBrains Mono', monospace" font-size="8.5" line-height="1.5">
+      <text y="0" fill="#818cf8">\documentclass<tspan fill="#cbd5e1">{</tspan><tspan fill="#38bdf8">article</tspan><tspan fill="#cbd5e1">}</tspan></text>
+      <text y="15" fill="#818cf8">\usepackage<tspan fill="#cbd5e1">{</tspan><tspan fill="#38bdf8">tikz</tspan><tspan fill="#cbd5e1">}</tspan></text>
+      <text y="30" fill="#818cf8">\begin<tspan fill="#cbd5e1">{</tspan><tspan fill="#38bdf8">tikzpicture</tspan><tspan fill="#cbd5e1">}</tspan></text>
+
+      <text y="48" fill="#64748b">% Base Timeline Axis</text>
+      <text y="61" fill="#818cf8">\draw</text>
+      <text x="35" y="61" fill="#e2e8f0">[->, thick, black]</text>
+      <text y="74" fill="#e2e8f0"> (0pt,0pt) -- (550pt,0pt);</text>
+
+      <text y="92" fill="#64748b">% 1914 WWI</text>
+      <text y="105" fill="#818cf8">\draw</text>
+      <text x="35" y="105" fill="#e2e8f0">(77pt,-3pt)--(77pt,3pt);</text>
+      <text y="120" fill="#818cf8">\node</text>
+      <text x="35" y="120" fill="#e2e8f0">[above, rotate=45]</text>
+      <text y="133" fill="#e2e8f0"> at(77pt,0pt) {1914: WWI};</text>
+
+      <text y="152" fill="#64748b">% 1945 UN Founded</text>
+      <text y="165" fill="#818cf8">\draw</text>
+      <text x="35" y="165" fill="#e2e8f0">(247pt,-3pt)--(247pt,3pt);</text>
+      <text y="180" fill="#818cf8">\node</text>
+      <text x="35" y="180" fill="#e2e8f0">[above, rotate=45]</text>
+      <text y="193" fill="#e2e8f0"> at(247pt,0pt) {1945: UN};</text>
+
+      <text y="212" fill="#64748b">% 1969 Apollo 11</text>
+      <text y="225" fill="#818cf8">\draw</text>
+      <text x="35" y="225" fill="#e2e8f0">(379pt,-3pt)--(379pt,3pt);</text>
+      <text y="240" fill="#818cf8">\node</text>
+      <text x="35" y="240" fill="#e2e8f0">[above, rotate=45]</text>
+      <text y="253" fill="#e2e8f0"> at(379pt,0pt) {Apollo 11};</text>
+
+      <text y="272" fill="#64748b">% 1989 Berlin Wall</text>
+      <text y="285" fill="#818cf8">\node</text>
+      <text x="35" y="285" fill="#e2e8f0">[below, rotate=-45]</text>
+      <text y="298" fill="#e2e8f0"> at(489pt,0pt) {Berlin Wall};</text>
+
+      <text y="318" fill="#818cf8">\end<tspan fill="#cbd5e1">{</tspan><tspan fill="#38bdf8">tikzpicture</tspan><tspan fill="#cbd5e1">}</tspan></text>
+    </g>
+  </g>
+</svg>

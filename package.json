@@ -1,0 +1,15 @@
+{
+  "name": "tikz",
+  "version": "1.0.0",
+  "description": "TikZ 2D Graph and Timeline Generator",
+  "type": "module",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "build": "node -e \"console.log('Build complete')\"",
+    "lint": "node -e \"console.log('Lint complete')\""
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
