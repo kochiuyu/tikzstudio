@@ -10,8 +10,8 @@ Designed for educators, researchers, students, and authors who want to quickly s
 
 ### 1. 2D Coordinate Graph Studio (`Coordinate.html`)
 - **Direct Canvas Sketching & Editing**:
-  - Interactive drawing tools for **Straight Lines**, **Cubic Bézier Curves**, **Shaded Rectangles / Areas**, **Points & Labels**, and **Coordinate Axes**.
-  - Visual draggable handles for curve control points ($C_1$, $C_2$) and endpoints ($P_1$, $P_2$) with live real-time Bézier spline rendering.
+  - Interactive drawing tools for **Straight Lines**, **Cubic Bézier Curves**, **Circles**, **Shaded Rectangles / Areas**, **Points & Labels**, and **Coordinate Axes**.
+  - Visual draggable handles for curve control points ($C_1$, $C_2$) and endpoints ($P_1$, $P_2$), circle centers and radius handles, and rectangle boundaries.
   - Direct on-canvas **Axis Resizing & Tick Placement**: Drag axis arrowheads and corner handles to scale coordinate boundaries, or click directly along the axes to place and drag ticks ($x_1, x_2, y_1, y_2$).
   - Floating confirmation and adjustment cards with instant two-way synchronization between canvas manipulation and sidebar inputs.
 - **Grid Snapping & Precision**:
@@ -38,6 +38,7 @@ Designed for educators, researchers, students, and authors who want to quickly s
 | :--- | :--- | :--- |
 | **`A`** | Coordinate Axis | Activate axis mode (drag arrowheads/corner to adjust limits, click to add ticks) |
 | **`R`** | Rectangle | Click and drag to create shaded boxes or coordinate areas |
+| **`O`** | Circle | Click and drag from center to set radius and draw circles |
 | **`L`** | Line | Click and drag to create straight line segments |
 | **`C`** | Curve | Multi-click workflow to define endpoints and shape Bézier curves |
 | **`P`** | Point | Click anywhere on the grid to drop a labeled coordinate point |

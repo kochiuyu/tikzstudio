@@ -14,6 +14,13 @@ function del(id) {
     var d = document.getElementById("d_" + id); if (d) d.value = 0;
     var n = document.getElementById("linename_" + id); if (n) n.value = "";
     var col = document.getElementById("lineColor_" + id); if (col) col.value = "black";
+    var arr = document.getElementById("lineArrow_" + id); if (arr) arr.value = "none";
+    var wid = document.getElementById("lineWidth_" + id); if (wid) wid.value = "thin";
+    var sty = document.getElementById("lineStyle_" + id); if (sty) sty.value = "solid";
+    var dsh = document.getElementById("linedash_" + id); if (dsh) dsh.checked = false;
+    var lpos = document.getElementById("lineLabelPos_" + id); if (lpos) lpos.value = "end";
+    var lanc = document.getElementById("lineLabelAnchor_" + id); if (lanc) lanc.value = "right";
+    if (typeof updateLineTelemetry === 'function') updateLineTelemetry(id);
 }
 
 function delC(id) {
@@ -39,4 +46,15 @@ function delP(id) {
     var dot = document.getElementById("pointdot_" + id); if (dot) dot.checked = true;
     var pos = document.getElementById("pointpos_" + id); if (pos) pos.value = "above_right";
     var title = document.getElementById("point_title_" + id); if (title) title.textContent = "(Empty)";
+}
+
+function delCircle(id) {
+    var x = document.getElementById("circle_x_" + id); if (x) x.value = 0;
+    var y = document.getElementById("circle_y_" + id); if (y) y.value = 0;
+    var r = document.getElementById("circle_r_" + id); if (r) r.value = 0;
+    var n = document.getElementById("circlename_" + id); if (n) n.value = "";
+    var col = document.getElementById("circleColor_" + id); if (col) col.value = "black";
+    var dash = document.getElementById("circledash_" + id); if (dash) dash.checked = false;
+    var fill = document.getElementById("circlefill_" + id); if (fill) fill.checked = false;
+    var show = document.getElementById("circleshow_" + id); if (show) show.checked = false;
 }

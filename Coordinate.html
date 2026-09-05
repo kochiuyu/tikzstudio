@@ -20,11 +20,13 @@
   <script type="text/javascript" src="js/input-addline.js"></script>
   <script type="text/javascript" src="js/input-addCurve.js"></script>
   <script type="text/javascript" src="js/input-addRectangle.js"></script>
+  <script type="text/javascript" src="js/input-addCircle.js"></script>
   <script type="text/javascript" src="js/Draw Tikz Line.js"></script>
   <script type="text/javascript" src="js/input-addPoints.js"></script>
   <script type="text/javascript" src="js/PrintLine.js"></script>
   <script type="text/javascript" src="js/PrintCurve.js"></script>
   <script type="text/javascript" src="js/Rectangle.js"></script>
+  <script type="text/javascript" src="js/Circle.js"></script>
   <script type="text/javascript" src="js/DrawGrid.js"></script>
   <script type="text/javascript" src="js/ChoosePoints.js"></script>
   <script type="text/javascript" src="js/DrawGraph.js"></script>
@@ -516,6 +518,64 @@
             </ul>
           </li>
 
+          <!-- Circles Section -->
+          <li>
+            <a href="#">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/></svg>
+              Circles
+            </a>
+            <ul>
+              <li>
+                <form id="circleform" name="myformCircle" action="" method="get">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                    <span style="font-size: 0.85rem; font-weight: 600; color: var(--color-text-muted);">Configurable circles &amp; radii</span>
+                    <button type="button" class="btn-modern btn-modern-secondary btn-modern-sm" onclick="AddCircle(this.form)">
+                      + Add Circle
+                    </button>
+                  </div>
+
+                  <!-- Circle 1 -->
+                  <div class="item-card" id="circle_card_1">
+                    <div class="item-card-header">
+                      <span>Circle 1</span>
+                      <div style="display: flex; gap: 0.35rem;">
+                        <button type="button" class="btn-modern btn-modern-secondary btn-modern-sm" onclick="selectShapeOnCanvas('circle', 1)" title="Manipulate directly on canvas with drag handles">Canvas Edit</button>
+                        <button type="button" id="1" class="btn-modern btn-modern-danger btn-modern-sm" onclick="delCircle(this.id); DrawGraph();">Clear</button>
+                      </div>
+                    </div>
+                    <div class="form-row">
+                      <span class="form-label">Center:</span>
+                      <span class="coord-box">(<input type="text" id="circle_x_1" value="0">,<input type="text" id="circle_y_1" value="0">)</span>
+                      <span class="form-label" style="margin-left: 0.5rem;">Radius:</span>
+                      <span class="coord-box"><input type="text" id="circle_r_1" value="0" style="width: 46px;"></span>
+                    </div>
+                    <div class="options-row">
+                      <label class="checkbox-label"><input type="checkbox" id="circleshow_1" checked> Show</label>
+                      <label class="checkbox-label"><input type="checkbox" id="circledash_1"> Dash</label>
+                      <label class="checkbox-label"><input type="checkbox" id="circlefill_1"> Shade</label>
+                    </div>
+                    <div class="form-row" style="margin-top: 0.5rem;">
+                      <span class="form-label">Label:</span>
+                      <input type="text" id="circlename_1" class="input-modern" size="5" value="" placeholder="Label" style="width: 80px;">
+                      <span class="form-label">Color:</span>
+                      <select id="circleColor_1" class="select-modern">
+                        <option value="black" selected>black</option>
+                        <option value="yellow">yellow</option>
+                        <option value="red">red</option>
+                        <option value="blue">blue</option>
+                        <option value="purple">purple</option>
+                        <option value="brown">brown</option>
+                        <option value="orange">orange</option>
+                        <option value="green">green</option>
+                      </select>
+                    </div>
+                  </div>
+
+                </form>
+              </li>
+            </ul>
+          </li>
+
           <!-- 3. Lines Section -->
           <li>
             <a href="#">
@@ -535,31 +595,66 @@
                   <!-- Line 1 -->
                   <div class="item-card" id="line_card_1">
                     <div class="item-card-header">
-                      <span>Line 1</span>
+                      <span style="font-weight: 600;">Line 1</span>
                       <div style="display: flex; gap: 0.35rem;">
                         <button type="button" class="btn-modern btn-modern-secondary btn-modern-sm" onclick="selectShapeOnCanvas('line', 1)" title="Manipulate directly on canvas with drag handles">Canvas Edit</button>
                         <button type="button" id="1" class="btn-modern btn-modern-danger btn-modern-sm" onclick="del(this.id); DrawGraph();">Clear</button>
                       </div>
                     </div>
+                    <div id="line_telemetry_1" class="telemetry-pill" style="margin: 0.25rem 0 0.4rem 0; font-size: 0.72rem; padding: 0.2rem 0.5rem; background: var(--color-bg-alt, #f8fafc); border: 1px solid var(--color-border, #e2e8f0); border-radius: 4px; display: inline-block; font-family: monospace; color: var(--color-text, #334155);">L: 0.00 u | Slope: 0 (0°)</div>
                     <div class="form-row">
-                      <span class="form-label">Coords:</span>
-                      <span class="coord-box">(<input type="text" id="a_1" value="0">,<input type="text" id="b_1" value="0">)</span>
+                      <span class="form-label" style="min-width: 48px;">Coords:</span>
+                      <span class="coord-box">(<input type="text" id="a_1" value="0" oninput="if (typeof updateLineTelemetry==='function') updateLineTelemetry(1); DrawGraph();">,<input type="text" id="b_1" value="0" oninput="if (typeof updateLineTelemetry==='function') updateLineTelemetry(1); DrawGraph();">)</span>
                       <span style="color: var(--color-text-muted); font-weight: bold;">&mdash;</span>
-                      <span class="coord-box">(<input type="text" id="c_1" value="0">,<input type="text" id="d_1" value="0">)</span>
+                      <span class="coord-box">(<input type="text" id="c_1" value="0" oninput="if (typeof updateLineTelemetry==='function') updateLineTelemetry(1); DrawGraph();">,<input type="text" id="d_1" value="0" oninput="if (typeof updateLineTelemetry==='function') updateLineTelemetry(1); DrawGraph();">)</span>
                     </div>
-                    <div class="options-row">
-                      <label class="checkbox-label"><input type="checkbox" id="lineshow_1" checked> Show</label>
-                      <label class="checkbox-label"><input type="checkbox" name="onlyOne" id="mouseDL_1" onclick="test(0)"> Mouse Draw</label>
-                      <label class="checkbox-label"><input type="checkbox" name="onlyP" id="lin_1" onclick="test1(0)"> All</label>
-                      <label class="checkbox-label"><input type="checkbox" name="onlyP" id="LP1_1" onclick="test1(1)"> Pt 1</label>
-                      <label class="checkbox-label"><input type="checkbox" name="onlyP" id="LP2_1" onclick="test1(2)"> Pt 2</label>
-                      <label class="checkbox-label"><input type="checkbox" id="linedash_1"> Dash</label>
+                    <div class="form-row" style="margin-top: 0.4rem; gap: 0.35rem; flex-wrap: wrap;">
+                      <span class="form-label" style="min-width: 42px;">Arrow:</span>
+                      <select id="lineArrow_1" class="select-modern" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;" onchange="DrawGraph();">
+                        <option value="none" selected>None (--)</option>
+                        <option value="->">Forward (-&gt;)</option>
+                        <option value="<-">Reverse (&lt;-)</option>
+                        <option value="<->">Both (&lt;-&gt;)</option>
+                      </select>
+                      <span class="form-label" style="min-width: 40px; margin-left: 0.25rem;">Width:</span>
+                      <select id="lineWidth_1" class="select-modern" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;" onchange="DrawGraph();">
+                        <option value="ultra thin">Ultra Thin</option>
+                        <option value="thin" selected>Thin</option>
+                        <option value="semithick">Semithick</option>
+                        <option value="thick">Thick</option>
+                        <option value="very thick">Very Thick</option>
+                      </select>
+                      <span class="form-label" style="min-width: 38px; margin-left: 0.25rem;">Style:</span>
+                      <select id="lineStyle_1" class="select-modern" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;" onchange="var cb=document.getElementById('linedash_1'); if (cb) cb.checked=(this.value==='dashed'); DrawGraph();">
+                        <option value="solid" selected>Solid</option>
+                        <option value="dashed">Dashed</option>
+                        <option value="dotted">Dotted</option>
+                        <option value="dashdotted">Dash-Dot</option>
+                      </select>
                     </div>
-                    <div class="form-row" style="margin-top: 0.5rem;">
-                      <span class="form-label">Label:</span>
-                      <input type="text" id="linename_1" class="input-modern" size="5" value="" placeholder="Name" style="width: 80px;">
-                      <span class="form-label">Color:</span>
-                      <select id="lineColor_1" class="select-modern">
+                    <div class="form-row" style="margin-top: 0.4rem; gap: 0.35rem; flex-wrap: wrap;">
+                      <span class="form-label" style="min-width: 42px;">Label:</span>
+                      <input type="text" id="linename_1" class="input-modern" size="5" value="" placeholder="Name" style="width: 70px;" oninput="DrawGraph();">
+                      <span class="form-label" style="min-width: 30px; margin-left: 0.2rem;">Pos:</span>
+                      <select id="lineLabelPos_1" class="select-modern" title="Position along line" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;" onchange="DrawGraph();">
+                        <option value="end" selected>End</option>
+                        <option value="mid">Mid</option>
+                        <option value="start">Start</option>
+                      </select>
+                      <span class="form-label" style="min-width: 44px; margin-left: 0.2rem;">Anchor:</span>
+                      <select id="lineLabelAnchor_1" class="select-modern" title="Label anchor alignment" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;" onchange="DrawGraph();">
+                        <option value="right" selected>Right</option>
+                        <option value="above">Above</option>
+                        <option value="below">Below</option>
+                        <option value="left">Left</option>
+                        <option value="above right">Above Right</option>
+                        <option value="above left">Above Left</option>
+                        <option value="below right">Below Right</option>
+                        <option value="below left">Below Left</option>
+                        <option value="sloped">Sloped</option>
+                      </select>
+                      <span class="form-label" style="min-width: 36px; margin-left: 0.2rem;">Color:</span>
+                      <select id="lineColor_1" class="select-modern" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;" onchange="DrawGraph();">
                         <option value="black" selected>black</option>
                         <option value="yellow">yellow</option>
                         <option value="red">red</option>
@@ -569,37 +664,80 @@
                         <option value="orange">orange</option>
                         <option value="green">green</option>
                       </select>
+                    </div>
+                    <div class="options-row" style="margin-top: 0.4rem;">
+                      <label class="checkbox-label"><input type="checkbox" id="lineshow_1" checked onchange="DrawGraph();"> Show</label>
+                      <label class="checkbox-label"><input type="checkbox" name="onlyOne" id="mouseDL_1" onclick="test(0)"> Mouse Draw</label>
+                      <label class="checkbox-label"><input type="checkbox" name="onlyP" id="lin_1" onclick="test1(0)"> All</label>
+                      <label class="checkbox-label"><input type="checkbox" name="onlyP" id="LP1_1" onclick="test1(1)"> Pt 1</label>
+                      <label class="checkbox-label"><input type="checkbox" name="onlyP" id="LP2_1" onclick="test1(2)"> Pt 2</label>
+                      <input type="checkbox" id="linedash_1" style="display:none;" onchange="DrawGraph();">
                     </div>
                   </div>
 
                   <!-- Line 2 -->
                   <div class="item-card" id="line_card_2">
                     <div class="item-card-header">
-                      <span>Line 2</span>
+                      <span style="font-weight: 600;">Line 2</span>
                       <div style="display: flex; gap: 0.35rem;">
                         <button type="button" class="btn-modern btn-modern-secondary btn-modern-sm" onclick="selectShapeOnCanvas('line', 2)" title="Manipulate directly on canvas with drag handles">Canvas Edit</button>
                         <button type="button" id="2" class="btn-modern btn-modern-danger btn-modern-sm" onclick="del(this.id); DrawGraph();">Clear</button>
                       </div>
                     </div>
+                    <div id="line_telemetry_2" class="telemetry-pill" style="margin: 0.25rem 0 0.4rem 0; font-size: 0.72rem; padding: 0.2rem 0.5rem; background: var(--color-bg-alt, #f8fafc); border: 1px solid var(--color-border, #e2e8f0); border-radius: 4px; display: inline-block; font-family: monospace; color: var(--color-text, #334155);">L: 0.00 u | Slope: 0 (0°)</div>
                     <div class="form-row">
-                      <span class="form-label">Coords:</span>
-                      <span class="coord-box">(<input type="text" id="a_2" value="0">,<input type="text" id="b_2" value="0">)</span>
+                      <span class="form-label" style="min-width: 48px;">Coords:</span>
+                      <span class="coord-box">(<input type="text" id="a_2" value="0" oninput="if (typeof updateLineTelemetry==='function') updateLineTelemetry(2); DrawGraph();">,<input type="text" id="b_2" value="0" oninput="if (typeof updateLineTelemetry==='function') updateLineTelemetry(2); DrawGraph();">)</span>
                       <span style="color: var(--color-text-muted); font-weight: bold;">&mdash;</span>
-                      <span class="coord-box">(<input type="text" id="c_2" value="0">,<input type="text" id="d_2" value="0">)</span>
+                      <span class="coord-box">(<input type="text" id="c_2" value="0" oninput="if (typeof updateLineTelemetry==='function') updateLineTelemetry(2); DrawGraph();">,<input type="text" id="d_2" value="0" oninput="if (typeof updateLineTelemetry==='function') updateLineTelemetry(2); DrawGraph();">)</span>
                     </div>
-                    <div class="options-row">
-                      <label class="checkbox-label"><input type="checkbox" id="lineshow_2"> Show</label>
-                      <label class="checkbox-label"><input type="checkbox" name="onlyOne" id="mouseDL_2" onclick="test(1)"> Mouse Draw</label>
-                      <label class="checkbox-label"><input type="checkbox" name="onlyP" id="lin_2" onclick="test1(3)"> All</label>
-                      <label class="checkbox-label"><input type="checkbox" name="onlyP" id="LP1_2" onclick="test1(4)"> Pt 1</label>
-                      <label class="checkbox-label"><input type="checkbox" name="onlyP" id="LP2_2" onclick="test1(5)"> Pt 2</label>
-                      <label class="checkbox-label"><input type="checkbox" id="linedash_2"> Dash</label>
+                    <div class="form-row" style="margin-top: 0.4rem; gap: 0.35rem; flex-wrap: wrap;">
+                      <span class="form-label" style="min-width: 42px;">Arrow:</span>
+                      <select id="lineArrow_2" class="select-modern" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;" onchange="DrawGraph();">
+                        <option value="none" selected>None (--)</option>
+                        <option value="->">Forward (-&gt;)</option>
+                        <option value="<-">Reverse (&lt;-)</option>
+                        <option value="<->">Both (&lt;-&gt;)</option>
+                      </select>
+                      <span class="form-label" style="min-width: 40px; margin-left: 0.25rem;">Width:</span>
+                      <select id="lineWidth_2" class="select-modern" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;" onchange="DrawGraph();">
+                        <option value="ultra thin">Ultra Thin</option>
+                        <option value="thin" selected>Thin</option>
+                        <option value="semithick">Semithick</option>
+                        <option value="thick">Thick</option>
+                        <option value="very thick">Very Thick</option>
+                      </select>
+                      <span class="form-label" style="min-width: 38px; margin-left: 0.25rem;">Style:</span>
+                      <select id="lineStyle_2" class="select-modern" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;" onchange="var cb=document.getElementById('linedash_2'); if (cb) cb.checked=(this.value==='dashed'); DrawGraph();">
+                        <option value="solid" selected>Solid</option>
+                        <option value="dashed">Dashed</option>
+                        <option value="dotted">Dotted</option>
+                        <option value="dashdotted">Dash-Dot</option>
+                      </select>
                     </div>
-                    <div class="form-row" style="margin-top: 0.5rem;">
-                      <span class="form-label">Label:</span>
-                      <input type="text" id="linename_2" class="input-modern" size="5" value="" placeholder="Name" style="width: 80px;">
-                      <span class="form-label">Color:</span>
-                      <select id="lineColor_2" class="select-modern">
+                    <div class="form-row" style="margin-top: 0.4rem; gap: 0.35rem; flex-wrap: wrap;">
+                      <span class="form-label" style="min-width: 42px;">Label:</span>
+                      <input type="text" id="linename_2" class="input-modern" size="5" value="" placeholder="Name" style="width: 70px;" oninput="DrawGraph();">
+                      <span class="form-label" style="min-width: 30px; margin-left: 0.2rem;">Pos:</span>
+                      <select id="lineLabelPos_2" class="select-modern" title="Position along line" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;" onchange="DrawGraph();">
+                        <option value="end" selected>End</option>
+                        <option value="mid">Mid</option>
+                        <option value="start">Start</option>
+                      </select>
+                      <span class="form-label" style="min-width: 44px; margin-left: 0.2rem;">Anchor:</span>
+                      <select id="lineLabelAnchor_2" class="select-modern" title="Label anchor alignment" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;" onchange="DrawGraph();">
+                        <option value="right" selected>Right</option>
+                        <option value="above">Above</option>
+                        <option value="below">Below</option>
+                        <option value="left">Left</option>
+                        <option value="above right">Above Right</option>
+                        <option value="above left">Above Left</option>
+                        <option value="below right">Below Right</option>
+                        <option value="below left">Below Left</option>
+                        <option value="sloped">Sloped</option>
+                      </select>
+                      <span class="form-label" style="min-width: 36px; margin-left: 0.2rem;">Color:</span>
+                      <select id="lineColor_2" class="select-modern" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;" onchange="DrawGraph();">
                         <option value="black" selected>black</option>
                         <option value="yellow">yellow</option>
                         <option value="red">red</option>
@@ -609,37 +747,80 @@
                         <option value="orange">orange</option>
                         <option value="green">green</option>
                       </select>
+                    </div>
+                    <div class="options-row" style="margin-top: 0.4rem;">
+                      <label class="checkbox-label"><input type="checkbox" id="lineshow_2" onchange="DrawGraph();"> Show</label>
+                      <label class="checkbox-label"><input type="checkbox" name="onlyOne" id="mouseDL_2" onclick="test(1)"> Mouse Draw</label>
+                      <label class="checkbox-label"><input type="checkbox" name="onlyP" id="lin_2" onclick="test1(3)"> All</label>
+                      <label class="checkbox-label"><input type="checkbox" name="onlyP" id="LP1_2" onclick="test1(4)"> Pt 1</label>
+                      <label class="checkbox-label"><input type="checkbox" name="onlyP" id="LP2_2" onclick="test1(5)"> Pt 2</label>
+                      <input type="checkbox" id="linedash_2" style="display:none;" onchange="DrawGraph();">
                     </div>
                   </div>
 
                   <!-- Line 3 -->
                   <div class="item-card" id="line_card_3">
                     <div class="item-card-header">
-                      <span>Line 3</span>
+                      <span style="font-weight: 600;">Line 3</span>
                       <div style="display: flex; gap: 0.35rem;">
                         <button type="button" class="btn-modern btn-modern-secondary btn-modern-sm" onclick="selectShapeOnCanvas('line', 3)" title="Manipulate directly on canvas with drag handles">Canvas Edit</button>
                         <button type="button" id="3" class="btn-modern btn-modern-danger btn-modern-sm" onclick="del(this.id); DrawGraph();">Clear</button>
                       </div>
                     </div>
+                    <div id="line_telemetry_3" class="telemetry-pill" style="margin: 0.25rem 0 0.4rem 0; font-size: 0.72rem; padding: 0.2rem 0.5rem; background: var(--color-bg-alt, #f8fafc); border: 1px solid var(--color-border, #e2e8f0); border-radius: 4px; display: inline-block; font-family: monospace; color: var(--color-text, #334155);">L: 0.00 u | Slope: 0 (0°)</div>
                     <div class="form-row">
-                      <span class="form-label">Coords:</span>
-                      <span class="coord-box">(<input type="text" id="a_3" value="0">,<input type="text" id="b_3" value="0">)</span>
+                      <span class="form-label" style="min-width: 48px;">Coords:</span>
+                      <span class="coord-box">(<input type="text" id="a_3" value="0" oninput="if (typeof updateLineTelemetry==='function') updateLineTelemetry(3); DrawGraph();">,<input type="text" id="b_3" value="0" oninput="if (typeof updateLineTelemetry==='function') updateLineTelemetry(3); DrawGraph();">)</span>
                       <span style="color: var(--color-text-muted); font-weight: bold;">&mdash;</span>
-                      <span class="coord-box">(<input type="text" id="c_3" value="0">,<input type="text" id="d_3" value="0">)</span>
+                      <span class="coord-box">(<input type="text" id="c_3" value="0" oninput="if (typeof updateLineTelemetry==='function') updateLineTelemetry(3); DrawGraph();">,<input type="text" id="d_3" value="0" oninput="if (typeof updateLineTelemetry==='function') updateLineTelemetry(3); DrawGraph();">)</span>
                     </div>
-                    <div class="options-row">
-                      <label class="checkbox-label"><input type="checkbox" id="lineshow_3"> Show</label>
-                      <label class="checkbox-label"><input type="checkbox" name="onlyOne" id="mouseDL_3" onclick="test(2)"> Mouse Draw</label>
-                      <label class="checkbox-label"><input type="checkbox" name="onlyP" id="lin_3" onclick="test1(6)"> All</label>
-                      <label class="checkbox-label"><input type="checkbox" name="onlyP" id="LP1_3" onclick="test1(7)"> Pt 1</label>
-                      <label class="checkbox-label"><input type="checkbox" name="onlyP" id="LP2_3" onclick="test1(8)"> Pt 2</label>
-                      <label class="checkbox-label"><input type="checkbox" id="linedash_3"> Dash</label>
+                    <div class="form-row" style="margin-top: 0.4rem; gap: 0.35rem; flex-wrap: wrap;">
+                      <span class="form-label" style="min-width: 42px;">Arrow:</span>
+                      <select id="lineArrow_3" class="select-modern" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;" onchange="DrawGraph();">
+                        <option value="none" selected>None (--)</option>
+                        <option value="->">Forward (-&gt;)</option>
+                        <option value="<-">Reverse (&lt;-)</option>
+                        <option value="<->">Both (&lt;-&gt;)</option>
+                      </select>
+                      <span class="form-label" style="min-width: 40px; margin-left: 0.25rem;">Width:</span>
+                      <select id="lineWidth_3" class="select-modern" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;" onchange="DrawGraph();">
+                        <option value="ultra thin">Ultra Thin</option>
+                        <option value="thin" selected>Thin</option>
+                        <option value="semithick">Semithick</option>
+                        <option value="thick">Thick</option>
+                        <option value="very thick">Very Thick</option>
+                      </select>
+                      <span class="form-label" style="min-width: 38px; margin-left: 0.25rem;">Style:</span>
+                      <select id="lineStyle_3" class="select-modern" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;" onchange="var cb=document.getElementById('linedash_3'); if (cb) cb.checked=(this.value==='dashed'); DrawGraph();">
+                        <option value="solid" selected>Solid</option>
+                        <option value="dashed">Dashed</option>
+                        <option value="dotted">Dotted</option>
+                        <option value="dashdotted">Dash-Dot</option>
+                      </select>
                     </div>
-                    <div class="form-row" style="margin-top: 0.5rem;">
-                      <span class="form-label">Label:</span>
-                      <input type="text" id="linename_3" class="input-modern" size="5" value="" placeholder="Name" style="width: 80px;">
-                      <span class="form-label">Color:</span>
-                      <select id="lineColor_3" class="select-modern">
+                    <div class="form-row" style="margin-top: 0.4rem; gap: 0.35rem; flex-wrap: wrap;">
+                      <span class="form-label" style="min-width: 42px;">Label:</span>
+                      <input type="text" id="linename_3" class="input-modern" size="5" value="" placeholder="Name" style="width: 70px;" oninput="DrawGraph();">
+                      <span class="form-label" style="min-width: 30px; margin-left: 0.2rem;">Pos:</span>
+                      <select id="lineLabelPos_3" class="select-modern" title="Position along line" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;" onchange="DrawGraph();">
+                        <option value="end" selected>End</option>
+                        <option value="mid">Mid</option>
+                        <option value="start">Start</option>
+                      </select>
+                      <span class="form-label" style="min-width: 44px; margin-left: 0.2rem;">Anchor:</span>
+                      <select id="lineLabelAnchor_3" class="select-modern" title="Label anchor alignment" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;" onchange="DrawGraph();">
+                        <option value="right" selected>Right</option>
+                        <option value="above">Above</option>
+                        <option value="below">Below</option>
+                        <option value="left">Left</option>
+                        <option value="above right">Above Right</option>
+                        <option value="above left">Above Left</option>
+                        <option value="below right">Below Right</option>
+                        <option value="below left">Below Left</option>
+                        <option value="sloped">Sloped</option>
+                      </select>
+                      <span class="form-label" style="min-width: 36px; margin-left: 0.2rem;">Color:</span>
+                      <select id="lineColor_3" class="select-modern" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;" onchange="DrawGraph();">
                         <option value="black" selected>black</option>
                         <option value="yellow">yellow</option>
                         <option value="red">red</option>
@@ -649,37 +830,80 @@
                         <option value="orange">orange</option>
                         <option value="green">green</option>
                       </select>
+                    </div>
+                    <div class="options-row" style="margin-top: 0.4rem;">
+                      <label class="checkbox-label"><input type="checkbox" id="lineshow_3" onchange="DrawGraph();"> Show</label>
+                      <label class="checkbox-label"><input type="checkbox" name="onlyOne" id="mouseDL_3" onclick="test(2)"> Mouse Draw</label>
+                      <label class="checkbox-label"><input type="checkbox" name="onlyP" id="lin_3" onclick="test1(6)"> All</label>
+                      <label class="checkbox-label"><input type="checkbox" name="onlyP" id="LP1_3" onclick="test1(7)"> Pt 1</label>
+                      <label class="checkbox-label"><input type="checkbox" name="onlyP" id="LP2_3" onclick="test1(8)"> Pt 2</label>
+                      <input type="checkbox" id="linedash_3" style="display:none;" onchange="DrawGraph();">
                     </div>
                   </div>
 
                   <!-- Line 4 -->
                   <div class="item-card" id="line_card_4">
                     <div class="item-card-header">
-                      <span>Line 4</span>
+                      <span style="font-weight: 600;">Line 4</span>
                       <div style="display: flex; gap: 0.35rem;">
                         <button type="button" class="btn-modern btn-modern-secondary btn-modern-sm" onclick="selectShapeOnCanvas('line', 4)" title="Manipulate directly on canvas with drag handles">Canvas Edit</button>
                         <button type="button" id="4" class="btn-modern btn-modern-danger btn-modern-sm" onclick="del(this.id); DrawGraph();">Clear</button>
                       </div>
                     </div>
+                    <div id="line_telemetry_4" class="telemetry-pill" style="margin: 0.25rem 0 0.4rem 0; font-size: 0.72rem; padding: 0.2rem 0.5rem; background: var(--color-bg-alt, #f8fafc); border: 1px solid var(--color-border, #e2e8f0); border-radius: 4px; display: inline-block; font-family: monospace; color: var(--color-text, #334155);">L: 0.00 u | Slope: 0 (0°)</div>
                     <div class="form-row">
-                      <span class="form-label">Coords:</span>
-                      <span class="coord-box">(<input type="text" id="a_4" value="0">,<input type="text" id="b_4" value="0">)</span>
+                      <span class="form-label" style="min-width: 48px;">Coords:</span>
+                      <span class="coord-box">(<input type="text" id="a_4" value="0" oninput="if (typeof updateLineTelemetry==='function') updateLineTelemetry(4); DrawGraph();">,<input type="text" id="b_4" value="0" oninput="if (typeof updateLineTelemetry==='function') updateLineTelemetry(4); DrawGraph();">)</span>
                       <span style="color: var(--color-text-muted); font-weight: bold;">&mdash;</span>
-                      <span class="coord-box">(<input type="text" id="c_4" value="0">,<input type="text" id="d_4" value="0">)</span>
+                      <span class="coord-box">(<input type="text" id="c_4" value="0" oninput="if (typeof updateLineTelemetry==='function') updateLineTelemetry(4); DrawGraph();">,<input type="text" id="d_4" value="0" oninput="if (typeof updateLineTelemetry==='function') updateLineTelemetry(4); DrawGraph();">)</span>
                     </div>
-                    <div class="options-row">
-                      <label class="checkbox-label"><input type="checkbox" id="lineshow_4"> Show</label>
-                      <label class="checkbox-label"><input type="checkbox" name="onlyOne" id="mouseDL_4" onclick="test(3)"> Mouse Draw</label>
-                      <label class="checkbox-label"><input type="checkbox" name="onlyP" id="lin_4" onclick="test1(9)"> All</label>
-                      <label class="checkbox-label"><input type="checkbox" name="onlyP" id="LP1_4" onclick="test1(10)"> Pt 1</label>
-                      <label class="checkbox-label"><input type="checkbox" name="onlyP" id="LP2_4" onclick="test1(11)"> Pt 2</label>
-                      <label class="checkbox-label"><input type="checkbox" id="linedash_4"> Dash</label>
+                    <div class="form-row" style="margin-top: 0.4rem; gap: 0.35rem; flex-wrap: wrap;">
+                      <span class="form-label" style="min-width: 42px;">Arrow:</span>
+                      <select id="lineArrow_4" class="select-modern" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;" onchange="DrawGraph();">
+                        <option value="none" selected>None (--)</option>
+                        <option value="->">Forward (-&gt;)</option>
+                        <option value="<-">Reverse (&lt;-)</option>
+                        <option value="<->">Both (&lt;-&gt;)</option>
+                      </select>
+                      <span class="form-label" style="min-width: 40px; margin-left: 0.25rem;">Width:</span>
+                      <select id="lineWidth_4" class="select-modern" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;" onchange="DrawGraph();">
+                        <option value="ultra thin">Ultra Thin</option>
+                        <option value="thin" selected>Thin</option>
+                        <option value="semithick">Semithick</option>
+                        <option value="thick">Thick</option>
+                        <option value="very thick">Very Thick</option>
+                      </select>
+                      <span class="form-label" style="min-width: 38px; margin-left: 0.25rem;">Style:</span>
+                      <select id="lineStyle_4" class="select-modern" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;" onchange="var cb=document.getElementById('linedash_4'); if (cb) cb.checked=(this.value==='dashed'); DrawGraph();">
+                        <option value="solid" selected>Solid</option>
+                        <option value="dashed">Dashed</option>
+                        <option value="dotted">Dotted</option>
+                        <option value="dashdotted">Dash-Dot</option>
+                      </select>
                     </div>
-                    <div class="form-row" style="margin-top: 0.5rem;">
-                      <span class="form-label">Label:</span>
-                      <input type="text" id="linename_4" class="input-modern" size="5" value="" placeholder="Name" style="width: 80px;">
-                      <span class="form-label">Color:</span>
-                      <select id="lineColor_4" class="select-modern">
+                    <div class="form-row" style="margin-top: 0.4rem; gap: 0.35rem; flex-wrap: wrap;">
+                      <span class="form-label" style="min-width: 42px;">Label:</span>
+                      <input type="text" id="linename_4" class="input-modern" size="5" value="" placeholder="Name" style="width: 70px;" oninput="DrawGraph();">
+                      <span class="form-label" style="min-width: 30px; margin-left: 0.2rem;">Pos:</span>
+                      <select id="lineLabelPos_4" class="select-modern" title="Position along line" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;" onchange="DrawGraph();">
+                        <option value="end" selected>End</option>
+                        <option value="mid">Mid</option>
+                        <option value="start">Start</option>
+                      </select>
+                      <span class="form-label" style="min-width: 44px; margin-left: 0.2rem;">Anchor:</span>
+                      <select id="lineLabelAnchor_4" class="select-modern" title="Label anchor alignment" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;" onchange="DrawGraph();">
+                        <option value="right" selected>Right</option>
+                        <option value="above">Above</option>
+                        <option value="below">Below</option>
+                        <option value="left">Left</option>
+                        <option value="above right">Above Right</option>
+                        <option value="above left">Above Left</option>
+                        <option value="below right">Below Right</option>
+                        <option value="below left">Below Left</option>
+                        <option value="sloped">Sloped</option>
+                      </select>
+                      <span class="form-label" style="min-width: 36px; margin-left: 0.2rem;">Color:</span>
+                      <select id="lineColor_4" class="select-modern" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;" onchange="DrawGraph();">
                         <option value="black" selected>black</option>
                         <option value="yellow">yellow</option>
                         <option value="red">red</option>
@@ -689,6 +913,14 @@
                         <option value="orange">orange</option>
                         <option value="green">green</option>
                       </select>
+                    </div>
+                    <div class="options-row" style="margin-top: 0.4rem;">
+                      <label class="checkbox-label"><input type="checkbox" id="lineshow_4" onchange="DrawGraph();"> Show</label>
+                      <label class="checkbox-label"><input type="checkbox" name="onlyOne" id="mouseDL_4" onclick="test(3)"> Mouse Draw</label>
+                      <label class="checkbox-label"><input type="checkbox" name="onlyP" id="lin_4" onclick="test1(9)"> All</label>
+                      <label class="checkbox-label"><input type="checkbox" name="onlyP" id="LP1_4" onclick="test1(10)"> Pt 1</label>
+                      <label class="checkbox-label"><input type="checkbox" name="onlyP" id="LP2_4" onclick="test1(11)"> Pt 2</label>
+                      <input type="checkbox" id="linedash_4" style="display:none;" onchange="DrawGraph();">
                     </div>
                   </div>
 
@@ -880,6 +1112,8 @@
                     <tr><td id="curveCopy"></td></tr>
                     <tr><td id="rectangleLableC"></td></tr>
                     <tr><td id="rectangleCopy"></td></tr> 
+                    <tr><td id="circleLableC"></td></tr>
+                    <tr><td id="circleCopy"></td></tr> 
                   </table>
                   
                   <script type="text/javascript">
@@ -958,6 +1192,10 @@
               <button type="button" class="tool-btn active" id="tool-btn-rectangle" onclick="setDrawTool('rectangle')" title="Rubberband drag rectangle on canvas (R)">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
                 Rectangle
+              </button>
+              <button type="button" class="tool-btn" id="tool-btn-circle" onclick="setDrawTool('circle')" title="Rubberband drag circle on canvas (O)">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>
+                Circle
               </button>
               <button type="button" class="tool-btn" id="tool-btn-line" onclick="setDrawTool('line')" title="Rubberband drag straight line on canvas">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="19" x2="19" y2="5"/></svg>
@@ -1117,6 +1355,69 @@
                       <option value="above_left">Above Left</option>
                       <option value="center">Center</option>
                     </select>
+                  </div>
+                </div>
+
+                <!-- Line specific advanced settings: Arrow, Width, Pattern, Label Pos, Label Anchor -->
+                <div id="confirm-field-line-extras" style="display: none; flex-direction: column; gap: 0.4rem; padding-top: 0.35rem; border-top: 1px solid #f1f5f9; margin-top: 0.35rem;">
+                  <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    <div class="confirm-field" style="flex: 1; min-width: 90px;">
+                      <label for="confirm-line-arrow">Arrow:</label>
+                      <select id="confirm-line-arrow" class="confirm-slot-select" onchange="updateCandidateLineArrow(this.value)">
+                        <option value="none" selected>None</option>
+                        <option value="-&gt;">-&gt;</option>
+                        <option value="&lt;-">&lt;-</option>
+                        <option value="&lt;-&gt;">&lt;-&gt;</option>
+                      </select>
+                    </div>
+                    <div class="confirm-field" style="flex: 1; min-width: 100px;">
+                      <label for="confirm-line-width">Thickness:</label>
+                      <select id="confirm-line-width" class="confirm-slot-select" onchange="updateCandidateLineWidth(this.value)">
+                        <option value="ultra thin">Ultra Thin</option>
+                        <option value="very thin">Very Thin</option>
+                        <option value="thin">Thin</option>
+                        <option value="semithick" selected>Semi Thick</option>
+                        <option value="thick">Thick</option>
+                        <option value="very thick">Very Thick</option>
+                        <option value="ultra thick">Ultra Thick</option>
+                      </select>
+                    </div>
+                    <div class="confirm-field" style="flex: 1; min-width: 110px;">
+                      <label for="confirm-line-pattern">Pattern:</label>
+                      <select id="confirm-line-pattern" class="confirm-slot-select" onchange="updateCandidateLinePattern(this.value)">
+                        <option value="solid" selected>Solid</option>
+                        <option value="dashed">Dashed</option>
+                        <option value="dotted">Dotted</option>
+                        <option value="loosely dashed">Loosely Dashed</option>
+                        <option value="densely dashed">Densely Dashed</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    <div class="confirm-field" style="flex: 1; min-width: 110px;">
+                      <label for="confirm-line-label-pos">Label Pos:</label>
+                      <select id="confirm-line-label-pos" class="confirm-slot-select" onchange="updateCandidateLineLabelPos(this.value)">
+                        <option value="midway" selected>Midway (0.5)</option>
+                        <option value="at start">At Start (0.0)</option>
+                        <option value="near start">Near Start (0.25)</option>
+                        <option value="near end">Near End (0.75)</option>
+                        <option value="at end">At End (1.0)</option>
+                      </select>
+                    </div>
+                    <div class="confirm-field" style="flex: 1; min-width: 110px;">
+                      <label for="confirm-line-label-anchor">Label Anchor:</label>
+                      <select id="confirm-line-label-anchor" class="confirm-slot-select" onchange="updateCandidateLineLabelAnchor(this.value)">
+                        <option value="above" selected>Above</option>
+                        <option value="below">Below</option>
+                        <option value="left">Left</option>
+                        <option value="right">Right</option>
+                        <option value="above left">Above Left</option>
+                        <option value="above right">Above Right</option>
+                        <option value="below left">Below Left</option>
+                        <option value="below right">Below Right</option>
+                        <option value="sloped">Sloped</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
 

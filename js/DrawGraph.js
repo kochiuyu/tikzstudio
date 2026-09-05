@@ -3,6 +3,7 @@ if (typeof window !== 'undefined') {
     if (typeof window.counter_i === 'undefined') window.counter_i = 5;
     if (typeof window.counter_j === 'undefined') window.counter_j = 3;
     if (typeof window.counter_z === 'undefined') window.counter_z = 2;
+    if (typeof window.counter_circle === 'undefined') window.counter_circle = 2;
     if (typeof window.scale === 'undefined') window.scale = 35;
     if (typeof window.x_offset === 'undefined') window.x_offset = 28;
     if (typeof window.y_offset === 'undefined') window.y_offset = 28;
@@ -22,6 +23,7 @@ function DrawGraph(isEample, customCanvas, scaleMultiplier) {
 	var lines="";
 	var curves="";
 	var rects="";
+	var circles="";
 	
 	if (isEample) {
 		var myxsize = 10;
@@ -146,6 +148,7 @@ function DrawGraph(isEample, customCanvas, scaleMultiplier) {
     ctx.restore();
 	
     for (var j = 1; j < counter_i; j++) {
+        if (typeof updateLineTelemetry === 'function') updateLineTelemetry(j);
         var lineshowEl = document.getElementById("lineshow_" + j);
         if (lineshowEl && lineshowEl.checked) {
             var aEl = document.getElementById("a_" + j);
@@ -155,10 +158,15 @@ function DrawGraph(isEample, customCanvas, scaleMultiplier) {
             var nameEl = document.getElementById("linename_" + j);
             var dashEl = document.getElementById("linedash_" + j);
             var colEl = document.getElementById("lineColor_" + j);
+            var arrowEl = document.getElementById("lineArrow_" + j);
+            var widthEl = document.getElementById("lineWidth_" + j);
+            var styleEl = document.getElementById("lineStyle_" + j);
+            var labelPosEl = document.getElementById("lineLabelPos_" + j);
+            var labelAnchorEl = document.getElementById("lineLabelAnchor_" + j);
             if (aEl && bEl && cEl && dEl) {
-                PrintLine(ctx, aEl, bEl, cEl, dEl, nameEl, dashEl, colEl);
+                PrintLine(ctx, aEl, bEl, cEl, dEl, nameEl, dashEl, colEl, arrowEl, widthEl, styleEl, labelPosEl, labelAnchorEl);
                 if (aEl.value != 0 || bEl.value != 0 || cEl.value != 0 || dEl.value != 0) {
-                    lines += DrawLine(aEl, bEl, cEl, dEl, nameEl, dashEl);
+                    lines += DrawLine(aEl, bEl, cEl, dEl, nameEl, dashEl, colEl, arrowEl, widthEl, styleEl, labelPosEl, labelAnchorEl);
                 }
             }
         }
@@ -200,6 +208,28 @@ function DrawGraph(isEample, customCanvas, scaleMultiplier) {
                 PrintRectangle(ctx, rEl, sEl, tEl, uEl, rNameEl, rDashEl, rColEl);
                 if (rEl.value != 0 || sEl.value != 0 || tEl.value != 0 || uEl.value != 0) {
                     rects += DrawRectangle(rEl, sEl, tEl, uEl, rNameEl, rDashEl, rColEl);
+                }
+            }
+        }
+    }
+
+    var maxCircles = typeof counter_circle !== 'undefined' ? counter_circle : 2;
+    for (var c = 1; c < maxCircles; c++) {
+        var cshowEl = document.getElementById("circleshow_" + c);
+        if (cshowEl && cshowEl.checked) {
+            var cxEl = document.getElementById("circle_x_" + c);
+            var cyEl = document.getElementById("circle_y_" + c);
+            var crEl = document.getElementById("circle_r_" + c);
+            var cnameEl = document.getElementById("circlename_" + c);
+            var cdashEl = document.getElementById("circledash_" + c);
+            var ccolEl = document.getElementById("circleColor_" + c);
+            var cfillEl = document.getElementById("circlefill_" + c);
+            if (cxEl && cyEl && crEl) {
+                if (typeof PrintCircle === 'function') {
+                    PrintCircle(ctx, cxEl, cyEl, crEl, cnameEl, cdashEl, ccolEl, cfillEl);
+                }
+                if (parseFloat(crEl.value) > 0 && typeof DrawCircle === 'function') {
+                    circles += DrawCircle(cxEl, cyEl, crEl, cnameEl, cdashEl, ccolEl, cfillEl);
                 }
             }
         }
@@ -253,7 +283,7 @@ function DrawGraph(isEample, customCanvas, scaleMultiplier) {
 		}
 	}
 
-	document.getElementById("answer").innerHTML = axis + lines + curves + rects + pointsTikz;
+	document.getElementById("answer").innerHTML = axis + lines + curves + rects + circles + pointsTikz;
 	
 	ctx.restore();
     // restore initial coordinate system

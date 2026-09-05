@@ -251,6 +251,9 @@
       if (drawCb) drawCb.checked = true;
       var allCb = document.getElementById("cm_" + state.index);
       if (allCb && state.subPoint === 'all') allCb.checked = true;
+    } else if (state.tool === 'circle') {
+      var showCb = document.getElementById("circleshow_" + state.index);
+      if (showCb) showCb.checked = true;
     }
   }
 
@@ -296,6 +299,8 @@
       if (bannerText) {
         if (state.tool === 'rectangle') {
           bannerText.textContent = "Canvas Rubberband: Click & drag opposite corners to draw a rectangle.";
+        } else if (state.tool === 'circle') {
+          bannerText.textContent = "Canvas Rubberband: Click center & drag outward to set circle radius.";
         } else if (state.tool === 'line') {
           bannerText.textContent = "Canvas Rubberband: Click & drag start and end points to draw a straight line.";
         } else if (state.tool === 'curve') {
@@ -833,6 +838,51 @@
       ctx.fillText(dimStr, minX + w / 2 - dtw / 2, minY - 7);
 
       ctx.restore();
+    } else if (state.tool === 'circle') {
+      var rMath = Math.hypot(current.x - start.x, current.y - start.y);
+      var curScale = typeof scale !== 'undefined' ? scale : 35;
+      var rPx = rMath * curScale;
+
+      ctx.save();
+      // Translucent fill
+      ctx.fillStyle = "rgba(79, 70, 229, 0.12)";
+      ctx.beginPath();
+      ctx.arc(start.screenX, start.screenY, rPx, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Dashed border
+      ctx.strokeStyle = "#4f46e5";
+      ctx.lineWidth = 2;
+      ctx.setLineDash([5, 4]);
+      ctx.beginPath();
+      ctx.arc(start.screenX, start.screenY, rPx, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Radius line guide from center to current cursor
+      ctx.beginPath();
+      ctx.strokeStyle = "rgba(79, 70, 229, 0.5)";
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([3, 3]);
+      ctx.moveTo(start.screenX, start.screenY);
+      ctx.lineTo(current.screenX, current.screenY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Center and perimeter points
+      drawPointDot(ctx, start.screenX, start.screenY, "#10b981", "Center (" + start.x + ", " + start.y + ")");
+      drawPointDot(ctx, current.screenX, current.screenY, "#4f46e5", "R=" + rMath.toFixed(1));
+
+      // Radius badge
+      var dimStr = "R = " + rMath.toFixed(2) + " units";
+      ctx.font = "bold 11px system-ui, sans-serif";
+      var dtw = ctx.measureText(dimStr).width;
+      ctx.fillStyle = "#4f46e5";
+      ctx.fillRect(start.screenX - dtw / 2 - 6, start.screenY - rPx - 22, dtw + 12, 18);
+      ctx.fillStyle = "#ffffff";
+      ctx.fillText(dimStr, start.screenX - dtw / 2, start.screenY - rPx - 9);
+
+      ctx.restore();
     } else if (state.tool === 'line') {
       ctx.save();
       ctx.beginPath();
@@ -847,15 +897,21 @@
       drawPointDot(ctx, start.screenX, start.screenY, "#4f46e5", "P1 (" + start.x + ", " + start.y + ")");
       drawPointDot(ctx, current.screenX, current.screenY, "#4f46e5", "P2 (" + current.x + ", " + current.y + ")");
 
-      var dist = Math.hypot(current.x - start.x, current.y - start.y).toFixed(2);
+      var dx = current.x - start.x;
+      var dy = current.y - start.y;
+      var dist = Math.hypot(dx, dy).toFixed(2);
+      var slope = Math.abs(dx) < 0.0001 ? "∞" : (dy / dx).toFixed(2);
+      var angle = Math.round(((Math.atan2(dy, dx) * 180 / Math.PI) + 360) % 360);
+
       var midX = (start.screenX + current.screenX) / 2;
       var midY = (start.screenY + current.screenY) / 2;
+      var badgeText = "L: " + dist + " u | " + angle + "° (Slope: " + slope + ")";
       ctx.font = "bold 11px system-ui, sans-serif";
-      var dtw = ctx.measureText("L: " + dist).width;
-      ctx.fillStyle = "#4f46e5";
-      ctx.fillRect(midX - dtw / 2 - 6, midY - 18, dtw + 12, 18);
+      var dtw = ctx.measureText(badgeText).width;
+      ctx.fillStyle = "rgba(15, 23, 42, 0.9)";
+      ctx.fillRect(midX - dtw / 2 - 8, midY - 24, dtw + 16, 20);
       ctx.fillStyle = "#ffffff";
-      ctx.fillText("L: " + dist, midX - dtw / 2, midY - 5);
+      ctx.fillText(badgeText, midX - dtw / 2, midY - 10);
       ctx.restore();
     } else if (state.tool === 'curve') {
       ctx.save();
@@ -1398,6 +1454,24 @@
   };
 
   /**
+   * Helper: Draw an arrowhead on 2D canvas
+   */
+  function drawCanvasArrowhead(ctx, fromX, fromY, toX, toY, color, width) {
+    var angle = Math.atan2(toY - fromY, toX - fromX);
+    var headLen = Math.max(10, width * 3);
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(toX, toY);
+    ctx.lineTo(toX - headLen * Math.cos(angle - Math.PI / 6), toY - headLen * Math.sin(angle - Math.PI / 6));
+    ctx.lineTo(toX - headLen * Math.cos(angle + Math.PI / 6), toY - headLen * Math.sin(angle + Math.PI / 6));
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+
+  /**
    * Render Candidate Shape with Draggable Handles & Confirmation Highlights
    */
   function renderCandidateShape(ctx, candidate) {
@@ -1442,20 +1516,84 @@
       ctx.fillStyle = "#ffffff";
       ctx.fillText(dimStr, minX + w / 2 - dtw / 2, minY - 8);
 
+    } else if (candidate.type === 'circle') {
+      var center = window.mathToScreen(candidate.center.x, candidate.center.y);
+      var curScale = typeof scale !== 'undefined' ? scale : 35;
+      var radiusScreen = candidate.radius * curScale;
+
+      // Semi-transparent background
+      ctx.fillStyle = "rgba(79, 70, 229, 0.16)";
+      ctx.beginPath();
+      ctx.arc(center.screenX, center.screenY, radiusScreen, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Border outline
+      ctx.strokeStyle = candidate.color === 'black' ? '#1e293b' : candidate.color;
+      ctx.lineWidth = 2.5;
+      if (candidate.dashed) {
+        ctx.setLineDash([6, 4]);
+      }
+      ctx.beginPath();
+      ctx.arc(center.screenX, center.screenY, radiusScreen, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Center move handle
+      drawPointDot(ctx, center.screenX, center.screenY, "#10b981", "Center (" + candidate.center.x + ", " + candidate.center.y + ")", candidate.activeHandle === 'center');
+
+      // Cardinal perimeter handles for adjusting radius
+      drawPointDot(ctx, center.screenX + radiusScreen, center.screenY, "#4f46e5", "R=" + candidate.radius.toFixed(1), candidate.activeHandle === 'radius_e');
+      drawPointDot(ctx, center.screenX - radiusScreen, center.screenY, "#4f46e5", null, candidate.activeHandle === 'radius_w');
+      drawPointDot(ctx, center.screenX, center.screenY - radiusScreen, "#4f46e5", null, candidate.activeHandle === 'radius_n');
+      drawPointDot(ctx, center.screenX, center.screenY + radiusScreen, "#4f46e5", null, candidate.activeHandle === 'radius_s');
+
+      // Dimension pill
+      var dimStr = "Radius: " + candidate.radius.toFixed(2) + " units";
+      ctx.font = "bold 11px system-ui, sans-serif";
+      var dtw = ctx.measureText(dimStr).width;
+      ctx.fillStyle = "rgba(15, 23, 42, 0.9)";
+      ctx.fillRect(center.screenX - dtw / 2 - 8, center.screenY - radiusScreen - 24, dtw + 16, 20);
+      ctx.fillStyle = "#ffffff";
+      ctx.fillText(dimStr, center.screenX - dtw / 2, center.screenY - radiusScreen - 10);
+
     } else if (candidate.type === 'line') {
       var p1 = window.mathToScreen(candidate.start.x, candidate.start.y);
       var p2 = window.mathToScreen(candidate.end.x, candidate.end.y);
 
       ctx.beginPath();
       ctx.strokeStyle = candidate.color === 'black' ? '#1e293b' : candidate.color;
-      ctx.lineWidth = 3;
-      if (candidate.dashed) {
+      var lw = 3;
+      if (candidate.width === 'ultra thin') lw = 1;
+      else if (candidate.width === 'very thin') lw = 1.5;
+      else if (candidate.width === 'thin') lw = 2;
+      else if (candidate.width === 'semithick') lw = 3;
+      else if (candidate.width === 'thick') lw = 4;
+      else if (candidate.width === 'very thick') lw = 5;
+      else if (candidate.width === 'ultra thick') lw = 6.5;
+      ctx.lineWidth = lw;
+
+      if (candidate.style === 'dashed' || candidate.dashed) {
         ctx.setLineDash([6, 4]);
+      } else if (candidate.style === 'dotted') {
+        ctx.setLineDash([2.5, 3]);
+      } else if (candidate.style === 'loosely dashed') {
+        ctx.setLineDash([8, 8]);
+      } else if (candidate.style === 'densely dashed') {
+        ctx.setLineDash([4, 2.5]);
       }
       ctx.moveTo(p1.screenX, p1.screenY);
       ctx.lineTo(p2.screenX, p2.screenY);
       ctx.stroke();
       ctx.setLineDash([]);
+
+      // Draw arrowheads if any
+      var arrow = candidate.arrow || 'none';
+      if (arrow === '->' || arrow === '<->') {
+        drawCanvasArrowhead(ctx, p1.screenX, p1.screenY, p2.screenX, p2.screenY, ctx.strokeStyle, lw);
+      }
+      if (arrow === '<-' || arrow === '<->') {
+        drawCanvasArrowhead(ctx, p2.screenX, p2.screenY, p1.screenX, p1.screenY, ctx.strokeStyle, lw);
+      }
 
       // Handles at endpoints and midpoint
       drawPointDot(ctx, p1.screenX, p1.screenY, "#4f46e5", "P1 (" + candidate.start.x + ", " + candidate.start.y + ")", candidate.activeHandle === 'p1');
@@ -1465,9 +1603,14 @@
       var midY = (p1.screenY + p2.screenY) / 2;
       drawPointDot(ctx, midX, midY, "#10b981", "Move", candidate.activeHandle === 'mid');
 
-      var len = Math.hypot(candidate.end.x - candidate.start.x, candidate.end.y - candidate.start.y).toFixed(2);
+      var dx = candidate.end.x - candidate.start.x;
+      var dy = candidate.end.y - candidate.start.y;
+      var len = Math.hypot(dx, dy).toFixed(2);
+      var slope = Math.abs(dx) < 0.0001 ? "∞" : (dy / dx).toFixed(2);
+      var angle = Math.round(((Math.atan2(dy, dx) * 180 / Math.PI) + 360) % 360);
+
       ctx.font = "bold 11px system-ui, sans-serif";
-      var lstr = "L: " + len + " units";
+      var lstr = "L: " + len + " u | " + angle + "° (Slope: " + slope + ")";
       var ltw = ctx.measureText(lstr).width;
       ctx.fillStyle = "rgba(15, 23, 42, 0.9)";
       ctx.fillRect(midX - ltw / 2 - 8, midY - 24, ltw + 16, 20);
@@ -1668,6 +1811,24 @@
       var midX = 0.125 * p1.screenX + 0.375 * c1.screenX + 0.375 * c2.screenX + 0.125 * p2.screenX;
       var midY = 0.125 * p1.screenY + 0.375 * c1.screenY + 0.375 * c2.screenY + 0.125 * p2.screenY;
       drawPointDot(ctx, midX, midY, "#10b981", "Move", selected.activeHandle === 'mid');
+    } else if (selected.type === 'circle') {
+      var center = window.mathToScreen(coords.cx, coords.cy);
+      var curScale = typeof scale !== 'undefined' ? scale : 35;
+      var radiusScreen = coords.r * curScale;
+
+      ctx.strokeStyle = "#6366f1";
+      ctx.lineWidth = 2;
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath();
+      ctx.arc(center.screenX, center.screenY, radiusScreen + 3, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      drawPointDot(ctx, center.screenX, center.screenY, "#10b981", "Center", selected.activeHandle === 'center');
+      drawPointDot(ctx, center.screenX + radiusScreen, center.screenY, "#6366f1", "R", selected.activeHandle === 'radius_e');
+      drawPointDot(ctx, center.screenX - radiusScreen, center.screenY, "#6366f1", null, selected.activeHandle === 'radius_w');
+      drawPointDot(ctx, center.screenX, center.screenY - radiusScreen, "#6366f1", null, selected.activeHandle === 'radius_n');
+      drawPointDot(ctx, center.screenX, center.screenY + radiusScreen, "#6366f1", null, selected.activeHandle === 'radius_s');
     } else if (selected.type === 'axis') {
       renderAxisHandles(ctx, selected.activeHandle);
     }
@@ -1691,6 +1852,17 @@
           y1: parseFloat(s.value) || 0,
           x2: parseFloat(t.value) || 0,
           y2: parseFloat(u.value) || 0
+        };
+      }
+    } else if (type === 'circle') {
+      var cx = document.getElementById("circle_x_" + index);
+      var cy = document.getElementById("circle_y_" + index);
+      var cr = document.getElementById("circle_r_" + index);
+      if (cx && cy && cr) {
+        return {
+          cx: parseFloat(cx.value) || 0,
+          cy: parseFloat(cy.value) || 0,
+          r: parseFloat(cr.value) || 0
         };
       }
     } else if (type === 'line') {
@@ -1773,6 +1945,18 @@
     } else if (candidate.type === 'point') {
       var p = window.mathToScreen(candidate.pos.x, candidate.pos.y);
       if (Math.hypot(pos.screenX - p.screenX, pos.screenY - p.screenY) <= threshold + 6) return 'pos';
+    } else if (candidate.type === 'circle') {
+      var center = window.mathToScreen(candidate.center.x, candidate.center.y);
+      var curScale = typeof scale !== 'undefined' ? scale : 35;
+      var radiusScreen = candidate.radius * curScale;
+
+      if (Math.hypot(pos.screenX - center.screenX, pos.screenY - center.screenY) <= threshold) return 'center';
+      if (Math.hypot(pos.screenX - (center.screenX + radiusScreen), pos.screenY - center.screenY) <= threshold) return 'radius_e';
+      if (Math.hypot(pos.screenX - (center.screenX - radiusScreen), pos.screenY - center.screenY) <= threshold) return 'radius_w';
+      if (Math.hypot(pos.screenX - center.screenX, pos.screenY - (center.screenY - radiusScreen)) <= threshold) return 'radius_n';
+      if (Math.hypot(pos.screenX - center.screenX, pos.screenY - (center.screenY + radiusScreen)) <= threshold) return 'radius_s';
+      var distFromCenter = Math.hypot(pos.screenX - center.screenX, pos.screenY - center.screenY);
+      if (Math.abs(distFromCenter - radiusScreen) <= threshold) return 'radius';
     }
 
     return null;
@@ -1801,6 +1985,18 @@
       if (Math.hypot(pos.screenX - (minX + w), pos.screenY - (minY + h)) <= threshold) return 'c3';
       if (Math.hypot(pos.screenX - minX, pos.screenY - (minY + h)) <= threshold) return 'c4';
       if (Math.hypot(pos.screenX - (minX + w / 2), pos.screenY - (minY + h / 2)) <= threshold) return 'center';
+    } else if (selected.type === 'circle') {
+      var center = window.mathToScreen(coords.cx, coords.cy);
+      var curScale = typeof scale !== 'undefined' ? scale : 35;
+      var radiusScreen = coords.r * curScale;
+
+      if (Math.hypot(pos.screenX - center.screenX, pos.screenY - center.screenY) <= threshold) return 'center';
+      if (Math.hypot(pos.screenX - (center.screenX + radiusScreen), pos.screenY - center.screenY) <= threshold) return 'radius_e';
+      if (Math.hypot(pos.screenX - (center.screenX - radiusScreen), pos.screenY - center.screenY) <= threshold) return 'radius_w';
+      if (Math.hypot(pos.screenX - center.screenX, pos.screenY - (center.screenY - radiusScreen)) <= threshold) return 'radius_n';
+      if (Math.hypot(pos.screenX - center.screenX, pos.screenY - (center.screenY + radiusScreen)) <= threshold) return 'radius_s';
+      var distFromCenter = Math.hypot(pos.screenX - center.screenX, pos.screenY - center.screenY);
+      if (Math.abs(distFromCenter - radiusScreen) <= threshold) return 'radius';
     } else if (selected.type === 'line') {
       var p1 = window.mathToScreen(coords.x1, coords.y1);
       var p2 = window.mathToScreen(coords.x2, coords.y2);
@@ -1850,6 +2046,21 @@
           if (pos.x >= minX - tolerance && pos.x <= maxX + tolerance &&
               pos.y >= minY - tolerance && pos.y <= maxY + tolerance) {
             return { type: 'rectangle', index: z };
+          }
+        }
+      }
+    }
+
+    // 2. Check Circles
+    var maxCircles = typeof counter_circle !== 'undefined' ? counter_circle : 5;
+    for (var c = 1; c <= maxCircles; c++) {
+      var showCircle = document.getElementById("circleshow_" + c);
+      if (showCircle && showCircle.checked) {
+        var circleCoords = getShapeCoordinates('circle', c);
+        if (circleCoords && circleCoords.r > 0) {
+          var dist = Math.hypot(pos.x - circleCoords.cx, pos.y - circleCoords.cy);
+          if (Math.abs(dist - circleCoords.r) <= tolerance || dist <= tolerance) {
+            return { type: 'circle', index: c };
           }
         }
       }
@@ -1951,12 +2162,14 @@
     var pointDotChk = document.getElementById("confirm-point-dot-chk");
 
     if (typeBadge) {
-      typeBadge.textContent = candidate.type === 'rectangle' ? "Rectangle" : (candidate.type === 'line' ? "Straight Line" : (candidate.type === 'curve' ? "Bézier Curve" : "Point / Label"));
+      typeBadge.textContent = candidate.type === 'rectangle' ? "Rectangle" : (candidate.type === 'circle' ? "Circle" : (candidate.type === 'line' ? "Straight Line" : (candidate.type === 'curve' ? "Bézier Curve" : "Point / Label")));
     }
 
     if (coordsText) {
       if (candidate.type === 'curve') {
         coordsText.textContent = "P₁(" + candidate.p1.x + ", " + candidate.p1.y + ") → P₂(" + candidate.p2.x + ", " + candidate.p2.y + ")";
+      } else if (candidate.type === 'circle') {
+        coordsText.textContent = "Center: (" + candidate.center.x + ", " + candidate.center.y + ")";
       } else if (candidate.type === 'point') {
         coordsText.textContent = "(" + candidate.pos.x + ", " + candidate.pos.y + ")";
       } else {
@@ -1973,9 +2186,15 @@
         var w = Math.abs(candidate.end.x - candidate.start.x).toFixed(1);
         var h = Math.abs(candidate.end.y - candidate.start.y).toFixed(1);
         dimText.textContent = "Size: " + w + " × " + h + " units";
+      } else if (candidate.type === 'circle') {
+        dimText.textContent = "Radius: " + candidate.radius.toFixed(2) + " units (Dia: " + (candidate.radius * 2).toFixed(1) + " u)";
       } else if (candidate.type === 'line') {
-        var len = Math.hypot(candidate.end.x - candidate.start.x, candidate.end.y - candidate.start.y).toFixed(2);
-        dimText.textContent = "Length: " + len + " units";
+        var dx = candidate.end.x - candidate.start.x;
+        var dy = candidate.end.y - candidate.start.y;
+        var len = Math.hypot(dx, dy).toFixed(2);
+        var slope = Math.abs(dx) < 0.0001 ? "∞" : (dy / dx).toFixed(2);
+        var angle = Math.round(((Math.atan2(dy, dx) * 180 / Math.PI) + 360) % 360);
+        dimText.textContent = "Length: " + len + " u | Slope: " + slope + " (" + angle + "°)";
       } else if (candidate.type === 'curve') {
         var isSingle = (candidate.c1.x === candidate.c2.x && candidate.c1.y === candidate.c2.y);
         var span = Math.hypot(candidate.p2.x - candidate.p1.x, candidate.p2.y - candidate.p1.y).toFixed(2);
@@ -1983,6 +2202,25 @@
       } else if (candidate.type === 'point') {
         dimText.textContent = "Marker & Text Label";
       }
+    }
+
+    // Toggle line-specific advanced settings (Arrow, Width, Pattern, Label Pos/Anchor)
+    var lineExtras = document.getElementById("confirm-field-line-extras");
+    var lineArrowSel = document.getElementById("confirm-line-arrow");
+    var lineWidthSel = document.getElementById("confirm-line-width");
+    var linePatternSel = document.getElementById("confirm-line-pattern");
+    var lineLabelPosSel = document.getElementById("confirm-line-label-pos");
+    var lineLabelAnchorSel = document.getElementById("confirm-line-label-anchor");
+
+    if (candidate.type === 'line') {
+      if (lineExtras) lineExtras.style.display = "flex";
+      if (lineArrowSel) lineArrowSel.value = candidate.arrow || "none";
+      if (lineWidthSel) lineWidthSel.value = candidate.width || "semithick";
+      if (linePatternSel) linePatternSel.value = candidate.style || (candidate.dashed ? "dashed" : "solid");
+      if (lineLabelPosSel) lineLabelPosSel.value = candidate.labelPos || "midway";
+      if (lineLabelAnchorSel) lineLabelAnchorSel.value = candidate.labelAnchor || "above";
+    } else {
+      if (lineExtras) lineExtras.style.display = "none";
     }
 
     // Toggle point-specific vs line/rectangle fields
@@ -2005,7 +2243,7 @@
         labelInput.value = candidate.label || "";
       }
       if (quickChips) quickChips.style.display = "none";
-      if (lineStyleField) lineStyleField.style.display = "flex";
+      if (lineStyleField) lineStyleField.style.display = candidate.type === 'line' ? "none" : "flex";
       if (pointPosField) pointPosField.style.display = "none";
       if (pointDotField) pointDotField.style.display = "none";
     }
@@ -2019,6 +2257,12 @@
           slotSelect.innerHTML += '<option value="rectangle_' + r + '">Rectangle ' + r + '</option>';
         }
         slotSelect.innerHTML += '<option value="new_rectangle">+ New Rectangle</option>';
+      } else if (candidate.type === 'circle') {
+        var maxCircle = typeof counter_circle !== 'undefined' ? counter_circle : 2;
+        for (var c = 1; c < maxCircle; c++) {
+          slotSelect.innerHTML += '<option value="circle_' + c + '">Circle ' + c + '</option>';
+        }
+        slotSelect.innerHTML += '<option value="new_circle">+ New Circle</option>';
       } else if (candidate.type === 'line') {
         var maxLine = typeof counter_i !== 'undefined' ? counter_i : 5;
         for (var l = 1; l < maxLine; l++) {
@@ -2100,7 +2344,55 @@
     var state = window.drawingState;
     if (state.candidate) {
       state.candidate.dashed = (style === 'dashed');
+      if (state.candidate.type === 'line') {
+        state.candidate.style = style;
+      }
       updateConfirmStyleButtons(state.candidate.dashed);
+      renderAllOverlays();
+    }
+  };
+
+  /**
+   * Update line-specific candidate properties
+   */
+  window.updateCandidateLineArrow = function (val) {
+    var state = window.drawingState;
+    if (state.candidate && state.candidate.type === 'line') {
+      state.candidate.arrow = val;
+      renderAllOverlays();
+    }
+  };
+
+  window.updateCandidateLineWidth = function (val) {
+    var state = window.drawingState;
+    if (state.candidate && state.candidate.type === 'line') {
+      state.candidate.width = val;
+      renderAllOverlays();
+    }
+  };
+
+  window.updateCandidateLinePattern = function (val) {
+    var state = window.drawingState;
+    if (state.candidate && state.candidate.type === 'line') {
+      state.candidate.style = val;
+      state.candidate.dashed = (val === 'dashed' || val === 'loosely dashed' || val === 'densely dashed' || val === 'dotted');
+      updateConfirmStyleButtons(state.candidate.dashed);
+      renderAllOverlays();
+    }
+  };
+
+  window.updateCandidateLineLabelPos = function (val) {
+    var state = window.drawingState;
+    if (state.candidate && state.candidate.type === 'line') {
+      state.candidate.labelPos = val;
+      renderAllOverlays();
+    }
+  };
+
+  window.updateCandidateLineLabelAnchor = function (val) {
+    var state = window.drawingState;
+    if (state.candidate && state.candidate.type === 'line') {
+      state.candidate.labelAnchor = val;
       renderAllOverlays();
     }
   };
@@ -2168,6 +2460,10 @@
         var form = document.getElementById("Retangularform");
         if (typeof AddRec === 'function') AddRec(form);
         return { type: 'rectangle', index: (typeof counter_z !== 'undefined' ? counter_z - 1 : 2) };
+      } else if (userChoice === 'new_circle') {
+        var form = document.getElementById("circleform");
+        if (typeof AddCircle === 'function') AddCircle(form);
+        return { type: 'circle', index: (typeof counter_circle !== 'undefined' ? counter_circle - 1 : 2) };
       } else if (userChoice === 'new_line') {
         var form = document.getElementById("lineform");
         if (typeof AddLine === 'function') AddLine(form);
@@ -2205,6 +2501,21 @@
         return { type: 'rectangle', index: (typeof counter_z !== 'undefined' ? counter_z - 1 : 2) };
       }
       return { type: 'rectangle', index: 1 };
+    } else if (type === 'circle') {
+      var maxCircle = typeof counter_circle !== 'undefined' ? counter_circle : 2;
+      for (var c = 1; c < maxCircle; c++) {
+        var r = document.getElementById("circle_r_" + c);
+        if (r && parseFloat(r.value) === 0) {
+          return { type: 'circle', index: c };
+        }
+      }
+      // If none empty, create new circle card!
+      var form = document.getElementById("circleform");
+      if (typeof AddCircle === 'function') {
+        AddCircle(form);
+        return { type: 'circle', index: (typeof counter_circle !== 'undefined' ? counter_circle - 1 : 2) };
+      }
+      return { type: 'circle', index: 1 };
     } else if (type === 'line') {
       var maxLine = typeof counter_i !== 'undefined' ? counter_i : 5;
       for (var i = 1; i < maxLine; i++) {
@@ -2306,6 +2617,35 @@
           window.showToast("✓ Rectangle " + j + " created on canvas! Secondary form synchronized.");
         }
       }
+    } else if (candidate.type === 'circle') {
+      var j = target.index;
+      var cx = document.getElementById("circle_x_" + j);
+      var cy = document.getElementById("circle_y_" + j);
+      var cr = document.getElementById("circle_r_" + j);
+      var show = document.getElementById("circleshow_" + j);
+      var nameEl = document.getElementById("circlename_" + j);
+      var colorEl = document.getElementById("circleColor_" + j);
+      var dashEl = document.getElementById("circledash_" + j);
+      var fillEl = document.getElementById("circlefill_" + j);
+
+      if (cx && cy && cr) {
+        cx.value = candidate.center.x;
+        cy.value = candidate.center.y;
+        cr.value = candidate.radius;
+        if (show) show.checked = true;
+        if (nameEl && labelVal) nameEl.value = labelVal;
+        if (colorEl && candidate.color) colorEl.value = candidate.color;
+        if (dashEl) dashEl.checked = !!candidate.dashed;
+        if (fillEl) fillEl.checked = !!candidate.fill;
+
+        if (typeof DrawGraph === 'function') DrawGraph();
+
+        // Secondary Form Feedback
+        synchronizeSidebarCard('circle', j);
+        if (window.showToast) {
+          window.showToast("✓ Circle " + j + " created on canvas! Secondary form synchronized.");
+        }
+      }
     } else if (candidate.type === 'line') {
       var j = target.index;
       var a = document.getElementById("a_" + j);
@@ -2316,6 +2656,17 @@
       var nameEl = document.getElementById("linename_" + j);
       var colorEl = document.getElementById("lineColor_" + j);
       var dashEl = document.getElementById("linedash_" + j);
+      var arrowEl = document.getElementById("lineArrow_" + j);
+      var widthEl = document.getElementById("lineWidth_" + j);
+      var styleEl = document.getElementById("lineStyle_" + j);
+      var labelPosEl = document.getElementById("lineLabelPos_" + j);
+      var labelAnchorEl = document.getElementById("lineLabelAnchor_" + j);
+
+      var confArrow = document.getElementById("confirm-line-arrow")?.value || candidate.arrow || "none";
+      var confWidth = document.getElementById("confirm-line-width")?.value || candidate.width || "semithick";
+      var confStyle = document.getElementById("confirm-line-pattern")?.value || candidate.style || (candidate.dashed ? "dashed" : "solid");
+      var confLabelPos = document.getElementById("confirm-line-label-pos")?.value || candidate.labelPos || "midway";
+      var confLabelAnchor = document.getElementById("confirm-line-label-anchor")?.value || candidate.labelAnchor || "above";
 
       if (a && b && c && d) {
         a.value = candidate.start.x;
@@ -2325,7 +2676,16 @@
         if (show) show.checked = true;
         if (nameEl && labelVal) nameEl.value = labelVal;
         if (colorEl && candidate.color) colorEl.value = candidate.color;
-        if (dashEl) dashEl.checked = !!candidate.dashed;
+        if (arrowEl) arrowEl.value = confArrow;
+        if (widthEl) widthEl.value = confWidth;
+        if (styleEl) styleEl.value = confStyle;
+        if (dashEl) dashEl.checked = (confStyle === 'dashed' || candidate.dashed);
+        if (labelPosEl) labelPosEl.value = confLabelPos;
+        if (labelAnchorEl) labelAnchorEl.value = confLabelAnchor;
+
+        if (typeof window.updateLineTelemetry === 'function') {
+          window.updateLineTelemetry(j);
+        }
 
         if (typeof DrawGraph === 'function') DrawGraph();
 
@@ -2414,8 +2774,8 @@
    * Programmatically open accordion and highlight the secondary form card
    */
   function synchronizeSidebarCard(type, index) {
-    // Axis is accordion index 1; Points & Labels 2; Rectangles 3; Lines 4; Curves 5
-    var accordionItemIdx = type === 'axis' ? 1 : (type === 'point' ? 2 : (type === 'rectangle' ? 3 : (type === 'line' ? 4 : (type === 'curve' ? 5 : 6))));
+    // Axis is accordion index 1; Points & Labels 2; Rectangles 3; Circles 4; Lines 5; Curves 6
+    var accordionItemIdx = type === 'axis' ? 1 : (type === 'point' ? 2 : (type === 'rectangle' ? 3 : (type === 'circle' ? 4 : (type === 'line' ? 5 : (type === 'curve' ? 6 : 7)))));
 
     // Open hoverAccordion section if jQuery available
     if (window.jQuery) {
@@ -2428,10 +2788,10 @@
     }
 
     // Locate the card and apply glowing feedback
-    var cardId = type === 'axis' ? 'axisform' : (type === 'point' ? ('point_card_' + index) : (type === 'rectangle' ? ('rectangle_card_' + index) : (type === 'line' ? ('line_card_' + index) : ('curve_card_' + index))));
+    var cardId = type === 'axis' ? 'axisform' : (type === 'point' ? ('point_card_' + index) : (type === 'rectangle' ? ('rectangle_card_' + index) : (type === 'circle' ? ('circle_card_' + index) : (type === 'line' ? ('line_card_' + index) : ('curve_card_' + index)))));
     var card = document.getElementById(cardId);
     if (!card) {
-      var formId = type === 'axis' ? 'axisform' : (type === 'point' ? 'pointform' : (type === 'rectangle' ? 'Retangularform' : (type === 'line' ? 'lineform' : 'curveform')));
+      var formId = type === 'axis' ? 'axisform' : (type === 'point' ? 'pointform' : (type === 'rectangle' ? 'Retangularform' : (type === 'circle' ? 'circleform' : (type === 'line' ? 'lineform' : 'curveform'))));
       var form = document.getElementById(formId);
       if (form) {
         var cards = form.querySelectorAll(".item-card");
@@ -2463,7 +2823,7 @@
     var coords = document.getElementById("selected-coords-text");
 
     if (badge) {
-      var title = selected.type === 'axis' ? "Coordinate Axis" : (selected.type === 'rectangle' ? ("Rectangle " + selected.index) : (selected.type === 'curve' ? ("Curve " + selected.index) : ("Line " + selected.index)));
+      var title = selected.type === 'axis' ? "Coordinate Axis" : (selected.type === 'rectangle' ? ("Rectangle " + selected.index) : (selected.type === 'circle' ? ("Circle " + selected.index) : (selected.type === 'curve' ? ("Curve " + selected.index) : ("Line " + selected.index))));
       badge.textContent = title;
     }
 
@@ -2472,6 +2832,8 @@
       if (selected.type === 'axis') {
         coords.textContent = "X: 0 → " + c.effectiveXSize + " | Y: 0 → " + c.effectiveYSize;
         if (typeof openAxisCard === 'function') openAxisCard();
+      } else if (selected.type === 'circle') {
+        coords.textContent = "Center: (" + c.cx + ", " + c.cy + ") | Radius: " + c.r;
       } else if (selected.type === 'curve') {
         coords.textContent = "P₁(" + c.p1.x + ", " + c.p1.y + ") C₁(" + c.c1.x + ", " + c.c1.y + ") C₂(" + c.c2.x + ", " + c.c2.y + ") P₂(" + c.p2.x + ", " + c.p2.y + ")";
       } else {
@@ -2505,7 +2867,7 @@
     }
 
     if (window.showToast) {
-      var title = type === 'axis' ? "Coordinate Axis" : (type === 'rectangle' ? "Rectangle " : (type === 'curve' ? "Curve " : "Line ")) + (type === 'axis' ? "" : index);
+      var title = type === 'axis' ? "Coordinate Axis" : (type === 'rectangle' ? "Rectangle " : (type === 'circle' ? "Circle " : (type === 'curve' ? "Curve " : "Line "))) + (type === 'axis' ? "" : index);
       window.showToast("Selected " + title + " on canvas. Drag handles to tweak!");
     }
   };
@@ -2515,7 +2877,7 @@
     if (sel) {
       synchronizeSidebarCard(sel.type, sel.index);
       if (window.showToast) {
-        var title = sel.type === 'axis' ? "Coordinate Axis" : (sel.type === 'rectangle' ? "Rectangle " : (sel.type === 'curve' ? "Curve " : "Line ")) + (sel.type === 'axis' ? "" : sel.index);
+        var title = sel.type === 'axis' ? "Coordinate Axis" : (sel.type === 'rectangle' ? "Rectangle " : (sel.type === 'circle' ? "Circle " : (sel.type === 'curve' ? "Curve " : "Line "))) + (sel.type === 'axis' ? "" : sel.index);
         window.showToast("Scrolled to " + title + " in secondary form");
       }
     }
@@ -2542,6 +2904,10 @@
     } else if (sel.type === 'rectangle') {
       if (typeof delR === 'function') delR(sel.index);
       var show = document.getElementById("retangularshow_" + sel.index);
+      if (show) show.checked = false;
+    } else if (sel.type === 'circle') {
+      if (typeof delCircle === 'function') delCircle(sel.index);
+      var show = document.getElementById("circleshow_" + sel.index);
       if (show) show.checked = false;
     } else if (sel.type === 'line') {
       if (typeof del === 'function') del(sel.index);
@@ -2676,22 +3042,57 @@
         state.currentPos = pos;
       } else {
         // Second click of two-click interaction
-        completeRubberband(state.dragStartPos, pos);
+        var endP = pos;
+        if (state.tool === 'line' && evt.shiftKey) {
+          var sn = snapToStandardAngles(state.dragStartPos.x, state.dragStartPos.y, pos.x, pos.y);
+          endP = {
+            x: sn.x,
+            y: sn.y,
+            screenX: window.mathToScreen(sn.x, sn.y).screenX,
+            screenY: window.mathToScreen(sn.x, sn.y).screenY,
+            canvasX: pos.canvasX,
+            canvasY: pos.canvasY
+          };
+        }
+        completeRubberband(state.dragStartPos, endP);
       }
     });
 
     cnv.addEventListener('mousemove', function (evt) {
       var state = window.drawingState;
       var pos = window.getCanvasMathPos(evt.clientX, evt.clientY);
+
+      // Shift-to-snap constraint (0°, 45°, 90°, etc.) for straight line drawing
+      if (state.tool === 'line' && state.dragStartPos && evt.shiftKey) {
+        var snapped = snapToStandardAngles(state.dragStartPos.x, state.dragStartPos.y, pos.x, pos.y);
+        pos.x = snapped.x;
+        pos.y = snapped.y;
+        var sc = window.mathToScreen(pos.x, pos.y);
+        pos.screenX = sc.screenX;
+        pos.screenY = sc.screenY;
+      }
+
       state.currentPos = pos;
 
-      // Update HUD coordinates
+      // Update HUD coordinates with telemetry
       var hud = document.getElementById("canvas-coord-hud");
-      if (hud) hud.textContent = "Cursor: (" + pos.x + ", " + pos.y + ")";
+      if (hud) {
+        if (state.tool === 'line' && state.dragStartPos) {
+          var dx = pos.x - state.dragStartPos.x;
+          var dy = pos.y - state.dragStartPos.y;
+          var len = Math.hypot(dx, dy).toFixed(2);
+          var slope = Math.abs(dx) < 0.0001 ? "∞" : (dy / dx).toFixed(2);
+          var angle = Math.round(((Math.atan2(dy, dx) * 180 / Math.PI) + 360) % 360);
+          var snapTag = evt.shiftKey ? " [Shift Snapped 45°]" : " [Shift to snap 45°]";
+          hud.textContent = "Cursor: (" + pos.x + ", " + pos.y + ") | L: " + len + " u | " + angle + "° (Slope: " + slope + ")" + snapTag;
+        } else {
+          hud.textContent = "Cursor: (" + pos.x + ", " + pos.y + ")";
+        }
+      }
 
       // 1. Dragging candidate handle
       if (state.isMouseDown && state.candidate && state.candidate.activeHandle) {
-        dragCandidateHandle(state.candidate, state.candidate.activeHandle, pos);
+        dragCandidateHandle(state.candidate, state.candidate.activeHandle, pos, evt);
         openConfirmationCard(state.candidate);
         renderAllOverlays();
         return;
@@ -2699,7 +3100,7 @@
 
       // 2. Dragging selected shape handle in 'select' mode
       if (state.isMouseDown && state.selectedShape && state.selectedShape.activeHandle) {
-        dragSelectedHandle(state.selectedShape, state.selectedShape.activeHandle, pos);
+        dragSelectedHandle(state.selectedShape, state.selectedShape.activeHandle, pos, evt);
         if (typeof DrawGraph === 'function') DrawGraph();
         renderAllOverlays();
         return;
@@ -2730,7 +3131,12 @@
       if (state.candidate) {
         var hHandle = hitTestCandidateHandles(pos);
         if (hHandle) {
-          cnv.style.cursor = (hHandle === 'c1' || hHandle === 'c3') ? 'nwse-resize' : ((hHandle === 'c2' || hHandle === 'c4') ? 'nesw-resize' : 'move');
+          if (hHandle === 'c1' || hHandle === 'c3') cnv.style.cursor = 'nwse-resize';
+          else if (hHandle === 'c2' || hHandle === 'c4') cnv.style.cursor = 'nesw-resize';
+          else if (hHandle === 'radius_e' || hHandle === 'radius_w') cnv.style.cursor = 'ew-resize';
+          else if (hHandle === 'radius_n' || hHandle === 'radius_s') cnv.style.cursor = 'ns-resize';
+          else if (hHandle === 'radius') cnv.style.cursor = 'crosshair';
+          else cnv.style.cursor = 'move';
           return;
         }
       } else if (state.tool === 'axis') {
@@ -2748,7 +3154,12 @@
         if (state.selectedShape) {
           var sHandle = hitTestSelectedHandles(pos);
           if (sHandle) {
-            cnv.style.cursor = (sHandle === 'c1' || sHandle === 'c3' || sHandle === 'corner') ? 'nwse-resize' : ((sHandle === 'c2' || sHandle === 'c4') ? 'nesw-resize' : 'move');
+            if (sHandle === 'c1' || sHandle === 'c3' || sHandle === 'corner') cnv.style.cursor = 'nwse-resize';
+            else if (sHandle === 'c2' || sHandle === 'c4') cnv.style.cursor = 'nesw-resize';
+            else if (sHandle === 'radius_e' || sHandle === 'radius_w') cnv.style.cursor = 'ew-resize';
+            else if (sHandle === 'radius_n' || sHandle === 'radius_s') cnv.style.cursor = 'ns-resize';
+            else if (sHandle === 'radius') cnv.style.cursor = 'crosshair';
+            else cnv.style.cursor = 'move';
             return;
           }
         }
@@ -2794,6 +3205,14 @@
       // If dragged with meaningful distance (> 6px), complete rubberband
       if (state.hasMoved && state.dragStartPos) {
         var endPos = window.getCanvasMathPos(evt.clientX, evt.clientY);
+        if (state.tool === 'line' && evt.shiftKey) {
+          var sn = snapToStandardAngles(state.dragStartPos.x, state.dragStartPos.y, endPos.x, endPos.y);
+          endPos.x = sn.x;
+          endPos.y = sn.y;
+          var sc = window.mathToScreen(endPos.x, endPos.y);
+          endPos.screenX = sc.screenX;
+          endPos.screenY = sc.screenY;
+        }
         var dist = Math.hypot(endPos.canvasX - state.dragStartPos.canvasX, endPos.canvasY - state.dragStartPos.canvasY);
         if (dist > 6) {
           completeRubberband(state.dragStartPos, endPos);
@@ -2847,6 +3266,8 @@
         window.setDrawTool('axis');
       } else if (e.key === 'r' || e.key === 'R') {
         window.setDrawTool('rectangle');
+      } else if (e.key === 'o' || e.key === 'O') {
+        window.setDrawTool('circle');
       } else if (e.key === 'l' || e.key === 'L') {
         window.setDrawTool('line');
       } else if (e.key === 'c' || e.key === 'C') {
@@ -2871,12 +3292,15 @@
         }
       });
     }
+
+    // Initialize telemetry readout for all current lines
+    initializeAllLineTelemetry();
   };
 
   /**
    * Drag handle adjustments for Candidate shape
    */
-  function dragCandidateHandle(candidate, handle, pos) {
+  function dragCandidateHandle(candidate, handle, pos, evt) {
     if (candidate.type === 'rectangle') {
       if (handle === 'c1') {
         candidate.start.x = pos.x;
@@ -2900,11 +3324,23 @@
       }
     } else if (candidate.type === 'line') {
       if (handle === 'p1') {
-        candidate.start.x = pos.x;
-        candidate.start.y = pos.y;
+        if (evt && evt.shiftKey) {
+          var sn = snapToStandardAngles(candidate.end.x, candidate.end.y, pos.x, pos.y);
+          candidate.start.x = sn.x;
+          candidate.start.y = sn.y;
+        } else {
+          candidate.start.x = pos.x;
+          candidate.start.y = pos.y;
+        }
       } else if (handle === 'p2') {
-        candidate.end.x = pos.x;
-        candidate.end.y = pos.y;
+        if (evt && evt.shiftKey) {
+          var sn = snapToStandardAngles(candidate.start.x, candidate.start.y, pos.x, pos.y);
+          candidate.end.x = sn.x;
+          candidate.end.y = sn.y;
+        } else {
+          candidate.end.x = pos.x;
+          candidate.end.y = pos.y;
+        }
       } else if (handle === 'mid') {
         var dx = candidate.end.x - candidate.start.x;
         var dy = candidate.end.y - candidate.start.y;
@@ -2951,13 +3387,28 @@
         candidate.pos.x = pos.x;
         candidate.pos.y = pos.y;
       }
+    } else if (candidate.type === 'circle') {
+      if (handle === 'center') {
+        candidate.center.x = pos.x;
+        candidate.center.y = pos.y;
+      } else if (handle === 'radius_e') {
+        candidate.radius = Math.round(Math.max(0.1, Math.abs(pos.x - candidate.center.x)) * 100) / 100;
+      } else if (handle === 'radius_w') {
+        candidate.radius = Math.round(Math.max(0.1, Math.abs(candidate.center.x - pos.x)) * 100) / 100;
+      } else if (handle === 'radius_n') {
+        candidate.radius = Math.round(Math.max(0.1, Math.abs(pos.y - candidate.center.y)) * 100) / 100;
+      } else if (handle === 'radius_s') {
+        candidate.radius = Math.round(Math.max(0.1, Math.abs(candidate.center.y - pos.y)) * 100) / 100;
+      } else if (handle === 'radius') {
+        candidate.radius = Math.round(Math.max(0.1, Math.hypot(pos.x - candidate.center.x, pos.y - candidate.center.y)) * 100) / 100;
+      }
     }
   }
 
   /**
    * Drag handle adjustments for Selected existing shape in select mode
    */
-  function dragSelectedHandle(selected, handle, pos) {
+  function dragSelectedHandle(selected, handle, pos, evt) {
     if (selected.type === 'rectangle') {
       var r = document.getElementById("r_" + selected.index);
       var s = document.getElementById("s_" + selected.index);
@@ -2981,6 +3432,29 @@
         t.value = Math.round((parseFloat(r.value) + w) * 100) / 100;
         u.value = Math.round((parseFloat(s.value) + h) * 100) / 100;
       }
+    } else if (selected.type === 'circle') {
+      var cx = document.getElementById("circle_x_" + selected.index);
+      var cy = document.getElementById("circle_y_" + selected.index);
+      var cr = document.getElementById("circle_r_" + selected.index);
+      if (!cx || !cy || !cr) return;
+
+      var curCx = parseFloat(cx.value) || 0;
+      var curCy = parseFloat(cy.value) || 0;
+
+      if (handle === 'center') {
+        cx.value = pos.x;
+        cy.value = pos.y;
+      } else if (handle === 'radius_e') {
+        cr.value = Math.round(Math.max(0.1, Math.abs(pos.x - curCx)) * 100) / 100;
+      } else if (handle === 'radius_w') {
+        cr.value = Math.round(Math.max(0.1, Math.abs(curCx - pos.x)) * 100) / 100;
+      } else if (handle === 'radius_n') {
+        cr.value = Math.round(Math.max(0.1, Math.abs(pos.y - curCy)) * 100) / 100;
+      } else if (handle === 'radius_s') {
+        cr.value = Math.round(Math.max(0.1, Math.abs(curCy - pos.y)) * 100) / 100;
+      } else if (handle === 'radius') {
+        cr.value = Math.round(Math.max(0.1, Math.hypot(pos.x - curCx, pos.y - curCy)) * 100) / 100;
+      }
     } else if (selected.type === 'line') {
       var a = document.getElementById("a_" + selected.index);
       var b = document.getElementById("b_" + selected.index);
@@ -2989,9 +3463,23 @@
       if (!a || !b || !c || !d) return;
 
       if (handle === 'p1') {
-        a.value = pos.x; b.value = pos.y;
+        if (evt && evt.shiftKey) {
+          var fixedX = parseFloat(c.value) || 0;
+          var fixedY = parseFloat(d.value) || 0;
+          var sn = snapToStandardAngles(fixedX, fixedY, pos.x, pos.y);
+          a.value = sn.x; b.value = sn.y;
+        } else {
+          a.value = pos.x; b.value = pos.y;
+        }
       } else if (handle === 'p2') {
-        c.value = pos.x; d.value = pos.y;
+        if (evt && evt.shiftKey) {
+          var fixedX = parseFloat(a.value) || 0;
+          var fixedY = parseFloat(b.value) || 0;
+          var sn = snapToStandardAngles(fixedX, fixedY, pos.x, pos.y);
+          c.value = sn.x; d.value = sn.y;
+        } else {
+          c.value = pos.x; d.value = pos.y;
+        }
       } else if (handle === 'mid') {
         var dx = parseFloat(c.value) - parseFloat(a.value);
         var dy = parseFloat(d.value) - parseFloat(b.value);
@@ -2999,6 +3487,10 @@
         b.value = Math.round((pos.y - dy / 2) * 100) / 100;
         c.value = Math.round((parseFloat(a.value) + dx) * 100) / 100;
         d.value = Math.round((parseFloat(b.value) + dy) * 100) / 100;
+      }
+
+      if (typeof window.updateLineTelemetry === 'function') {
+        window.updateLineTelemetry(selected.index);
       }
     } else if (selected.type === 'curve') {
       var e = document.getElementById("e_" + selected.index);
@@ -3039,21 +3531,112 @@
   }
 
   /**
+   * Geometric Constraint: Snap point (px, py) relative to origin (ox, oy)
+   * to multiples of 45° (0°, 45°, 90°, 135°, 180°, 225°, 270°, 315°)
+   */
+  function snapToStandardAngles(ox, oy, px, py) {
+    var dx = px - ox;
+    var dy = py - oy;
+    var dist = Math.hypot(dx, dy);
+    if (dist < 0.001) return { x: px, y: py };
+    var angle = Math.atan2(dy, dx);
+    var step = Math.PI / 4; // 45 degrees
+    var snappedAngle = Math.round(angle / step) * step;
+    return {
+      x: Math.round((ox + dist * Math.cos(snappedAngle)) * 100) / 100,
+      y: Math.round((oy + dist * Math.sin(snappedAngle)) * 100) / 100
+    };
+  }
+
+  /**
+   * Calculate & display telemetry (Length, Slope, Angle) for a given Line ID
+   */
+  window.updateLineTelemetry = function (id) {
+    if (!id) return;
+    var a = parseFloat(document.getElementById("a_" + id)?.value) || 0;
+    var b = parseFloat(document.getElementById("b_" + id)?.value) || 0;
+    var c = parseFloat(document.getElementById("c_" + id)?.value) || 0;
+    var d = parseFloat(document.getElementById("d_" + id)?.value) || 0;
+    var dx = c - a;
+    var dy = d - b;
+    var len = Math.hypot(dx, dy).toFixed(2);
+    var slope = Math.abs(dx) < 0.0001 ? (Math.abs(dy) < 0.0001 ? "0" : "∞") : (dy / dx).toFixed(2);
+    var angle = Math.round(((Math.atan2(dy, dx) * 180 / Math.PI) + 360) % 360);
+
+    var pill = document.getElementById("line_telemetry_" + id);
+    if (pill) {
+      pill.textContent = "L: " + len + " u | Slope: " + slope + " (" + angle + "°)";
+    }
+
+    var state = window.drawingState;
+    if (state && state.selectedShape && state.selectedShape.type === 'line' && state.selectedShape.index == id) {
+      var hud = document.getElementById("canvas-coord-hud");
+      if (hud) {
+        hud.textContent = "Line " + id + " | L: " + len + " u | " + angle + "° (Slope: " + slope + ")";
+      }
+    }
+  };
+
+  /**
+   * Initialize telemetry for lines on page load
+   */
+  function initializeAllLineTelemetry() {
+    var maxLine = typeof counter_i !== 'undefined' ? counter_i : 5;
+    for (var i = 1; i < maxLine; i++) {
+      if (typeof window.updateLineTelemetry === 'function') {
+        window.updateLineTelemetry(i);
+      }
+    }
+  }
+
+  /**
    * Complete Rubberband Drawing
    */
   function completeRubberband(startPos, endPos) {
     var state = window.drawingState;
 
-    var candidate = {
-      type: state.tool,
-      start: { x: startPos.x, y: startPos.y },
-      end: { x: endPos.x, y: endPos.y },
-      color: 'black',
-      dashed: false,
-      label: '',
-      targetSlot: 'auto',
-      activeHandle: null
-    };
+    var candidate;
+    if (state.tool === 'circle') {
+      var radius = Math.round(Math.hypot(endPos.x - startPos.x, endPos.y - startPos.y) * 100) / 100;
+      candidate = {
+        type: 'circle',
+        center: { x: startPos.x, y: startPos.y },
+        radius: Math.max(0.2, radius),
+        color: state.color || 'black',
+        dashed: !!state.dashed,
+        fill: false,
+        label: state.index ? ("Circle " + state.index) : '',
+        targetSlot: state.index ? ('circle_' + state.index) : 'auto',
+        activeHandle: null
+      };
+    } else if (state.tool === 'line') {
+      candidate = {
+        type: 'line',
+        start: { x: startPos.x, y: startPos.y },
+        end: { x: endPos.x, y: endPos.y },
+        color: state.color || 'black',
+        dashed: !!state.dashed,
+        arrow: 'none',
+        width: 'semithick',
+        style: state.dashed ? 'dashed' : 'solid',
+        labelPos: 'midway',
+        labelAnchor: 'above',
+        label: state.index ? ("Line " + state.index) : '',
+        targetSlot: state.index ? ('line_' + state.index) : 'auto',
+        activeHandle: null
+      };
+    } else {
+      candidate = {
+        type: state.tool,
+        start: { x: startPos.x, y: startPos.y },
+        end: { x: endPos.x, y: endPos.y },
+        color: 'black',
+        dashed: false,
+        label: '',
+        targetSlot: 'auto',
+        activeHandle: null
+      };
+    }
 
     state.dragStartPos = null;
     state.hasMoved = false;

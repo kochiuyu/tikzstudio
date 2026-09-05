@@ -54,8 +54,20 @@ function pt() {
             var d = document.getElementById("d_" + j);
             var linename = document.getElementById("linename_" + j);
             var lineColor = document.getElementById("lineColor_" + j);
+            var arrowEl = document.getElementById("lineArrow_" + j);
+            var widthEl = document.getElementById("lineWidth_" + j);
+            var styleEl = document.getElementById("lineStyle_" + j);
+            var posEl = document.getElementById("lineLabelPos_" + j);
+            var ancEl = document.getElementById("lineLabelAnchor_" + j);
+
+            var arrowCP = (arrowEl && arrowEl.value !== 'none') ? "&nbsp;Arrow[" + arrowEl.value + "]" : "";
+            var widthCP = (widthEl && widthEl.value !== 'thin') ? "&nbsp;Width[" + widthEl.value + "]" : "";
+            var styleCP = (styleEl && styleEl.value !== 'solid') ? "&nbsp;Style[" + styleEl.value + "]" : dashCP;
+            var posCP = (posEl && posEl.value !== 'end') ? "&nbsp;Pos[" + posEl.value + "]" : "";
+            var ancCP = (ancEl && ancEl.value !== 'right') ? "&nbsp;Anchor[" + ancEl.value + "]" : "";
+
             if (a && b && c && d) {
-                lineCP += "&nbsp; Straight Line_" + j + ":(" + a.value + "," + b.value + ")--(" + c.value + "," + d.value + ")&nbsp;Name[" + (linename ? linename.value : "") + "]&nbsp;Color[" + (lineColor ? lineColor.value : "black") + "]&nbsp;" + dashCP + "</br>";
+                lineCP += "&nbsp; Straight Line_" + j + ":(" + a.value + "," + b.value + ")--(" + c.value + "," + d.value + ")&nbsp;Name[" + (linename ? linename.value : "") + "]&nbsp;Color[" + (lineColor ? lineColor.value : "black") + "]" + arrowCP + widthCP + styleCP + posCP + ancCP + "</br>";
             }
             var lineLableCEl = document.getElementById("lineLableC");
             if (lineLableCEl) lineLableCEl.innerHTML = lineLable;
@@ -108,6 +120,29 @@ function pt() {
             if (rectangleLableCEl) rectangleLableCEl.innerHTML = rectangleLable;
             var rectangleCopyEl = document.getElementById("rectangleCopy");
             if (rectangleCopyEl) rectangleCopyEl.innerHTML = rectangleCP;
+        }
+    }
+
+    var circleCP = "";
+    var maxCircles = typeof counter_circle !== 'undefined' ? counter_circle : 2;
+    for (var c = 1; c < maxCircles; c++) {
+        var circleshowEl = document.getElementById("circleshow_" + c);
+        if (circleshowEl && circleshowEl.checked) {
+            var circledashEl = document.getElementById("circledash_" + c);
+            var dashCP4 = (circledashEl && circledashEl.checked) ? " [dash] " : "";
+            var circleLable = "</br>Circle: </br>";
+            var cx = document.getElementById("circle_x_" + c);
+            var cy = document.getElementById("circle_y_" + c);
+            var cr = document.getElementById("circle_r_" + c);
+            var circlename = document.getElementById("circlename_" + c);
+            var circleColor = document.getElementById("circleColor_" + c);
+            if (cx && cy && cr) {
+                circleCP += "&nbsp; Circle_" + c + ": Center(" + cx.value + "," + cy.value + ") Radius[" + cr.value + "]&nbsp;Name[" + (circlename ? circlename.value : "") + "]&nbsp;Color[" + (circleColor ? circleColor.value : "black") + "]&nbsp;" + dashCP4 + "</br>";
+            }
+            var circleLableCEl = document.getElementById("circleLableC");
+            if (circleLableCEl) circleLableCEl.innerHTML = circleLable;
+            var circleCopyEl = document.getElementById("circleCopy");
+            if (circleCopyEl) circleCopyEl.innerHTML = circleCP;
         }
     }
 }
