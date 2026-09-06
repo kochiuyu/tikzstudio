@@ -294,7 +294,7 @@ function Example_ISLM() {
     xsize: 10, ysize: 10, xname: "Y", yname: "r", origin: "0",
     ticks: { x1: 5, x1_name: "Y^*", y1: 5, y1_name: "r^*" }
   });
-  setLine(1, 1, 8.5, 8.5, 1.5, "IS", { color: "#2563eb", width: "semithick", labelPos: "end", labelAnchor: "right" });
+  setLine(1, 1.5, 8.5, 8.5, 1.5, "IS", { color: "#2563eb", width: "semithick", labelPos: "end", labelAnchor: "right" });
   setLine(2, 1.5, 1.5, 8.5, 8.5, "LM", { color: "#16a34a", width: "semithick", labelPos: "end", labelAnchor: "right" });
   setLine(3, 0, 5, 5, 5, "", { dashed: true, color: "#64748b" });
   setLine(4, 5, 0, 5, 5, "", { dashed: true, color: "#64748b" });
@@ -306,7 +306,7 @@ function Example_Monopoly() {
   resetAllCanvasElements();
   setAxes({
     xsize: 10, ysize: 10, xname: "Q", yname: "P", origin: "0",
-    ticks: { x1: 3, x1_name: "Q_m", x2: 5, x2_name: "Q_c", y1: 6, y1_name: "P_m", y2: 3, y2_name: "MC" }
+    ticks: { x1: 3, x1_name: "Q_m", x2: 5, x2_name: "Q_c", y1: 6, y1_name: "P_m", y2: 4, y2_name: "P_c" }
   });
   setLine(1, 0.5, 8.5, 8.5, 0.5, "D", { color: "#2563eb", width: "semithick", labelPos: "end", labelAnchor: "right" });
   setLine(2, 0.5, 8.0, 4.5, 0.0, "MR", { color: "#9333ea", width: "semithick", labelPos: "end", labelAnchor: "right" });
@@ -314,10 +314,12 @@ function Example_Monopoly() {
   setLine(4, 0, 6, 3, 6, "", { dashed: true, color: "#64748b" });
   setLine(5, 3, 0, 3, 6, "", { dashed: true, color: "#64748b" });
   setLine(6, 0, 3, 3, 3, "", { dashed: true, color: "#64748b" });
+  setLine(7, 5, 0, 5, 4, "", { dashed: true, color: "#64748b" });
+  setLine(8, 0, 4, 5, 4, "", { dashed: true, color: "#64748b" });
   setRectangle(1, 0, 3, 3, 6, "Economic Profit", { fill: true, dashed: true, color: "#3b82f6" });
   setPoint(1, 3, 6, "E_m(Q_m, P_m)", { color: "#0f172a", pos: "above" });
   setPoint(2, 3, 3, "MR=MC", { color: "#9333ea", pos: "below" });
-  setPoint(3, 5, 4, "E_c (Competitive)", { color: "#16a34a", pos: "above" });
+  setPoint(3, 5, 4, "E_c(Q_c, P_c)", { color: "#16a34a", pos: "above" });
 }
 
 /** 4. Consumer Utility Maximization */
@@ -330,9 +332,9 @@ function Example_UtilityMax() {
   setLine(1, 0, 8, 8, 0, "BL", { color: "#2563eb", width: "semithick", labelPos: "end", labelAnchor: "right" });
   setLine(2, 0, 4, 4, 4, "", { dashed: true, color: "#64748b" });
   setLine(3, 4, 0, 4, 4, "", { dashed: true, color: "#64748b" });
-  setCurve(1, 1.5, 8.5, 3, 5, 5, 3, 8.5, 1.5, "U_2", { color: "#9333ea" });
-  setCurve(2, 1, 6, 2.2, 3.5, 3.5, 2.2, 6, 1, "U_1", { color: "#64748b", dashed: true });
-  setCurve(3, 2.5, 9.5, 4.5, 6.5, 6.5, 4.5, 9.5, 2.5, "U_3", { color: "#64748b", dashed: true });
+  setCurve(1, 1.5, 8.0, 2.7, 4.8, 4.8, 2.7, 8.0, 1.5, "U_2", { color: "#9333ea" });
+  setCurve(2, 1.0, 6.5, 2.0, 3.8, 3.8, 2.0, 6.5, 1.0, "U_1", { color: "#64748b", dashed: true });
+  setCurve(3, 2.2, 9.2, 3.5, 5.8, 5.8, 3.5, 9.2, 2.2, "U_3", { color: "#64748b", dashed: true });
   setPoint(1, 4, 4, "E(x_1^*, x_2^*)", { color: "#0f172a", pos: "above" });
 }
 
@@ -341,15 +343,17 @@ function Example_CostCurves() {
   resetAllCanvasElements();
   setAxes({
     xsize: 10, ysize: 10, xname: "q", yname: "C, P", origin: "0",
-    ticks: { x1: 5.5, x1_name: "q_{min}", y1: 6, y1_name: "P^*" }
+    ticks: { x1: 5.0, x1_name: "q_{min}", x2: 6.5, x2_name: "q^*", y1: 6.0, y1_name: "P^*", y2: 4.5, y2_name: "ATC_{min}" }
   });
-  setCurve(1, 1, 3.5, 3, 1.2, 5, 3.5, 8.5, 9, "MC", { color: "#dc2626" });
-  setCurve(2, 1.8, 8.5, 3.5, 4.2, 5.5, 4.2, 8.5, 6.5, "ATC", { color: "#2563eb" });
-  setCurve(3, 1.8, 5.5, 3.5, 2.5, 4.5, 2.4, 8.5, 4.8, "AVC", { color: "#16a34a", dashed: true });
-  setLine(1, 0, 6, 9, 6, "P = MR = AR", { color: "#d97706", width: "semithick", labelPos: "end", labelAnchor: "above" });
-  setLine(2, 7, 0, 7, 6, "", { dashed: true, color: "#64748b" });
-  setPoint(1, 7, 6, "q^* (P=MC)", { color: "#0f172a", pos: "above" });
-  setPoint(2, 5.5, 4.2, "Min ATC", { color: "#2563eb", pos: "below" });
+  setCurve(1, 1.5, 3.2, 2.6, 1.2, 5.8, 4.6, 8.5, 8.8, "MC", { color: "#dc2626" });
+  setCurve(2, 1.5, 8.5, 3.5, 2.5, 6.5, 4.5, 8.5, 6.5, "ATC", { color: "#2563eb" });
+  setCurve(3, 1.5, 5.5, 3.0, 1.2, 5.5, 2.6, 8.5, 4.8, "AVC", { color: "#16a34a", dashed: true });
+  setLine(1, 0, 6.0, 9.0, 6.0, "P = MR = AR", { color: "#d97706", width: "semithick", labelPos: "end", labelAnchor: "above" });
+  setLine(2, 6.5, 0, 6.5, 6.0, "", { dashed: true, color: "#64748b" });
+  setLine(3, 5.0, 0, 5.0, 4.5, "", { dashed: true, color: "#64748b" });
+  setLine(4, 0, 4.5, 5.0, 4.5, "", { dashed: true, color: "#64748b" });
+  setPoint(1, 6.5, 6.0, "q^* (P=MC)", { color: "#0f172a", pos: "above" });
+  setPoint(2, 5.0, 4.5, "Min ATC", { color: "#2563eb", pos: "below" });
 }
 
 /** 6. Keynesian Cross (45-Degree Model) */
@@ -372,14 +376,24 @@ function Example_SolowGrowth() {
   resetAllCanvasElements();
   setAxes({
     xsize: 10, ysize: 10, xname: "k", yname: "y, i", origin: "0",
-    ticks: { x1: 5, x1_name: "k^*", y1: 4.1, y1_name: "i^*", y2: 7.2, y2_name: "y^*" }
+    ticks: { x1: 5, x1_name: "k^*", y1: 4, y1_name: "i^*", y2: 7, y2_name: "y^*" }
   });
-  setCurve(1, 0, 0, 2, 5.2, 5, 7.2, 9, 8.2, "y = f(k)", { color: "#2563eb" });
-  setCurve(2, 0, 0, 2, 2.8, 5, 4.1, 9, 4.8, "s \\cdot f(k)", { color: "#16a34a" });
-  setLine(1, 0, 0, 9, 7.4, "(\\delta+n)k", { color: "#dc2626", width: "semithick", labelPos: "end", labelAnchor: "right" });
-  setLine(2, 5, 0, 5, 7.2, "", { dashed: true, color: "#64748b" });
-  setPoint(1, 5, 4.1, "Steady State k^*", { color: "#16a34a", pos: "below" });
-  setPoint(2, 5, 7.2, "y^*", { color: "#2563eb", pos: "above" });
+  // Output per worker: y = f(k), precisely passes through (5.0, 7.0) at t=0.5
+  setCurve(1, 0, 0, 3.5, 8.8, 6.833, 7.033, 9, 8.5, "y = f(k)", { color: "#2563eb" });
+  // Investment per worker: s*f(k), precisely passes through (5.0, 4.0) at t=0.5
+  setCurve(2, 0, 0, 3.5, 5.0, 6.833, 3.933, 9, 5.2, "s \\cdot f(k)", { color: "#16a34a" });
+  // Break-even investment ray (delta+n)k with slope 0.8: passes through (5.0, 4.0) exactly
+  setLine(1, 0, 0, 9, 7.2, "(\\delta+n)k", { color: "#dc2626", width: "semithick", labelPos: "end", labelAnchor: "right" });
+  // Steady state vertical dashed projection from k* through investment to output
+  setLine(2, 5, 0, 5, 7, "", { dashed: true, color: "#64748b" });
+  // Horizontal projection to steady-state investment i*
+  setLine(3, 0, 4, 5, 4, "", { dashed: true, color: "#64748b" });
+  // Horizontal projection to steady-state output y*
+  setLine(4, 0, 7, 5, 7, "", { dashed: true, color: "#64748b" });
+  // Steady-state equilibrium point where actual investment = break-even investment
+  setPoint(1, 5, 4, "k^* \\text{ (Steady State)}", { color: "#16a34a", pos: "below" });
+  // Steady-state output point on production curve f(k)
+  setPoint(2, 5, 7, "y^* = f(k^*)", { color: "#2563eb", pos: "above" });
 }
 
 /** 8. AD-AS Macroeconomic Equilibrium */
@@ -400,11 +414,15 @@ function Example_ADAS() {
 function Example_PPF() {
   resetAllCanvasElements();
   setAxes({
-    xsize: 10, ysize: 10, xname: "Consumer Goods (X)", yname: "Capital Goods (Y)", origin: "0"
+    xsize: 10, ysize: 10, xname: "Consumer Goods (X)", yname: "Capital Goods (Y)", origin: "0",
+    ticks: { x1: 3.5, x1_name: "X_A", x2: 6.5, x2_name: "X_B", y1: 7.2, y1_name: "Y_A", y2: 4.2, y2_name: "Y_B" }
   });
-  setCurve(1, 0, 8.5, 3.5, 8.2, 6.8, 6.5, 8.5, 0, "PPF", { color: "#0284c7" });
+  // Strictly concave PPF curve passing exactly through (3.5, 7.2) and (6.5, 4.2)
+  setCurve(1, 0, 8.5, 3.3, 7.7, 6.1, 6.5, 8.5, 0, "PPF", { color: "#0284c7" });
   setLine(1, 0, 7.2, 3.5, 7.2, "", { dashed: true, color: "#94a3b8" });
   setLine(2, 3.5, 0, 3.5, 7.2, "", { dashed: true, color: "#94a3b8" });
+  setLine(3, 0, 4.2, 6.5, 4.2, "", { dashed: true, color: "#94a3b8" });
+  setLine(4, 6.5, 0, 6.5, 4.2, "", { dashed: true, color: "#94a3b8" });
   setPoint(1, 3.5, 7.2, "A (Efficient)", { color: "#16a34a", pos: "above" });
   setPoint(2, 6.5, 4.2, "B (Efficient)", { color: "#16a34a", pos: "above" });
   setPoint(3, 3, 3, "C (Inefficient)", { color: "#d97706", pos: "below" });
@@ -416,17 +434,18 @@ function Example_Externality() {
   resetAllCanvasElements();
   setAxes({
     xsize: 10, ysize: 10, xname: "Q", yname: "P, Cost", origin: "0",
-    ticks: { x1: 4.4, x1_name: "Q_{opt}", x2: 5.7, x2_name: "Q_m", y1: 4.3, y1_name: "P_m", y2: 5.6, y2_name: "P_{opt}" }
+    ticks: { x1: 4.0, x1_name: "Q_{opt}", x2: 6.0, x2_name: "Q_m", y1: 4.0, y1_name: "P_m", y2: 6.0, y2_name: "P_{opt}" }
   });
   setLine(1, 1, 9, 9, 1, "MSB = MPB", { color: "#2563eb", width: "semithick", labelPos: "end", labelAnchor: "right" });
-  setLine(2, 1, 1.5, 9, 6.5, "PMC", { color: "#16a34a", width: "semithick", labelPos: "end", labelAnchor: "right" });
-  setLine(3, 1, 4.0, 9, 9.0, "SMC = PMC + MEC", { color: "#dc2626", width: "semithick", labelPos: "end", labelAnchor: "right" });
-  setLine(4, 4.4, 0, 4.4, 5.6, "", { dashed: true, color: "#64748b" });
-  setLine(5, 0, 5.6, 4.4, 5.6, "", { dashed: true, color: "#64748b" });
-  setLine(6, 5.7, 0, 5.7, 4.3, "", { dashed: true, color: "#64748b" });
-  setLine(7, 0, 4.3, 5.7, 4.3, "", { dashed: true, color: "#64748b" });
-  setPoint(1, 4.4, 5.6, "Social Optimum", { color: "#dc2626", pos: "above" });
-  setPoint(2, 5.7, 4.3, "Market Outcome", { color: "#16a34a", pos: "below" });
+  setLine(2, 1, 1.5, 9, 5.5, "PMC", { color: "#16a34a", width: "semithick", labelPos: "end", labelAnchor: "right" });
+  setLine(3, 1, 4.5, 9, 8.5, "SMC = PMC + MEC", { color: "#dc2626", width: "semithick", labelPos: "end", labelAnchor: "right" });
+  setLine(4, 4.0, 0, 4.0, 6.0, "", { dashed: true, color: "#64748b" });
+  setLine(5, 0, 6.0, 4.0, 6.0, "", { dashed: true, color: "#64748b" });
+  setLine(6, 6.0, 0, 6.0, 4.0, "", { dashed: true, color: "#64748b" });
+  setLine(7, 0, 4.0, 6.0, 4.0, "", { dashed: true, color: "#64748b" });
+  setLine(8, 4.0, 3.0, 4.0, 6.0, "t = MEC", { color: "#9333ea", width: "thick", labelPos: "mid", labelAnchor: "left" });
+  setPoint(1, 4.0, 6.0, "Social Optimum", { color: "#dc2626", pos: "above" });
+  setPoint(2, 6.0, 4.0, "Market Outcome", { color: "#16a34a", pos: "below" });
 }
 
 /** 11. Normal Distribution (Gaussian Bell Curve) */
@@ -434,17 +453,17 @@ function Example_NormalDist() {
   resetAllCanvasElements();
   setAxes({
     xsize: 10, ysize: 10, xname: "x (\\sigma)", yname: "f(x)", origin: "0",
-    ticks: { x1: 3.8, x1_name: "\\mu-\\sigma", x2: 6.2, x2_name: "\\mu+\\sigma", y1: 8, y1_name: "\\text{Peak}" }
+    ticks: { x1: 3.6, x1_name: "\\mu-\\sigma", x2: 6.4, x2_name: "\\mu+\\sigma", y1: 8.0, y1_name: "\\text{Peak}" }
   });
-  setCurve(1, 0.5, 0.2, 2.5, 0.8, 3.8, 4.8, 5, 8, "", { color: "#2563eb" });
-  setCurve(2, 5, 8, 6.2, 4.8, 7.5, 0.8, 9.5, 0.2, "f(x)", { color: "#2563eb" });
-  setLine(1, 5, 0, 5, 8, "\\mu (Mean)", { color: "#dc2626", style: "dashed", width: "semithick", labelPos: "end", labelAnchor: "above" });
-  setLine(2, 3.8, 0, 3.8, 4.8, "", { color: "#64748b", style: "dotted" });
-  setLine(3, 6.2, 0, 6.2, 4.8, "", { color: "#64748b", style: "dotted" });
-  setLine(4, 3.8, 4.8, 6.2, 4.8, "68.2\\% Area", { color: "#9333ea", arrow: "<->", width: "semithick", labelPos: "mid", labelAnchor: "above" });
-  setPoint(1, 5, 8, "\\mu", { color: "#dc2626", pos: "above" });
-  setPoint(2, 3.8, 4.8, "-\\sigma", { color: "#2563eb", pos: "left" });
-  setPoint(3, 6.2, 4.8, "+\\sigma", { color: "#2563eb", pos: "right" });
+  setCurve(1, 0.5, 0.1, 2.1, 0.4, 4.8, 8.0, 5.0, 8.0, "", { color: "#2563eb" });
+  setCurve(2, 5.0, 8.0, 5.2, 8.0, 7.9, 0.4, 9.5, 0.1, "f(x)", { color: "#2563eb" });
+  setLine(1, 5.0, 0, 5.0, 8.0, "\\mu (Mean)", { color: "#dc2626", style: "dashed", width: "semithick", labelPos: "end", labelAnchor: "above" });
+  setLine(2, 3.6, 0, 3.6, 4.85, "", { color: "#64748b", style: "dotted" });
+  setLine(3, 6.4, 0, 6.4, 4.85, "", { color: "#64748b", style: "dotted" });
+  setLine(4, 3.6, 4.85, 6.4, 4.85, "68.2\\% Area", { color: "#9333ea", arrow: "<->", width: "semithick", labelPos: "mid", labelAnchor: "above" });
+  setPoint(1, 5.0, 8.0, "\\mu", { color: "#dc2626", pos: "above" });
+  setPoint(2, 3.6, 4.85, "-\\sigma", { color: "#2563eb", pos: "left" });
+  setPoint(3, 6.4, 4.85, "+\\sigma", { color: "#2563eb", pos: "right" });
 }
 
 /** 12. Trigonometric Unit Circle */
@@ -472,7 +491,7 @@ function Example_LorenzGini() {
   });
   setLine(1, 0, 0, 9, 9, "Equality Line (45^\\circ)", { color: "#94a3b8", style: "dashed", labelPos: "end", labelAnchor: "right" });
   setCurve(1, 0, 0, 3.5, 0.8, 6.8, 3.2, 9, 9, "Lorenz Curve L(p)", { color: "#9333ea" });
-  setPoint(1, 4.2, 3.0, "Area A", { color: "#ef4444", pos: "above" });
+  setPoint(1, 4.5, 3.2, "Area A", { color: "#ef4444", pos: "above" });
   setPoint(2, 6.5, 1.8, "Area B", { color: "#3b82f6", pos: "below" });
   setPoint(3, 9, 9, "(100%, 100%)", { color: "#0f172a", pos: "above" });
 }
@@ -482,12 +501,15 @@ function Example_Projectile() {
   resetAllCanvasElements();
   setAxes({
     xsize: 10, ysize: 10, xname: "Distance x (m)", yname: "Height y (m)", origin: "0",
-    ticks: { x1: 4, x1_name: "x_{apex}", x2: 8, x2_name: "Range R", y1: 5.6, y1_name: "H_{max}" }
+    ticks: { x1: 4, x1_name: "x_{apex}", x2: 8, x2_name: "Range R", y1: 6, y1_name: "H_{max}" }
   });
-  setCurve(1, 0, 0, 2.5, 7.5, 5.5, 7.5, 8, 0, "Trajectory y(x)", { color: "#2563eb" });
-  setLine(1, 0, 0, 2, 4.5, "v_0", { color: "#dc2626", arrow: "->", width: "very thick", labelPos: "end", labelAnchor: "above" });
-  setLine(2, 4, 0, 4, 5.6, "H_{max}", { color: "#64748b", style: "dashed", labelPos: "mid", labelAnchor: "right" });
-  setPoint(1, 4, 5.6, "Apex (v_y = 0)", { color: "#0f172a", pos: "above" });
+  // Mathematically exact parabola y = (4*H/R^2)*x*(R - x) degree-elevated to cubic Bézier
+  setCurve(1, 0, 0, 2.67, 8.0, 5.33, 8.0, 8, 0, "Trajectory y(x)", { color: "#2563eb" });
+  // Launch velocity vector v0 tangent to trajectory at launch (slope = 3.0)
+  setLine(1, 0, 0, 1.8, 5.4, "v_0", { color: "#dc2626", arrow: "->", width: "very thick", labelPos: "end", labelAnchor: "above" });
+  setLine(2, 4, 0, 4, 6.0, "", { color: "#64748b", style: "dashed" });
+  setLine(3, 0, 6.0, 4, 6.0, "", { color: "#64748b", style: "dashed" });
+  setPoint(1, 4, 6.0, "Apex (v_y = 0)", { color: "#0f172a", pos: "above" });
   setPoint(2, 8, 0, "Landing R", { color: "#16a34a", pos: "above" });
 }
 
