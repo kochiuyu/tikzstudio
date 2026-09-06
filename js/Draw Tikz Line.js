@@ -31,8 +31,9 @@ function DrawLine(a, b, c, d, name, dash, lineColor, arrowEl, widthEl, styleEl, 
     }
 
     // Color
-    if (colVal && colVal !== 'black') {
-        opts.push(colVal);
+    if (colVal && colVal !== 'black' && colVal !== '#0f172a' && colVal !== '#000000') {
+        var tikzCol = window.toTikzColor ? window.toTikzColor(colVal) : colVal;
+        opts.push(tikzCol);
     }
 
     var optStr = opts.length > 0 ? "[" + opts.join(", ") + "] " : " ";
@@ -65,11 +66,19 @@ function DrawLine(a, b, c, d, name, dash, lineColor, arrowEl, widthEl, styleEl, 
 
 
 //Creat Tikz Curve
-function DrawCurve(e, f, g, h, i, j, k, l, name, dash) {
-    var line = "\\draw";
-    if (dash.checked) {
-        line += "[dashed] ";
+function DrawCurve(e, f, g, h, i, j, k, l, name, dash, curveColor) {
+    var opts = [];
+    if (dash && dash.checked) {
+        opts.push("dashed");
     }
-    return line += "(" + e.value + "," + f.value + ") ..controls (" + g.value + "," + h.value + ") and (" + i.value + "," + j.value + ") .. (" + k.value + "," + l.value + ") node[right]{$" + name.value + "$};<br>";
+    var colVal = (curveColor && curveColor.value) ? curveColor.value : "black";
+    if (colVal && colVal !== "black" && colVal !== "#0f172a" && colVal !== "#000000") {
+        var tikzCol = window.toTikzColor ? window.toTikzColor(colVal) : colVal;
+        opts.push(tikzCol);
+    }
+    var optStr = opts.length > 0 ? "[" + opts.join(", ") + "] " : " ";
+    var line = "\\draw" + optStr;
+    var labelPart = (name && name.value) ? " node[right]{$" + name.value + "$}" : "";
+    return line + "(" + e.value + "," + f.value + ") ..controls (" + g.value + "," + h.value + ") and (" + i.value + "," + j.value + ") .. (" + k.value + "," + l.value + ")" + labelPart + ";<br>";
 }
 

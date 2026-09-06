@@ -58,6 +58,11 @@ function AddCurve(form) {
 
     form.appendChild(card);
 
+    if (window.enhanceColorControl) {
+        var colSel = document.getElementById("curveColor_" + curJ) || document.getElementById("curvecolor_" + curJ);
+        if (colSel) window.enhanceColorControl(colSel);
+    }
+
     // Attach listeners for live preview redraw
     var inputs = card.querySelectorAll('input, select');
     for (var k = 0; k < inputs.length; k++) {

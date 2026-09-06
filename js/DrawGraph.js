@@ -19,28 +19,40 @@ function DrawGraph(isEample, customCanvas, scaleMultiplier) {
 	var isExport = !!customCanvas;
 	var mult = scaleMultiplier || 1;
 	
-	var axis = "\\draw[thick,<->] (0,"+ document.getElementById("ysize").value+") node[above]{$"+document.getElementById("yname").value+"$}--(0,0)--("+document.getElementById("xsize").value+",0) node[right]{$"+document.getElementById("xname").value+"$}; % Axis and Lable<br>";
+	var axEl = document.getElementById("axisColor");
+	var axCol = (axEl && axEl.value) ? axEl.value : 'black';
+	var axTikzCol = (axCol !== 'black' && axCol !== '#0f172a' && axCol !== '#000000') ? (window.toTikzColor ? window.toTikzColor(axCol) : axCol) : '';
+	var axOpts = ['thick', '<->'];
+	if (axTikzCol) axOpts.push(axTikzCol);
+	var nodeColOpt = axTikzCol ? (', ' + axTikzCol) : '';
+	var axis = "\\draw[" + axOpts.join(', ') + "] (0,"+ document.getElementById("ysize").value+") node[above" + nodeColOpt + "]{$"+document.getElementById("yname").value+"$}--(0,0)--("+document.getElementById("xsize").value+",0) node[right" + nodeColOpt + "]{$"+document.getElementById("xname").value+"$}; % Axis and Label<br>";
 	var lines="";
 	var curves="";
 	var rects="";
 	var circles="";
 	
 	if (isEample) {
-		var myxsize = 10;
-		var myysize = 10;
-		var myxname = 'Q';
-		var myyname = 'P';
-		
-		document.getElementById("xsize").value = myxsize;
-		document.getElementById("ysize").value = myysize;
-		document.getElementById("xname").value = myxname;
-		document.getElementById("yname").value = myyname;
-		document.getElementById("label_origin_name").value = 'o';
+		var xsizeEl = document.getElementById("xsize");
+		var ysizeEl = document.getElementById("ysize");
+		var xnameEl = document.getElementById("xname");
+		var ynameEl = document.getElementById("yname");
+		var originEl = document.getElementById("label_origin_name");
+
+		if (xsizeEl && (!xsizeEl.value || xsizeEl.value == 0)) xsizeEl.value = 10;
+		if (ysizeEl && (!ysizeEl.value || ysizeEl.value == 0)) ysizeEl.value = 10;
+		if (xnameEl && !xnameEl.value) xnameEl.value = 'Q';
+		if (ynameEl && !ynameEl.value) ynameEl.value = 'P';
+		if (originEl && !originEl.value) originEl.value = '0';
+
+		var myxsize = xsizeEl ? xsizeEl.value : 10;
+		var myysize = ysizeEl ? ysizeEl.value : 10;
+		var myxname = xnameEl ? xnameEl.value : 'Q';
+		var myyname = ynameEl ? ynameEl.value : 'P';
 	} else {
-		var myxsize = document.getElementById("xsize").value;
-		var myysize = document.getElementById("ysize").value;
-		var myxname = document.getElementById("xname").value;
-		var myyname = document.getElementById("yname").value;
+		var myxsize = document.getElementById("xsize") ? document.getElementById("xsize").value : 10;
+		var myysize = document.getElementById("ysize") ? document.getElementById("ysize").value : 10;
+		var myxname = document.getElementById("xname") ? document.getElementById("xname").value : 'x';
+		var myyname = document.getElementById("yname") ? document.getElementById("yname").value : 'y';
 	}
 
     //drawing canvas below
@@ -72,12 +84,28 @@ function DrawGraph(isEample, customCanvas, scaleMultiplier) {
         ctx.scale(mult, mult);
     }
 
+    var curScale = (typeof window.scale !== 'undefined') ? window.scale : ((typeof scale !== 'undefined') ? parseFloat(scale) : 35);
+    var scaleInput = document.getElementById("graph_scale");
+    if (scaleInput && !isNaN(parseFloat(scaleInput.value))) {
+        curScale = parseFloat(scaleInput.value);
+    }
+    window.scale = curScale;
+    scale = curScale;
+
+    var curXOffset = (typeof window.x_offset !== 'undefined') ? window.x_offset : ((typeof x_offset !== 'undefined') ? x_offset : 28);
+    var curYOffset = (typeof window.y_offset !== 'undefined') ? window.y_offset : ((typeof y_offset !== 'undefined') ? y_offset : 28);
+    window.x_offset = curXOffset;
+    x_offset = curXOffset;
+    window.y_offset = curYOffset;
+    y_offset = curYOffset;
+
     ctx.save();
     //Draw axis
+    var axHex = window.normalizeToHex ? window.normalizeToHex(axCol) : (axCol === 'black' ? '#0f172a' : axCol);
+    ctx.strokeStyle = axHex;
+    ctx.fillStyle = axHex;
     ctx.transform(1, 0, 0, -1, x_offset, logicalHeight - y_offset);
     ctx.beginPath();
-    //get new scale
-    scale = document.getElementById("graph_scale").value;
     //define the start-point coordinate of the straight
     ctx.moveTo(0, scale * myysize);
     //define the end-point coordinate value of the straight
@@ -96,7 +124,7 @@ function DrawGraph(isEample, customCanvas, scaleMultiplier) {
 		ctx.lineTo(5.5, scale * document.getElementById("ysize").value - 11);
 		ctx.lineTo(0, scale * document.getElementById("ysize").value);
 		ctx.closePath();
-		ctx.fillStyle = 'black';
+		ctx.fillStyle = axHex;
 		ctx.fill();
 		ctx.stroke();
 	} else if (isEample) {
@@ -107,7 +135,7 @@ function DrawGraph(isEample, customCanvas, scaleMultiplier) {
 		ctx.lineTo(5.5, scale * myysize - 11);
 		ctx.lineTo(0, scale * myysize);
 		ctx.closePath();
-		ctx.fillStyle = 'black';
+		ctx.fillStyle = axHex;
 		ctx.fill();
 		ctx.stroke();
 	}
@@ -120,7 +148,7 @@ function DrawGraph(isEample, customCanvas, scaleMultiplier) {
 		ctx.lineTo(scale * document.getElementById("xsize").value - 11, -5.5);
 		ctx.lineTo(scale * document.getElementById("xsize").value, 0);
 		ctx.closePath();
-		ctx.fillStyle = 'black';
+		ctx.fillStyle = axHex;
 		ctx.fill();
 		ctx.stroke();
 	} else if (isEample) {
@@ -130,7 +158,7 @@ function DrawGraph(isEample, customCanvas, scaleMultiplier) {
 		ctx.lineTo(scale * myxsize - 11, -5.5);
 		ctx.lineTo(scale * myxsize, 0);
 		ctx.closePath();
-		ctx.fillStyle = 'black';
+		ctx.fillStyle = axHex;
 		ctx.fill();
 		ctx.stroke();
 	}
@@ -138,12 +166,14 @@ function DrawGraph(isEample, customCanvas, scaleMultiplier) {
     ctx.save();
     ctx.translate(scale * myxsize + 10, -10);
     ctx.scale(1, -1);
+    ctx.fillStyle = axHex;
     ctx.fillText(myxname, 0, 0);
     ctx.restore();
     //y axis name
     ctx.save();
     ctx.translate(-10, scale * myysize + 10);
     ctx.scale(1, -1);
+    ctx.fillStyle = axHex;
     ctx.fillText(myyname, 0, 0);
     ctx.restore();
 	
@@ -204,10 +234,11 @@ function DrawGraph(isEample, customCanvas, scaleMultiplier) {
             var rNameEl = document.getElementById("retangularname_" + z);
             var rDashEl = document.getElementById("retangulardash_" + z);
             var rColEl = document.getElementById("retangularColor_" + z);
+            var rFillEl = document.getElementById("retangularfill_" + z);
             if (rEl && sEl && tEl && uEl) {
-                PrintRectangle(ctx, rEl, sEl, tEl, uEl, rNameEl, rDashEl, rColEl);
+                PrintRectangle(ctx, rEl, sEl, tEl, uEl, rNameEl, rDashEl, rColEl, rFillEl);
                 if (rEl.value != 0 || sEl.value != 0 || tEl.value != 0 || uEl.value != 0) {
-                    rects += DrawRectangle(rEl, sEl, tEl, uEl, rNameEl, rDashEl, rColEl);
+                    rects += DrawRectangle(rEl, sEl, tEl, uEl, rNameEl, rDashEl, rColEl, rFillEl);
                 }
             }
         }
@@ -270,7 +301,7 @@ function DrawGraph(isEample, customCanvas, scaleMultiplier) {
 
 			if (pName !== "" || px !== 0 || py !== 0) {
 				var tikzAnchor = pPos.replace('_', ' ');
-				var tikzCol = pCol === 'black' ? '' : pCol;
+				var tikzCol = (pCol === 'black' || pCol === '#0f172a' || pCol === '#000000') ? '' : (window.toTikzColor ? window.toTikzColor(pCol) : pCol);
 				if (hasDot) {
 					var colPart = tikzCol ? '[' + tikzCol + '] ' : '';
 					var nodePart = pName ? ' node[' + tikzAnchor + (tikzCol ? ',' + tikzCol : '') + ']{$' + pName + '$}' : '';
@@ -290,7 +321,7 @@ function DrawGraph(isEample, customCanvas, scaleMultiplier) {
     //drawing label beyond axis
     //draw origin
     ctx.save();
-    ctx.transform(1, 0, 0, -1, x_offset * 0.3, logicalHeight - y_offset * 0.3);
+    ctx.transform(1, 0, 0, -1, x_offset - 16, logicalHeight - (y_offset - 16));
     ctx.scale(1, -1);
     ctx.fillText(document.getElementById("label_origin_name").value, 0, 0);
     ctx.restore();
@@ -308,7 +339,7 @@ function DrawGraph(isEample, customCanvas, scaleMultiplier) {
         ctx.restore();
     }
     ctx.save();
-    ctx.transform(1, 0, 0, -1, x_offset, logicalHeight - y_offset * 0.3);
+    ctx.transform(1, 0, 0, -1, x_offset, logicalHeight - (y_offset - 18));
     ctx.translate(document.getElementById("label_x_1").value * scale, 0);
     ctx.scale(1, -1);
     ctx.fillText(document.getElementById("label_x_1_name").value, 0, 0);
@@ -327,7 +358,7 @@ function DrawGraph(isEample, customCanvas, scaleMultiplier) {
         ctx.restore();
     }
     ctx.save();
-    ctx.transform(1, 0, 0, -1, x_offset, logicalHeight - y_offset * 0.3);
+    ctx.transform(1, 0, 0, -1, x_offset, logicalHeight - (y_offset - 18));
     ctx.translate(document.getElementById("label_x_2").value * scale, 0);
     ctx.scale(1, -1);
     ctx.fillText(document.getElementById("label_x_2_name").value, 0, 0);
@@ -346,7 +377,7 @@ function DrawGraph(isEample, customCanvas, scaleMultiplier) {
         ctx.restore();
     }
     ctx.save();
-    ctx.transform(1, 0, 0, -1, 0, logicalHeight - y_offset);
+    ctx.transform(1, 0, 0, -1, x_offset - 20, logicalHeight - y_offset);
     ctx.translate(0, document.getElementById("label_y_1").value * scale);
     ctx.scale(1, -1);
     ctx.fillText(document.getElementById("label_y_1_name").value, 0, 0);
@@ -365,7 +396,7 @@ function DrawGraph(isEample, customCanvas, scaleMultiplier) {
         ctx.restore();
     }
     ctx.save();
-    ctx.transform(1, 0, 0, -1, 0, logicalHeight - y_offset);
+    ctx.transform(1, 0, 0, -1, x_offset - 20, logicalHeight - y_offset);
     ctx.translate(0, document.getElementById("label_y_2").value * scale);
     ctx.scale(1, -1);
     ctx.fillText(document.getElementById("label_y_2_name").value, 0, 0);
@@ -396,10 +427,11 @@ function DrawGraph(isEample, customCanvas, scaleMultiplier) {
 				ctx.translate(px * scale, py * scale);
 
 				// Draw dot marker if enabled
+				var pColHex = window.normalizeToHex ? window.normalizeToHex(pCol) : (pCol === 'black' ? '#0f172a' : pCol);
 				if (hasDot) {
 					ctx.beginPath();
 					ctx.arc(0, 0, 3.5, 0, Math.PI * 2);
-					ctx.fillStyle = pCol === 'black' ? '#0f172a' : pCol;
+					ctx.fillStyle = pColHex;
 					ctx.fill();
 					ctx.strokeStyle = '#ffffff';
 					ctx.lineWidth = 1;
@@ -410,7 +442,7 @@ function DrawGraph(isEample, customCanvas, scaleMultiplier) {
 				if (pName) {
 					ctx.scale(1, -1); // flip Y for text
 					ctx.font = "bold 12px system-ui, -apple-system, sans-serif";
-					ctx.fillStyle = pCol === 'black' ? '#0f172a' : pCol;
+					ctx.fillStyle = pColHex;
 
 					var textX = 6, textY = -6;
 					var align = "left", baseline = "bottom";
@@ -447,14 +479,22 @@ function DrawGraph(isEample, customCanvas, scaleMultiplier) {
     if (isExport && mult !== 1) {
         ctx.restore();
     }
+
+    // Auto-redraw grid if enabled
+    if (!isExport && window.isGridEnabled && typeof window.drawGrid === 'function') {
+        window.drawGrid();
+    }
 }
 
 // Global legacy fallback helper functions
 function getMousePos(cnv, evt) {
     var rect = cnv.getBoundingClientRect();
+    var curScale = typeof window.scale !== 'undefined' ? window.scale : (scale || 35);
+    var curXOffset = typeof window.x_offset !== 'undefined' ? window.x_offset : (x_offset || 28);
+    var curYOffset = typeof window.y_offset !== 'undefined' ? window.y_offset : (y_offset || 28);
     return {
-        x: Math.round(((evt.clientX - rect.left - x_offset) / scale) * 100) / 100,
-        y: Math.round(((cnv.height - (evt.clientY - rect.top) - y_offset) / scale) * 100) / 100
+        x: Math.round(((evt.clientX - rect.left - curXOffset) / curScale) * 100) / 100,
+        y: Math.round(((cnv.height - (evt.clientY - rect.top) - curYOffset) / curScale) * 100) / 100
     };
 }
 
@@ -464,14 +504,14 @@ function getMousePos(cnv, evt) {
         if (!ncv) return;
         var context = ncv.getContext("2d");
         if (!context) return;
-        context.clearRect(0,0,600,580);
+        context.clearRect(0, 0, ncv.width || 600, ncv.height || 580);
         var pointonscreen = 4;
         var isDrawingLine = (typeof drawingline !== 'undefined') ? drawingline : true;
         var isOnlyOne = (typeof onlyonepoint !== 'undefined') ? onlyonepoint : false;
         var history = (typeof mouse_history !== 'undefined') ? mouse_history : [];
-        var curScale = (typeof scale !== 'undefined') ? scale : 35;
-        var curXOffset = (typeof x_offset !== 'undefined') ? x_offset : 28;
-        var curYOffset = (typeof y_offset !== 'undefined') ? y_offset : 28;
+        var curScale = (typeof window.scale !== 'undefined') ? window.scale : ((typeof scale !== 'undefined') ? scale : 35);
+        var curXOffset = (typeof window.x_offset !== 'undefined') ? window.x_offset : ((typeof x_offset !== 'undefined') ? x_offset : 28);
+        var curYOffset = (typeof window.y_offset !== 'undefined') ? window.y_offset : ((typeof y_offset !== 'undefined') ? y_offset : 28);
 
         if(isDrawingLine){    //if drawline take last two point to draw
             pointonscreen = 2;

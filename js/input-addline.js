@@ -117,6 +117,11 @@ function AddLine(form) {
 
     if (typeof updateLineTelemetry === 'function') updateLineTelemetry(curI);
 
+    if (window.enhanceColorControl) {
+        var colSel = document.getElementById("lineColor_" + curI);
+        if (colSel) window.enhanceColorControl(colSel);
+    }
+
     // Scroll new card smoothly into view
     card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 

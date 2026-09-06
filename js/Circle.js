@@ -14,7 +14,8 @@ function PrintCircle(ctx, cxEl, cyEl, rEl, name, dash, lineColor, fill) {
         ctx.setLineDash([]);
     }
 
-    var strokeCol = (lineColor && lineColor.value) ? lineColor.value : "#000000";
+    var rawCol = (lineColor && lineColor.value) ? lineColor.value : "#000000";
+    var strokeCol = window.normalizeToHex ? window.normalizeToHex(rawCol) : rawCol;
 
     // Optional translucent fill
     if (fill && fill.checked) {
@@ -58,16 +59,23 @@ function DrawCircle(cxEl, cyEl, rEl, name, dash, lineColor, fill) {
 
     var isFill = fill && fill.checked;
     var options = [];
+    var col = (lineColor && lineColor.value) ? lineColor.value : "black";
+    var isNonDefaultCol = col && col !== "#000000" && col !== "#000" && col !== "black" && col !== "#0f172a";
 
     if (isFill) {
-        var col = (lineColor && lineColor.value) ? lineColor.value : "black";
-        options.push("fill=" + (col === "black" ? "gray!20" : col + "!15"));
+        if (!isNonDefaultCol) {
+            options.push("fill=gray!20");
+        } else {
+            var fillTikz = window.toTikzColor ? window.toTikzColor(col, 'fill') : ('fill=' + col);
+            options.push(fillTikz, "fill opacity=0.15");
+        }
     }
     if (dash && dash.checked) {
         options.push("dashed");
     }
-    if (lineColor && lineColor.value && lineColor.value !== "#000000" && lineColor.value !== "#000") {
-        options.push("draw=" + lineColor.value);
+    if (isNonDefaultCol) {
+        var circleCol = window.toTikzColor ? window.toTikzColor(col) : ('color=' + col);
+        options.push(circleCol);
     } else {
         options.push("draw");
     }

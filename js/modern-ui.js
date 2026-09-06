@@ -116,15 +116,16 @@ function initCanvasHud() {
     var mouseY = e.clientY - rect.top;
     
     // Scale and offsets from global scope if present
-    var currentScale = typeof scale !== 'undefined' ? scale : 35;
-    var cur_x_offset = typeof x_offset !== 'undefined' ? x_offset : (currentScale * 0.8);
-    var cur_y_offset = typeof y_offset !== 'undefined' ? y_offset : (currentScale * 0.8);
+    var currentScale = (typeof window.scale !== 'undefined') ? window.scale : ((typeof scale !== 'undefined') ? scale : 35);
+    var cur_x_offset = (typeof window.x_offset !== 'undefined') ? window.x_offset : ((typeof x_offset !== 'undefined') ? x_offset : 28);
+    var cur_y_offset = (typeof window.y_offset !== 'undefined') ? window.y_offset : ((typeof y_offset !== 'undefined') ? y_offset : 28);
 
     // Calculate Cartesian coordinate
     var graphX = ((mouseX - cur_x_offset) / currentScale).toFixed(2);
     var graphY = ((canvas.height - cur_y_offset - mouseY) / currentScale).toFixed(2);
+    var zoomPct = Math.round((currentScale / 35) * 100);
 
-    hud.textContent = 'Cursor: (' + graphX + ', ' + graphY + ')';
+    hud.textContent = 'Cursor: (' + graphX + ', ' + graphY + ') | ' + zoomPct + '%';
   });
 
   canvas.addEventListener('mouseleave', function() {

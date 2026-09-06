@@ -1,123 +1,131 @@
-   function drawGrid(customCnv, scaleMultiplier) {
-        if (!customCnv) {
-            window.isGridDrawn = true;
+// Infinite, adaptive grid rendering for 2D Cartesian plane
+function drawGrid(customCnv, scaleMultiplier, forceState) {
+    var isExport = !!scaleMultiplier && scaleMultiplier !== 1;
+    if (!customCnv) {
+        if (typeof forceState === 'boolean') {
+            window.isGridEnabled = forceState;
+        } else {
+            window.isGridEnabled = !window.isGridEnabled;
         }
-        var cnv = customCnv || document.getElementById("myCanvas");
-        if (!cnv) return;
+        window.isGridDrawn = window.isGridEnabled;
 
-        var gridOptions = {
-            minorLines: {
-                separation: 5,
-                color: '#E5E4E2'
-            },
-            majorLines: {
-                separation: 30,
-                color: '#E5E4E2'
+        var gridBtn = document.getElementById("btn-toggle-grid");
+        if (gridBtn) {
+            if (window.isGridEnabled) {
+                gridBtn.classList.add("active");
+            } else {
+                gridBtn.classList.remove("active");
             }
-        };
+        }
 
-        //drawGridLines(cnv, gridOptions.minorLines, scaleMultiplier);
-        drawGridLines(cnv, gridOptions.majorLines, scaleMultiplier);
-        return;
+        if (!window.isGridEnabled) {
+            var bgcanvas = document.getElementById("bgcanvas");
+            if (bgcanvas) {
+                var bgctx = bgcanvas.getContext("2d");
+                bgctx.clearRect(0, 0, bgcanvas.width, bgcanvas.height);
+            }
+            if (typeof DrawGraph === 'function') DrawGraph();
+            return;
+        }
     }
 
-    function drawGridLines(cnv, lineOptions, scaleMultiplier) {
-        var mult = scaleMultiplier || 1;
-        var isExport = !!scaleMultiplier && scaleMultiplier !== 1;
-        var logicalHeight = isExport ? (cnv.height / mult) : cnv.height;
+    var cnv = customCnv || document.getElementById("bgcanvas") || document.getElementById("myCanvas");
+    if (!cnv) return;
 
-        var iWidth = 570;
-        var iHeight = 470;
+    var curScale = (typeof window.scale !== 'undefined') ? window.scale : ((typeof scale !== 'undefined') ? scale : 35);
+    var curXOffset = (typeof window.x_offset !== 'undefined') ? window.x_offset : ((typeof x_offset !== 'undefined') ? x_offset : 28);
+    var curYOffset = (typeof window.y_offset !== 'undefined') ? window.y_offset : ((typeof y_offset !== 'undefined') ? y_offset : 28);
 
-        var ctx = cnv.getContext('2d');
-        ctx.save();
-        if (isExport) {
-            ctx.scale(mult, mult);
-        }
+    var mult = scaleMultiplier || 1;
+    var logicalWidth = isExport ? (cnv.width / mult) : cnv.width;
+    var logicalHeight = isExport ? (cnv.height / mult) : cnv.height;
 
-        ctx.globalCompositeOperation = "destination-over"; //make grid at the bottom
+    var ctx = cnv.getContext('2d');
+    ctx.save();
+    if (isExport) {
+        ctx.scale(mult, mult);
+    }
+    if (!customCnv) {
+        ctx.clearRect(0, 0, logicalWidth, logicalHeight);
+    }
 
-        //translate axis
-        ctx.transform(1, 0, 0, -1, x_offset, logicalHeight - y_offset);
+    ctx.globalCompositeOperation = "destination-over";
 
-			//ctx.transform(1, 0, 0, -1, 10, 380);
+    // Transform to Cartesian math coordinates origin
+    ctx.transform(1, 0, 0, -1, curXOffset, logicalHeight - curYOffset);
 
+    // Visible mathematical bounds on canvas
+    var minX = -curXOffset / curScale;
+    var maxX = (logicalWidth - curXOffset) / curScale;
+    var minY = -curYOffset / curScale;
+    var maxY = (logicalHeight - curYOffset) / curScale;
 
+    // Expand bounds slightly for clean rendering across viewport edges
+    var startX = Math.floor(minX) - 1;
+    var endX = Math.ceil(maxX) + 1;
+    var startY = Math.floor(minY) - 1;
+    var endY = Math.ceil(maxY) + 1;
 
-            ctx.strokeStyle = lineOptions.color;
+    // Choose grid step based on zoom scale
+    var step = 1;
+    if (curScale < 12) step = 5;
+    else if (curScale < 22) step = 2;
 
-            ctx.strokeWidth = 1;
+    // 1. Major grid lines
+    ctx.strokeStyle = "#e2e8f0"; // slate-200
+    ctx.lineWidth = 1;
+    ctx.beginPath();
 
+    for (var x = Math.floor(startX / step) * step; x <= endX; x += step) {
+        ctx.moveTo(x * curScale, startY * curScale);
+        ctx.lineTo(x * curScale, endY * curScale);
+    }
 
+    for (var y = Math.floor(startY / step) * step; y <= endY; y += step) {
+        ctx.moveTo(startX * curScale, y * curScale);
+        ctx.lineTo(endX * curScale, y * curScale);
+    }
+    ctx.stroke();
 
-            ctx.beginPath();
-
-
-
-            var iCount = null;
-
-            var i = null;
-
-            var x = null;
-
-            var y = null;
-
-
-
-            iCount = Math.floor(iWidth / lineOptions.separation);
-
-
-
-            for (i = 1; i <= iCount; i++) {
-
-                x = (i * lineOptions.separation);
-
-                ctx.moveTo(x, 0);
-
-                ctx.lineTo(x, iHeight);
-
-                ctx.stroke();
-
+    // 2. Subtle minor sub-grid lines when zoomed in
+    if (curScale >= 45) {
+        var subStep = curScale >= 85 ? 0.25 : 0.5;
+        ctx.strokeStyle = "#f1f5f9"; // soft slate-100
+        ctx.lineWidth = 0.75;
+        ctx.beginPath();
+        for (var sx = Math.floor(startX / subStep) * subStep; sx <= endX; sx += subStep) {
+            if (Math.abs(sx % step) > 0.001) {
+                ctx.moveTo(sx * curScale, startY * curScale);
+                ctx.lineTo(sx * curScale, endY * curScale);
             }
-
-
-
-
-
-            iCount = Math.floor(iHeight / lineOptions.separation);
-
-
-
-            for (i = 1; i <= iCount; i++) {
-
-                y = (i * lineOptions.separation);
-
-                ctx.moveTo(0, y);
-
-                ctx.lineTo(iWidth, y);
-
-                ctx.stroke();
-
-            }
-
-			ctx.strokeStyle = "#000000"
-
-            
-
-			
-
-			ctx.closePath();
-
-			ctx.restore();
-
-			ctx.globalCompositeOperation="source-over";
-
-
-
-            return;
-
         }
+        for (var sy = Math.floor(startY / subStep) * subStep; sy <= endY; sy += subStep) {
+            if (Math.abs(sy % step) > 0.001) {
+                ctx.moveTo(startX * curScale, sy * curScale);
+                ctx.lineTo(endX * curScale, sy * curScale);
+            }
+        }
+        ctx.stroke();
+    }
+
+    // 3. Infinite Axis Reference Lines (X=0 and Y=0) across full canvas
+    ctx.strokeStyle = "#cbd5e1"; // slate-300
+    ctx.lineWidth = 1.25;
+    ctx.beginPath();
+    // Y-axis line
+    ctx.moveTo(0, startY * curScale);
+    ctx.lineTo(0, endY * curScale);
+    // X-axis line
+    ctx.moveTo(startX * curScale, 0);
+    ctx.lineTo(endX * curScale, 0);
+    ctx.stroke();
+
+    ctx.restore();
+    ctx.globalCompositeOperation = "source-over";
+}
 
 if (typeof window !== 'undefined') {
     window.drawGrid = drawGrid;
+    window.isGridEnabled = false;
+    window.isGridDrawn = false;
 }

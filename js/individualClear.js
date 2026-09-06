@@ -5,6 +5,7 @@ function delR(id) {
     var u = document.getElementById("u_" + id); if (u) u.value = 0;
     var n = document.getElementById("retangularname_" + id); if (n) n.value = "";
     var c = document.getElementById("retangularColor_" + id); if (c) c.value = "black";
+    if (window.coordinateHistory) window.coordinateHistory.push("Clear Rectangle " + id);
 }
 
 function del(id) {
@@ -21,6 +22,7 @@ function del(id) {
     var lpos = document.getElementById("lineLabelPos_" + id); if (lpos) lpos.value = "end";
     var lanc = document.getElementById("lineLabelAnchor_" + id); if (lanc) lanc.value = "right";
     if (typeof updateLineTelemetry === 'function') updateLineTelemetry(id);
+    if (window.coordinateHistory) window.coordinateHistory.push("Clear Line " + id);
 }
 
 function delC(id) {
@@ -35,6 +37,7 @@ function delC(id) {
     var n = document.getElementById("curvename_" + id); if (n) n.value = "";
     var col = document.getElementById("curveColor_" + id) || document.getElementById("curvecolor_" + id);
     if (col) col.value = "black";
+    if (window.coordinateHistory) window.coordinateHistory.push("Clear Curve " + id);
 }
 
 function delP(id) {
@@ -46,6 +49,7 @@ function delP(id) {
     var dot = document.getElementById("pointdot_" + id); if (dot) dot.checked = true;
     var pos = document.getElementById("pointpos_" + id); if (pos) pos.value = "above_right";
     var title = document.getElementById("point_title_" + id); if (title) title.textContent = "(Empty)";
+    if (window.coordinateHistory) window.coordinateHistory.push("Clear Point " + id);
 }
 
 function delCircle(id) {
@@ -57,4 +61,5 @@ function delCircle(id) {
     var dash = document.getElementById("circledash_" + id); if (dash) dash.checked = false;
     var fill = document.getElementById("circlefill_" + id); if (fill) fill.checked = false;
     var show = document.getElementById("circleshow_" + id); if (show) show.checked = false;
+    if (window.coordinateHistory) window.coordinateHistory.push("Clear Circle " + id);
 }

@@ -108,6 +108,11 @@ function AddPoints(form) {
         container.appendChild(card);
     }
 
+    if (window.enhanceColorControl) {
+        var colSel = document.getElementById("pointColor_" + curP);
+        if (colSel) window.enhanceColorControl(colSel);
+    }
+
     card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
     var nameInput = document.getElementById("p_name_" + curP);

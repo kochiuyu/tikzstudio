@@ -1,4 +1,4 @@
-function PrintRectangle(ctx, a, b, c, d, name, dash, lineColor) {
+function PrintRectangle(ctx, a, b, c, d, name, dash, lineColor, fill) {
     ctx.save();
     if (dash && dash.checked) {
         ctx.setLineDash([5, 5]);
@@ -16,8 +16,19 @@ function PrintRectangle(ctx, a, b, c, d, name, dash, lineColor) {
     var width = Math.abs(x2 - x1);
     var height = Math.abs(y2 - y1);
     
+    var colVal = (lineColor && lineColor.value) ? lineColor.value : "#000000";
+    var colHex = window.normalizeToHex ? window.normalizeToHex(colVal) : colVal;
+
+    if (fill && fill.checked) {
+        ctx.save();
+        ctx.fillStyle = colHex;
+        ctx.globalAlpha = 0.18;
+        ctx.fillRect(scale * minX, scale * minY, scale * width, scale * height);
+        ctx.restore();
+    }
+
     ctx.beginPath();
-    ctx.strokeStyle = (lineColor && lineColor.value) ? lineColor.value : "#000000";
+    ctx.strokeStyle = colHex;
     ctx.lineWidth = 2;
     ctx.strokeRect(scale * minX, scale * minY, scale * width, scale * height);
     
@@ -26,25 +37,39 @@ function PrintRectangle(ctx, a, b, c, d, name, dash, lineColor) {
         ctx.translate(scale * (minX + width / 2), scale * (minY + height / 2));
         ctx.scale(1, -1);
         ctx.font = "12px sans-serif";
-        ctx.fillStyle = (lineColor && lineColor.value) ? lineColor.value : "#000000";
-        ctx.fillText(name.value, 0, 0);
+        ctx.fillStyle = colHex;
+        ctx.textAlign = "center";
+        ctx.fillText(name.value, 0, 4);
         ctx.restore();
     }
     
     ctx.restore();
 }
 
-function DrawRectangle(a, b, c, d, name, dash, lineColor) {
+function DrawRectangle(a, b, c, d, name, dash, lineColor, fill) {
     var x1 = parseFloat(a.value) || 0;
     var y1 = parseFloat(b.value) || 0;
     var x2 = parseFloat(c.value) || 0;
     var y2 = parseFloat(d.value) || 0;
     var options = [];
+    var colVal = (lineColor && lineColor.value) ? lineColor.value : "#000000";
+    var isNonDefaultCol = colVal && colVal !== "#000000" && colVal !== "#000" && colVal !== "black" && colVal !== "#0f172a";
+
+    if (fill && fill.checked) {
+        if (!isNonDefaultCol) {
+            options.push("fill=gray!20");
+        } else {
+            var fillTikz = window.toTikzColor ? window.toTikzColor(colVal, 'fill') : ('fill=' + colVal);
+            options.push(fillTikz, "fill opacity=0.18");
+        }
+    }
+
     if (dash && dash.checked) {
         options.push("dashed");
     }
-    if (lineColor && lineColor.value && lineColor.value !== "#000000" && lineColor.value !== "#000") {
-        options.push("draw=" + lineColor.value);
+    if (isNonDefaultCol) {
+        var strokeTikz = window.toTikzColor ? window.toTikzColor(colVal) : ('color=' + colVal);
+        options.push(strokeTikz);
     } else {
         options.push("draw");
     }

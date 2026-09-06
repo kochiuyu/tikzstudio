@@ -15,7 +15,7 @@
   // Global Drawing State
   window.drawingState = {
     active: true,
-    tool: 'rectangle',    // 'select' | 'rectangle' | 'line' | 'curve' | 'point'
+    tool: 'rectangle',    // 'select' | 'rectangle' | 'line' | 'curve' | 'point' | 'pan' | 'axis'
     index: 1,
     subPoint: 'all',
     requireConfirm: true, // "maybe with final confirm"
@@ -24,6 +24,11 @@
     dragStartPos: null,
     currentPos: null,
     placedCurvePoints: [],
+
+    // Canvas panning & navigation state
+    isPanning: false,
+    panStart: null,
+    isSpacePressed: false,
 
     // Candidate shape awaiting confirmation
     candidate: null,
@@ -47,9 +52,9 @@
     var canvasX = (clientX - rect.left) * scaleX;
     var canvasY = (clientY - rect.top) * scaleY;
 
-    var curScale = typeof scale !== 'undefined' ? scale : (parseFloat(document.getElementById("graph_scale")?.value) || 35);
-    var curXOffset = typeof x_offset !== 'undefined' ? x_offset : (curScale * 0.8);
-    var curYOffset = typeof y_offset !== 'undefined' ? y_offset : (curScale * 0.8);
+    var curScale = (typeof window.scale !== 'undefined') ? window.scale : ((typeof scale !== 'undefined') ? scale : (parseFloat(document.getElementById("graph_scale")?.value) || 35));
+    var curXOffset = (typeof window.x_offset !== 'undefined') ? window.x_offset : ((typeof x_offset !== 'undefined') ? x_offset : 28);
+    var curYOffset = (typeof window.y_offset !== 'undefined') ? window.y_offset : ((typeof y_offset !== 'undefined') ? y_offset : 28);
 
     var rawX = (canvasX - curXOffset) / curScale;
     var rawY = (cnv.height - curYOffset - canvasY) / curScale;
@@ -84,13 +89,250 @@
    */
   window.mathToScreen = function (mx, my) {
     var cnv = document.getElementById("myCanvas");
-    var curScale = typeof scale !== 'undefined' ? scale : (parseFloat(document.getElementById("graph_scale")?.value) || 35);
-    var curXOffset = typeof x_offset !== 'undefined' ? x_offset : (curScale * 0.8);
-    var curYOffset = typeof y_offset !== 'undefined' ? y_offset : (curScale * 0.8);
+    var curScale = (typeof window.scale !== 'undefined') ? window.scale : ((typeof scale !== 'undefined') ? scale : (parseFloat(document.getElementById("graph_scale")?.value) || 35));
+    var curXOffset = (typeof window.x_offset !== 'undefined') ? window.x_offset : ((typeof x_offset !== 'undefined') ? x_offset : 28);
+    var curYOffset = (typeof window.y_offset !== 'undefined') ? window.y_offset : ((typeof y_offset !== 'undefined') ? y_offset : 28);
     return {
       screenX: curXOffset + mx * curScale,
       screenY: (cnv ? cnv.height : 580) - curYOffset - my * curScale
     };
+  };
+
+  /**
+   * Update Coordinate HUD readout and Viewport Controls
+   */
+  window.updateViewportHUD = function (customPos) {
+    var hud = document.getElementById("canvas-coord-hud");
+    var vpBadge = document.getElementById("vp-badge-zoom");
+    var zoomInd = document.getElementById("canvas-zoom-indicator");
+    var vpZoomLabel = document.getElementById("viewport-zoom-label");
+    var curScale = (typeof window.scale !== 'undefined') ? window.scale : 35;
+    var zoomPct = Math.round((curScale / 35) * 100);
+    if (vpBadge) {
+      vpBadge.textContent = zoomPct + "%";
+    }
+    if (zoomInd) {
+      zoomInd.textContent = zoomPct + "%";
+    }
+    if (vpZoomLabel) {
+      vpZoomLabel.textContent = zoomPct + "%";
+    }
+    if (!hud) return;
+    var state = window.drawingState;
+    var pos = customPos || state?.currentPos;
+    var coordText = pos ? "Cursor: (" + pos.x + ", " + pos.y + ")" : "Cursor: (x, y)";
+    if (state && state.tool === 'line' && state.dragStartPos && pos) {
+      var dx = pos.x - state.dragStartPos.x;
+      var dy = pos.y - state.dragStartPos.y;
+      var len = Math.hypot(dx, dy).toFixed(2);
+      var angle = Math.round(((Math.atan2(dy, dx) * 180 / Math.PI) + 360) % 360);
+      coordText = "Line: L=" + len + "u, " + angle + "° | " + coordText;
+    }
+    hud.textContent = coordText + " | Zoom: " + zoomPct + "%";
+  };
+
+  /**
+   * Viewport navigation helper: Zoom centered at canvas midpoint
+   */
+  window.zoomCanvasAtCenter = function (factor) {
+    var cnv = document.getElementById("myCanvas");
+    if (!cnv) return;
+    var canvasX = cnv.width / 2;
+    var canvasY = cnv.height / 2;
+
+    var curScale = (typeof window.scale !== 'undefined') ? window.scale : 35;
+    var curXOffset = (typeof window.x_offset !== 'undefined') ? window.x_offset : 28;
+    var curYOffset = (typeof window.y_offset !== 'undefined') ? window.y_offset : 28;
+
+    var mathX = (canvasX - curXOffset) / curScale;
+    var mathY = (cnv.height - curYOffset - canvasY) / curScale;
+
+    var newScale = Math.max(6, Math.min(300, curScale * factor));
+    var newXOffset = canvasX - mathX * newScale;
+    var newYOffset = cnv.height - canvasY - mathY * newScale;
+
+    window.scale = Math.round(newScale * 100) / 100;
+    window.x_offset = Math.round(newXOffset * 10) / 10;
+    window.y_offset = Math.round(newYOffset * 10) / 10;
+    if (typeof scale !== 'undefined') scale = window.scale;
+    if (typeof x_offset !== 'undefined') x_offset = window.x_offset;
+    if (typeof y_offset !== 'undefined') y_offset = window.y_offset;
+
+    var scaleInput = document.getElementById("graph_scale");
+    if (scaleInput) scaleInput.value = Math.round(window.scale * 10) / 10;
+
+    if (typeof DrawGraph === 'function') DrawGraph();
+    if (window.isGridDrawn && typeof drawGrid === 'function') drawGrid();
+    renderAllOverlays();
+    window.updateViewportHUD();
+  };
+
+  /**
+   * Reset zoom level back to 100% (scale 35) preserving current center
+   */
+  window.resetCanvasZoom = function () {
+    var curScale = (typeof window.scale !== 'undefined') ? window.scale : 35;
+    window.zoomCanvasAtCenter(35 / curScale);
+  };
+
+  /**
+   * Center the mathematical origin (0, 0) in the middle of canvas
+   */
+  window.centerCanvasOrigin = function () {
+    var cnv = document.getElementById("myCanvas");
+    if (!cnv) return;
+    window.x_offset = Math.round(cnv.width / 2);
+    window.y_offset = Math.round(cnv.height / 2);
+    if (typeof x_offset !== 'undefined') x_offset = window.x_offset;
+    if (typeof y_offset !== 'undefined') y_offset = window.y_offset;
+
+    if (typeof DrawGraph === 'function') DrawGraph();
+    if (window.isGridDrawn && typeof drawGrid === 'function') drawGrid();
+    renderAllOverlays();
+    window.updateViewportHUD();
+  };
+
+  /**
+   * Reset view to initial layout (scale 35, origin at standard bottom-left corner)
+   */
+  window.resetCanvasView = function () {
+    var cnv = document.getElementById("myCanvas");
+    window.scale = 35;
+    window.x_offset = 28;
+    window.y_offset = 28;
+    if (typeof scale !== 'undefined') scale = window.scale;
+    if (typeof x_offset !== 'undefined') x_offset = window.x_offset;
+    if (typeof y_offset !== 'undefined') y_offset = window.y_offset;
+
+    var scaleInput = document.getElementById("graph_scale");
+    if (scaleInput) scaleInput.value = 35;
+
+    if (typeof DrawGraph === 'function') DrawGraph();
+    if (window.isGridDrawn && typeof drawGrid === 'function') drawGrid();
+    renderAllOverlays();
+    window.updateViewportHUD();
+  };
+
+  /**
+   * Automatically fit all diagram content comfortably in view
+   */
+  window.fitCanvasContent = function () {
+    var cnv = document.getElementById("myCanvas");
+    if (!cnv) return;
+
+    var minX = 0, maxX = 10, minY = 0, maxY = 10;
+    var foundAny = false;
+
+    // 1. Axis bounds
+    var xSize = parseFloat(document.getElementById("xsize")?.value) || 0;
+    var ySize = parseFloat(document.getElementById("ysize")?.value) || 0;
+    if (xSize > 0 || ySize > 0) {
+      minX = 0; maxX = Math.max(1, xSize);
+      minY = 0; maxY = Math.max(1, ySize);
+      foundAny = true;
+    }
+
+    // 2. Lines
+    for (var i = 1; i <= 4; i++) {
+      var show = document.getElementById("lineshow_" + i);
+      if (!show || show.checked) {
+        var x1 = parseFloat(document.getElementById("a_" + i)?.value);
+        var y1 = parseFloat(document.getElementById("b_" + i)?.value);
+        var x2 = parseFloat(document.getElementById("c_" + i)?.value);
+        var y2 = parseFloat(document.getElementById("d_" + i)?.value);
+        if (!isNaN(x1) && !isNaN(y1) && !isNaN(x2) && !isNaN(y2) && (x1 !== 0 || y1 !== 0 || x2 !== 0 || y2 !== 0)) {
+          minX = foundAny ? Math.min(minX, x1, x2) : Math.min(x1, x2);
+          maxX = foundAny ? Math.max(maxX, x1, x2) : Math.max(x1, x2);
+          minY = foundAny ? Math.min(minY, y1, y2) : Math.min(y1, y2);
+          maxY = foundAny ? Math.max(maxY, y1, y2) : Math.max(y1, y2);
+          foundAny = true;
+        }
+      }
+    }
+
+    // 3. Rectangles
+    for (var z = 1; z <= 2; z++) {
+      var rShow = document.getElementById("rectshow_" + z);
+      if (!rShow || rShow.checked) {
+        var rx1 = parseFloat(document.getElementById("r_" + z)?.value);
+        var ry1 = parseFloat(document.getElementById("s_" + z)?.value);
+        var rx2 = parseFloat(document.getElementById("u_" + z)?.value);
+        var ry2 = parseFloat(document.getElementById("v_" + z)?.value);
+        if (!isNaN(rx1) && !isNaN(ry1) && !isNaN(rx2) && !isNaN(ry2) && (rx1 !== 0 || ry1 !== 0 || rx2 !== 0 || ry2 !== 0)) {
+          minX = foundAny ? Math.min(minX, rx1, rx2) : Math.min(rx1, rx2);
+          maxX = foundAny ? Math.max(maxX, rx1, rx2) : Math.max(rx1, rx2);
+          minY = foundAny ? Math.min(minY, ry1, ry2) : Math.min(ry1, ry2);
+          maxY = foundAny ? Math.max(maxY, ry1, ry2) : Math.max(ry1, ry2);
+          foundAny = true;
+        }
+      }
+    }
+
+    // 4. Circles
+    for (var ci = 1; ci <= 2; ci++) {
+      var cShow = document.getElementById("circleshow_" + ci);
+      if (!cShow || cShow.checked) {
+        var cx = parseFloat(document.getElementById("circle_x_" + ci)?.value);
+        var cy = parseFloat(document.getElementById("circle_y_" + ci)?.value);
+        var cr = parseFloat(document.getElementById("circle_r_" + ci)?.value);
+        if (!isNaN(cx) && !isNaN(cy) && !isNaN(cr) && cr > 0) {
+          minX = foundAny ? Math.min(minX, cx - cr) : cx - cr;
+          maxX = foundAny ? Math.max(maxX, cx + cr) : cx + cr;
+          minY = foundAny ? Math.min(minY, cy - cr) : cy - cr;
+          maxY = foundAny ? Math.max(maxY, cy + cr) : cy + cr;
+          foundAny = true;
+        }
+      }
+    }
+
+    // 5. Points
+    var psJ = typeof window.ps_j !== 'undefined' ? window.ps_j : 4;
+    for (var p = 1; p < psJ; p++) {
+      var ptShow = document.getElementById("pointshow_" + p);
+      if (!ptShow || ptShow.checked) {
+        var px = parseFloat(document.getElementById("p_" + p)?.value);
+        var py = parseFloat(document.getElementById("q_" + p)?.value);
+        if (!isNaN(px) && !isNaN(py) && (px !== 0 || py !== 0)) {
+          minX = foundAny ? Math.min(minX, px) : px;
+          maxX = foundAny ? Math.max(maxX, px) : px;
+          minY = foundAny ? Math.min(minY, py) : py;
+          maxY = foundAny ? Math.max(maxY, py) : py;
+          foundAny = true;
+        }
+      }
+    }
+
+    var spanX = Math.max(1, maxX - minX);
+    var spanY = Math.max(1, maxY - minY);
+    var padX = Math.max(0.5, spanX * 0.15);
+    var padY = Math.max(0.5, spanY * 0.15);
+    minX -= padX; maxX += padX;
+    minY -= padY; maxY += padY;
+    spanX = maxX - minX;
+    spanY = maxY - minY;
+
+    var scaleX = (cnv.width - 40) / spanX;
+    var scaleY = (cnv.height - 40) / spanY;
+    var fitScale = Math.max(8, Math.min(180, Math.min(scaleX, scaleY)));
+
+    var centerMathX = (minX + maxX) / 2;
+    var centerMathY = (minY + maxY) / 2;
+
+    window.scale = Math.round(fitScale * 10) / 10;
+    window.x_offset = Math.round((cnv.width / 2) - (centerMathX * window.scale));
+    window.y_offset = Math.round((cnv.height / 2) - (centerMathY * window.scale));
+
+    if (typeof scale !== 'undefined') scale = window.scale;
+    if (typeof x_offset !== 'undefined') x_offset = window.x_offset;
+    if (typeof y_offset !== 'undefined') y_offset = window.y_offset;
+
+    var scaleInput = document.getElementById("graph_scale");
+    if (scaleInput) scaleInput.value = window.scale;
+
+    if (typeof DrawGraph === 'function') DrawGraph();
+    if (window.isGridDrawn && typeof drawGrid === 'function') drawGrid();
+    renderAllOverlays();
+    window.updateViewportHUD();
   };
 
   /**
@@ -111,6 +353,16 @@
     state.placedCurvePoints = [];
     state.isMouseDown = false;
     state.hasMoved = false;
+
+    if (toolType === 'pan') {
+      state.active = true;
+      deactivateAllDrawCheckboxes();
+      updateDrawingUI();
+      renderAllOverlays();
+      var cnv = document.getElementById("myCanvas");
+      if (cnv) cnv.style.cursor = 'grab';
+      return;
+    }
 
     if (toolType === 'select') {
       state.active = true;
@@ -291,6 +543,10 @@
     if (state.tool === 'select') {
       if (cnv) cnv.style.cursor = "default";
       if (banner) banner.style.display = "none";
+    } else if (state.tool === 'pan') {
+      if (cnv) cnv.style.cursor = state.isPanning ? "grabbing" : "grab";
+      if (banner) banner.style.display = "flex";
+      if (bannerText) bannerText.textContent = "Canvas Pan: Drag anywhere to move canvas view. Scroll mouse wheel to zoom.";
     } else {
       if (cnv) cnv.style.cursor = "crosshair";
       if (banner) banner.style.display = "flex";
@@ -2302,14 +2558,49 @@
   }
 
   function updateConfirmColorSwatches(selectedColor) {
+    var matched = false;
+    var customBtn = document.getElementById("confirm-custom-color-btn");
     document.querySelectorAll("#confirm-color-swatches .color-swatch").forEach(function (sw) {
+      if (sw.id === "confirm-custom-color-btn") return;
       if (sw.getAttribute("data-color") === selectedColor) {
         sw.classList.add("active");
+        matched = true;
       } else {
         sw.classList.remove("active");
       }
     });
+
+    if (customBtn) {
+      if (!matched && selectedColor) {
+        customBtn.classList.add("active");
+        var hex = window.normalizeToHex ? window.normalizeToHex(selectedColor) : selectedColor;
+        customBtn.style.background = hex;
+        customBtn.style.color = "#ffffff";
+      } else {
+        customBtn.classList.remove("active");
+        customBtn.style.background = "";
+        customBtn.style.color = "";
+      }
+    }
   }
+
+  window.openCandidateCustomColorPicker = function(event) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    var btn = document.getElementById("confirm-custom-color-btn") || (event ? event.currentTarget : null);
+    var currentColor = (window.drawingState && window.drawingState.candidate && window.drawingState.candidate.color) || "#0f172a";
+    if (window.openColorPopover) {
+      window.openColorPopover({
+        anchorEl: btn,
+        currentColor: currentColor,
+        onSelect: function(chosenColor) {
+          window.setCandidateColor(chosenColor);
+        }
+      });
+    }
+  };
 
   function updateConfirmStyleButtons(isDashed) {
     var solidBtn = document.getElementById("confirm-style-solid");
@@ -2763,11 +3054,19 @@
     }
 
     // Clear candidate & close card
+    var createdType = candidate ? candidate.type : 'shape';
+    var createdLabel = labelVal;
     state.candidate = null;
     var confirmCard = document.getElementById("shape-confirm-card");
     if (confirmCard) confirmCard.style.display = "none";
 
     renderAllOverlays();
+
+    if (window.coordinateHistory) {
+      var act = "Add " + createdType.charAt(0).toUpperCase() + createdType.slice(1);
+      if (createdLabel) act += ' "' + createdLabel + '"';
+      window.coordinateHistory.push(act);
+    }
   };
 
   /**
@@ -2924,6 +3223,9 @@
     if (window.showToast) {
       window.showToast(sel.type === 'axis' ? "Axis reset to defaults" : "Shape cleared from canvas");
     }
+    if (window.coordinateHistory) {
+      window.coordinateHistory.push("Delete " + sel.type.charAt(0).toUpperCase() + sel.type.slice(1) + " " + sel.index);
+    }
   };
 
   /**
@@ -2935,9 +3237,78 @@
 
     cnv.onmousedown = null;
 
+    // Smooth Infinite Canvas Wheel Zoom centered at mouse cursor
+    function handleCanvasWheel(evt) {
+      var cnv = document.getElementById("myCanvas");
+      if (!cnv) return;
+      evt.preventDefault();
+
+      var rect = cnv.getBoundingClientRect();
+      var scaleX = cnv.width / rect.width;
+      var scaleY = cnv.height / rect.height;
+      var canvasX = (evt.clientX - rect.left) * scaleX;
+      var canvasY = (evt.clientY - rect.top) * scaleY;
+
+      var curScale = (typeof window.scale !== 'undefined') ? window.scale : ((typeof scale !== 'undefined') ? scale : 35);
+      var curXOffset = (typeof window.x_offset !== 'undefined') ? window.x_offset : ((typeof x_offset !== 'undefined') ? x_offset : 28);
+      var curYOffset = (typeof window.y_offset !== 'undefined') ? window.y_offset : ((typeof y_offset !== 'undefined') ? y_offset : 28);
+
+      var mathX = (canvasX - curXOffset) / curScale;
+      var mathY = (cnv.height - curYOffset - canvasY) / curScale;
+
+      var delta = evt.deltaY;
+      var zoomFactor = delta < 0 ? 1.12 : 0.893;
+
+      var newScale = Math.max(6, Math.min(300, curScale * zoomFactor));
+      if (Math.abs(newScale - curScale) < 0.01) return;
+
+      var newXOffset = canvasX - mathX * newScale;
+      var newYOffset = cnv.height - canvasY - mathY * newScale;
+
+      window.scale = Math.round(newScale * 100) / 100;
+      window.x_offset = Math.round(newXOffset * 10) / 10;
+      window.y_offset = Math.round(newYOffset * 10) / 10;
+
+      if (typeof scale !== 'undefined') scale = window.scale;
+      if (typeof x_offset !== 'undefined') x_offset = window.x_offset;
+      if (typeof y_offset !== 'undefined') y_offset = window.y_offset;
+
+      var scaleInput = document.getElementById("graph_scale");
+      if (scaleInput) scaleInput.value = Math.round(window.scale * 10) / 10;
+
+      if (typeof DrawGraph === 'function') DrawGraph();
+      if (window.isGridDrawn && typeof drawGrid === 'function') drawGrid();
+      renderAllOverlays();
+      window.updateViewportHUD(window.getCanvasMathPos(evt.clientX, evt.clientY));
+    }
+
+    cnv.addEventListener('wheel', handleCanvasWheel, { passive: false });
+    var stageWrapper = document.querySelector('.canvas-stage-wrapper');
+    if (stageWrapper) {
+      stageWrapper.addEventListener('wheel', function (e) {
+        if (e.target === stageWrapper || stageWrapper.contains(e.target)) {
+          handleCanvasWheel(e);
+        }
+      }, { passive: false });
+    }
+
     cnv.addEventListener('mousedown', function (evt) {
       var state = window.drawingState;
       var pos = window.getCanvasMathPos(evt.clientX, evt.clientY);
+
+      // 0. Check for Pan trigger: Middle-click OR Spacebar held OR Pan Tool active
+      if (evt.button === 1 || state.isSpacePressed || state.tool === 'pan') {
+        state.isPanning = true;
+        state.panStart = {
+          clientX: evt.clientX,
+          clientY: evt.clientY,
+          x_offset: (typeof window.x_offset !== 'undefined') ? window.x_offset : 28,
+          y_offset: (typeof window.y_offset !== 'undefined') ? window.y_offset : 28
+        };
+        cnv.style.cursor = 'grabbing';
+        evt.preventDefault();
+        return;
+      }
 
       // 1. Check if user clicked on Candidate Handle
       if (state.candidate) {
@@ -2960,6 +3331,7 @@
           if (selHandle) {
             state.selectedShape.activeHandle = selHandle;
             state.isMouseDown = true;
+            state.dragPreState = window.coordinateHistory ? window.coordinateHistory.capture() : null;
             return;
           }
         }
@@ -2988,6 +3360,7 @@
           } else {
             state.activeAxisHandle = axHandle;
             state.isMouseDown = true;
+            state.dragPreState = window.coordinateHistory ? window.coordinateHistory.capture() : null;
           }
           return;
         }
@@ -3060,6 +3433,26 @@
 
     cnv.addEventListener('mousemove', function (evt) {
       var state = window.drawingState;
+
+      // 0. If currently panning canvas viewport
+      if (state.isPanning && state.panStart) {
+        var rect = cnv.getBoundingClientRect();
+        var scaleX = cnv.width / rect.width;
+        var scaleY = cnv.height / rect.height;
+        var dx = (evt.clientX - state.panStart.clientX) * scaleX;
+        var dy = (evt.clientY - state.panStart.clientY) * scaleY;
+        window.x_offset = Math.round((state.panStart.x_offset + dx) * 10) / 10;
+        window.y_offset = Math.round((state.panStart.y_offset - dy) * 10) / 10;
+        if (typeof x_offset !== 'undefined') x_offset = window.x_offset;
+        if (typeof y_offset !== 'undefined') y_offset = window.y_offset;
+
+        if (typeof DrawGraph === 'function') DrawGraph();
+        if (window.isGridDrawn && typeof drawGrid === 'function') drawGrid();
+        renderAllOverlays();
+        window.updateViewportHUD(window.getCanvasMathPos(evt.clientX, evt.clientY));
+        return;
+      }
+
       var pos = window.getCanvasMathPos(evt.clientX, evt.clientY);
 
       // Shift-to-snap constraint (0°, 45°, 90°, etc.) for straight line drawing
@@ -3178,6 +3571,21 @@
 
     cnv.addEventListener('mouseup', function (evt) {
       var state = window.drawingState;
+
+      // Handle pan release
+      if (state.isPanning) {
+        state.isPanning = false;
+        state.panStart = null;
+        if (state.tool === 'pan' || state.isSpacePressed) {
+          cnv.style.cursor = 'grab';
+        } else if (state.tool === 'select') {
+          cnv.style.cursor = 'default';
+        } else {
+          cnv.style.cursor = 'crosshair';
+        }
+        return;
+      }
+
       if (!state.isMouseDown) return;
       state.isMouseDown = false;
 
@@ -3185,6 +3593,10 @@
       if (state.tool === 'axis') {
         state.activeAxisHandle = null;
         state.dragStartPos = null;
+        if (state.dragPreState && window.coordinateHistory) {
+          window.coordinateHistory.pushPreState("Adjust Axis", state.dragPreState);
+          state.dragPreState = null;
+        }
         openAxisCard();
         renderAllOverlays();
         return;
@@ -3197,6 +3609,11 @@
         return;
       }
       if (state.selectedShape && state.selectedShape.activeHandle) {
+        if (state.dragPreState && window.coordinateHistory) {
+          var sType = state.selectedShape.type || 'Shape';
+          window.coordinateHistory.pushPreState("Move " + sType.charAt(0).toUpperCase() + sType.slice(1) + " " + state.selectedShape.index, state.dragPreState);
+          state.dragPreState = null;
+        }
         state.selectedShape.activeHandle = null;
         renderAllOverlays();
         return;
@@ -3220,6 +3637,28 @@
       }
     });
 
+    // Window mouseup listener prevents getting stuck in pan if released outside canvas
+    window.addEventListener('mouseup', function () {
+      var state = window.drawingState;
+      if (state && state.isPanning) {
+        state.isPanning = false;
+        state.panStart = null;
+        if (cnv) {
+          cnv.style.cursor = (state.tool === 'pan' || state.isSpacePressed) ? 'grab' : (state.tool === 'select' ? 'default' : 'crosshair');
+        }
+      }
+    });
+
+    // Spacebar release listener
+    window.addEventListener('keyup', function (e) {
+      if (e.code === 'Space') {
+        window.drawingState.isSpacePressed = false;
+        if (!window.drawingState.isPanning && cnv) {
+          cnv.style.cursor = (window.drawingState.tool === 'pan') ? 'grab' : (window.drawingState.tool === 'select' ? 'default' : 'crosshair');
+        }
+      }
+    });
+
     cnv.addEventListener('mouseleave', function () {
       var hud = document.getElementById("canvas-coord-hud");
       if (hud) hud.textContent = "Cursor: (x, y)";
@@ -3227,7 +3666,7 @@
       renderAllOverlays();
     });
 
-    // Keyboard Shortcuts: Enter (Confirm), Escape (Cancel), A (Axis), R (Rectangle), L (Line), S (Select), G (Snap)
+    // Keyboard Shortcuts: Enter (Confirm), Escape (Cancel), Space (Pan), H (Pan Tool), +, -, 0 (Zoom)
     window.addEventListener('keydown', function (e) {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
         if (e.key === 'Enter' && window.drawingState.candidate) {
@@ -3237,12 +3676,32 @@
         return;
       }
 
+      // Spacebar temporary pan mode
+      if (e.code === 'Space' && !window.drawingState.isSpacePressed) {
+        window.drawingState.isSpacePressed = true;
+        if (cnv && !window.drawingState.isPanning) {
+          cnv.style.cursor = 'grab';
+        }
+        e.preventDefault();
+        return;
+      }
+
       if (e.key === 'Enter') {
         if (window.drawingState.candidate) {
           window.confirmCandidateShape();
           e.preventDefault();
         } else if (window.drawingState.tool === 'axis') {
           window.confirmAxisCard();
+          e.preventDefault();
+        }
+      } else if ((e.ctrlKey || e.metaKey) && (e.key === 'z' || e.key === 'Z') && !e.shiftKey) {
+        if (window.coordinateHistory && window.coordinateHistory.canUndo()) {
+          window.coordinateUndo();
+          e.preventDefault();
+        }
+      } else if ((e.ctrlKey || e.metaKey) && ((e.key === 'y' || e.key === 'Y') || ((e.key === 'z' || e.key === 'Z') && e.shiftKey))) {
+        if (window.coordinateHistory && window.coordinateHistory.canRedo()) {
+          window.coordinateRedo();
           e.preventDefault();
         }
       } else if (e.key === 'Escape') {
@@ -3261,6 +3720,17 @@
         e.preventDefault();
       } else if (e.key === 'Delete' && window.drawingState.selectedShape) {
         window.deleteSelectedShape();
+        e.preventDefault();
+      } else if (e.key === 'h' || e.key === 'H') {
+        window.setDrawTool('pan');
+      } else if (e.key === '+' || e.key === '=') {
+        window.zoomCanvasAtCenter(1.2);
+        e.preventDefault();
+      } else if (e.key === '-' || e.key === '_') {
+        window.zoomCanvasAtCenter(0.833);
+        e.preventDefault();
+      } else if (e.key === '0') {
+        window.resetCanvasZoom();
         e.preventDefault();
       } else if (e.key === 'a' || e.key === 'A') {
         window.setDrawTool('axis');

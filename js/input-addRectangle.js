@@ -30,6 +30,7 @@ function AddRec(form) {
         '<label class="checkbox-label"><input type="checkbox" name="onlyPR" id="RP1_' + curZ + '" onclick="test5(' + (3 * curZ - 2) + ')"> Pt 1</label>' +
         '<label class="checkbox-label"><input type="checkbox" name="onlyPR" id="RP2_' + curZ + '" onclick="test5(' + (3 * curZ - 1) + ')"> Pt 2</label>' +
         '<label class="checkbox-label"><input type="checkbox" id="retangulardash_' + curZ + '"> Dash</label>' +
+        '<label class="checkbox-label"><input type="checkbox" id="retangularfill_' + curZ + '"> Fill</label>' +
       '</div>' +
       '<div class="form-row" style="margin-top: 0.5rem;">' +
         '<span class="form-label">Label:</span>' +
@@ -48,6 +49,11 @@ function AddRec(form) {
       '</div>';
 
     form.appendChild(card);
+
+    if (window.enhanceColorControl) {
+        var colSel = document.getElementById("retangularColor_" + curZ);
+        if (colSel) window.enhanceColorControl(colSel);
+    }
 
     // Attach listeners for live preview redraw
     var inputs = card.querySelectorAll('input, select');
