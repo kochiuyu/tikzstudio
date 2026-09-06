@@ -99,382 +99,456 @@ function DrawGraph(isEample, customCanvas, scaleMultiplier) {
     window.y_offset = curYOffset;
     y_offset = curYOffset;
 
-    ctx.save();
-    //Draw axis
     var axHex = window.normalizeToHex ? window.normalizeToHex(axCol) : (axCol === 'black' ? '#0f172a' : axCol);
-    ctx.strokeStyle = axHex;
-    ctx.fillStyle = axHex;
-    ctx.transform(1, 0, 0, -1, x_offset, logicalHeight - y_offset);
-    ctx.beginPath();
-    //define the start-point coordinate of the straight
-    ctx.moveTo(0, scale * myysize);
-    //define the end-point coordinate value of the straight
-    ctx.lineTo(0, 0);
-    ctx.lineTo(scale * myxsize, 0);
-    //print the straight along the order of coordinate
-    ctx.stroke();
 
-    //y-arrow
-    //ctx.save();
-    if(document.getElementById("ysize").value!=0){
-		//alert('111');
-		ctx.beginPath();
-		ctx.moveTo(0, scale * document.getElementById("ysize").value);
-		ctx.lineTo(-5.5, scale * document.getElementById("ysize").value - 11);
-		ctx.lineTo(5.5, scale * document.getElementById("ysize").value - 11);
-		ctx.lineTo(0, scale * document.getElementById("ysize").value);
-		ctx.closePath();
-		ctx.fillStyle = axHex;
-		ctx.fill();
-		ctx.stroke();
-	} else if (isEample) {
-		//alert('222');
-		ctx.beginPath();
-		ctx.moveTo(0, scale * myysize);
-		ctx.lineTo(-5.5, scale * myysize - 11);
-		ctx.lineTo(5.5, scale * myysize - 11);
-		ctx.lineTo(0, scale * myysize);
-		ctx.closePath();
-		ctx.fillStyle = axHex;
-		ctx.fill();
-		ctx.stroke();
-	}
-    //x-arrow
-    //ctx.save();
-	if(document.getElementById("xsize").value!=0){
-		ctx.beginPath();
-		ctx.moveTo(scale * document.getElementById("xsize").value, 0);
-		ctx.lineTo(scale * document.getElementById("xsize").value - 11, 5.5);
-		ctx.lineTo(scale * document.getElementById("xsize").value - 11, -5.5);
-		ctx.lineTo(scale * document.getElementById("xsize").value, 0);
-		ctx.closePath();
-		ctx.fillStyle = axHex;
-		ctx.fill();
-		ctx.stroke();
-	} else if (isEample) {
-		ctx.beginPath();
-		ctx.moveTo(scale * myxsize, 0);
-		ctx.lineTo(scale * myxsize - 11, 5.5);
-		ctx.lineTo(scale * myxsize - 11, -5.5);
-		ctx.lineTo(scale * myxsize, 0);
-		ctx.closePath();
-		ctx.fillStyle = axHex;
-		ctx.fill();
-		ctx.stroke();
-	}
-    //x-axis name
-    ctx.save();
-    ctx.translate(scale * myxsize + 10, -10);
-    ctx.scale(1, -1);
-    ctx.fillStyle = axHex;
-    ctx.fillText(myxname, 0, 0);
-    ctx.restore();
-    //y axis name
-    ctx.save();
-    ctx.translate(-10, scale * myysize + 10);
-    ctx.scale(1, -1);
-    ctx.fillStyle = axHex;
-    ctx.fillText(myyname, 0, 0);
-    ctx.restore();
-	
-    for (var j = 1; j < counter_i; j++) {
+    // Modular shape rendering functions
+    function renderAxisElement() {
+        if (window.isLayerVisible && !window.isLayerVisible('axis', 1)) return "";
+
+        ctx.save();
+        ctx.strokeStyle = axHex;
+        ctx.fillStyle = axHex;
+
+        // Draw axis lines
+        ctx.beginPath();
+        ctx.moveTo(0, scale * myysize);
+        ctx.lineTo(0, 0);
+        ctx.lineTo(scale * myxsize, 0);
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // y-arrow
+        var ySizeVal = parseFloat(document.getElementById("ysize")?.value) || 0;
+        var effY = (ySizeVal !== 0) ? ySizeVal : myysize;
+        ctx.beginPath();
+        ctx.moveTo(0, scale * effY);
+        ctx.lineTo(-5.5, scale * effY - 11);
+        ctx.lineTo(5.5, scale * effY - 11);
+        ctx.lineTo(0, scale * effY);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // x-arrow
+        var xSizeVal = parseFloat(document.getElementById("xsize")?.value) || 0;
+        var effX = (xSizeVal !== 0) ? xSizeVal : myxsize;
+        ctx.beginPath();
+        ctx.moveTo(scale * effX, 0);
+        ctx.lineTo(scale * effX - 11, 5.5);
+        ctx.lineTo(scale * effX - 11, -5.5);
+        ctx.lineTo(scale * effX, 0);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // x-axis name
+        ctx.save();
+        ctx.translate(scale * myxsize + 10, -10);
+        ctx.scale(1, -1);
+        ctx.fillStyle = axHex;
+        ctx.font = "20px Arial";
+        ctx.fillText(myxname, 0, 0);
+        ctx.restore();
+
+        // y-axis name
+        ctx.save();
+        ctx.translate(-10, scale * myysize + 10);
+        ctx.scale(1, -1);
+        ctx.fillStyle = axHex;
+        ctx.font = "20px Arial";
+        ctx.fillText(myyname, 0, 0);
+        ctx.restore();
+
+        // Origin label
+        var origEl = document.getElementById("label_origin_name");
+        var origVal = origEl ? origEl.value : "0";
+        if (origVal) {
+            ctx.save();
+            ctx.translate(-16, -16);
+            ctx.scale(1, -1);
+            ctx.fillStyle = axHex;
+            ctx.font = "20px Arial";
+            ctx.fillText(origVal, 0, 0);
+            ctx.restore();
+        }
+
+        // Tick X 1
+        var lx1 = document.getElementById("label_x_1");
+        var lx1n = document.getElementById("label_x_1_name");
+        if (lx1 && (lx1n?.value !== "" || parseFloat(lx1.value) > 0)) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(lx1.value * scale, -5);
+            ctx.lineTo(lx1.value * scale, 5);
+            ctx.strokeStyle = "black";
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+            if (lx1n && lx1n.value) {
+                ctx.translate(lx1.value * scale, -18);
+                ctx.scale(1, -1);
+                ctx.font = "20px Arial";
+                ctx.fillStyle = "black";
+                ctx.fillText(lx1n.value, 0, 0);
+            }
+            ctx.restore();
+        }
+
+        // Tick X 2
+        var lx2 = document.getElementById("label_x_2");
+        var lx2n = document.getElementById("label_x_2_name");
+        if (lx2 && (lx2n?.value !== "" || parseFloat(lx2.value) > 0)) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(lx2.value * scale, -5);
+            ctx.lineTo(lx2.value * scale, 5);
+            ctx.strokeStyle = "black";
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+            if (lx2n && lx2n.value) {
+                ctx.translate(lx2.value * scale, -18);
+                ctx.scale(1, -1);
+                ctx.font = "20px Arial";
+                ctx.fillStyle = "black";
+                ctx.fillText(lx2n.value, 0, 0);
+            }
+            ctx.restore();
+        }
+
+        // Tick Y 1
+        var ly1 = document.getElementById("label_y_1");
+        var ly1n = document.getElementById("label_y_1_name");
+        if (ly1 && (ly1n?.value !== "" || parseFloat(ly1.value) > 0)) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(-5, ly1.value * scale);
+            ctx.lineTo(5, ly1.value * scale);
+            ctx.strokeStyle = "black";
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+            if (ly1n && ly1n.value) {
+                ctx.translate(-20, ly1.value * scale);
+                ctx.scale(1, -1);
+                ctx.font = "20px Arial";
+                ctx.fillStyle = "black";
+                ctx.fillText(ly1n.value, 0, 0);
+            }
+            ctx.restore();
+        }
+
+        // Tick Y 2
+        var ly2 = document.getElementById("label_y_2");
+        var ly2n = document.getElementById("label_y_2_name");
+        if (ly2 && (ly2n?.value !== "" || parseFloat(ly2.value) > 0)) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(-5, ly2.value * scale);
+            ctx.lineTo(5, ly2.value * scale);
+            ctx.strokeStyle = "black";
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+            if (ly2n && ly2n.value) {
+                ctx.translate(-20, ly2.value * scale);
+                ctx.scale(1, -1);
+                ctx.font = "20px Arial";
+                ctx.fillStyle = "black";
+                ctx.fillText(ly2n.value, 0, 0);
+            }
+            ctx.restore();
+        }
+
+        ctx.restore();
+
+        // TikZ string
+        var axTikz = "\\draw[" + axOpts.join(', ') + "] (0," + myysize + ") node[above" + nodeColOpt + "]{$" + myyname + "$}--(0,0)--(" + myxsize + ",0) node[right" + nodeColOpt + "]{$" + myxname + "$}; % Axis and Label<br>";
+        axTikz += "\\node [below left] at (0,0) {$" + origVal + "$};%Origin<br>";
+        if (lx1n && lx1n.value !== "") {
+            axTikz += "\\node [below] at (" + (lx1 ? lx1.value : 0) + ",0) {$" + lx1n.value + "$}; % X-Label 1<br>";
+        }
+        if (lx2n && lx2n.value !== "") {
+            axTikz += "\\node [below] at (" + (lx2 ? lx2.value : 0) + ",0) {$" + lx2n.value + "$}; % X-Label 2<br>";
+        }
+        if (ly1n && ly1n.value !== "") {
+            axTikz += "\\node [left] at (0," + (ly1 ? ly1.value : 0) + ") {$" + ly1n.value + "$}; % Y-Label 1<br>";
+        }
+        if (ly2n && ly2n.value !== "") {
+            axTikz += "\\node [left] at (0," + (ly2 ? ly2.value : 0) + ") {$" + ly2n.value + "$}; % Y-Label 2<br>";
+        }
+        return axTikz;
+    }
+
+    function renderLineElement(j) {
         if (typeof updateLineTelemetry === 'function') updateLineTelemetry(j);
+        if (window.isLayerVisible && !window.isLayerVisible('line', j)) return "";
+
         var lineshowEl = document.getElementById("lineshow_" + j);
-        if (lineshowEl && lineshowEl.checked) {
-            var aEl = document.getElementById("a_" + j);
-            var bEl = document.getElementById("b_" + j);
-            var cEl = document.getElementById("c_" + j);
-            var dEl = document.getElementById("d_" + j);
-            var nameEl = document.getElementById("linename_" + j);
-            var dashEl = document.getElementById("linedash_" + j);
-            var colEl = document.getElementById("lineColor_" + j);
-            var arrowEl = document.getElementById("lineArrow_" + j);
-            var widthEl = document.getElementById("lineWidth_" + j);
-            var styleEl = document.getElementById("lineStyle_" + j);
-            var labelPosEl = document.getElementById("lineLabelPos_" + j);
-            var labelAnchorEl = document.getElementById("lineLabelAnchor_" + j);
-            if (aEl && bEl && cEl && dEl) {
-                PrintLine(ctx, aEl, bEl, cEl, dEl, nameEl, dashEl, colEl, arrowEl, widthEl, styleEl, labelPosEl, labelAnchorEl);
-                if (aEl.value != 0 || bEl.value != 0 || cEl.value != 0 || dEl.value != 0) {
-                    lines += DrawLine(aEl, bEl, cEl, dEl, nameEl, dashEl, colEl, arrowEl, widthEl, styleEl, labelPosEl, labelAnchorEl);
-                }
+        if (!lineshowEl || !lineshowEl.checked) return "";
+
+        var aEl = document.getElementById("a_" + j);
+        var bEl = document.getElementById("b_" + j);
+        var cEl = document.getElementById("c_" + j);
+        var dEl = document.getElementById("d_" + j);
+        var nameEl = document.getElementById("linename_" + j);
+        var dashEl = document.getElementById("linedash_" + j);
+        var colEl = document.getElementById("lineColor_" + j);
+        var arrowEl = document.getElementById("lineArrow_" + j);
+        var widthEl = document.getElementById("lineWidth_" + j);
+        var styleEl = document.getElementById("lineStyle_" + j);
+        var labelPosEl = document.getElementById("lineLabelPos_" + j);
+        var labelAnchorEl = document.getElementById("lineLabelAnchor_" + j);
+
+        if (aEl && bEl && cEl && dEl) {
+            PrintLine(ctx, aEl, bEl, cEl, dEl, nameEl, dashEl, colEl, arrowEl, widthEl, styleEl, labelPosEl, labelAnchorEl);
+            if (aEl.value != 0 || bEl.value != 0 || cEl.value != 0 || dEl.value != 0) {
+                return DrawLine(aEl, bEl, cEl, dEl, nameEl, dashEl, colEl, arrowEl, widthEl, styleEl, labelPosEl, labelAnchorEl);
             }
         }
+        return "";
     }
-    for (var j = 1; j < counter_j; j++) {
+
+    function renderCurveElement(j) {
+        if (window.isLayerVisible && !window.isLayerVisible('curve', j)) return "";
+
         var curveshowEl = document.getElementById("curveshow_" + j);
-        if (curveshowEl && curveshowEl.checked) {
-            var eEl = document.getElementById("e_" + j);
-            var fEl = document.getElementById("f_" + j);
-            var gEl = document.getElementById("g_" + j);
-            var hEl = document.getElementById("h_" + j);
-            var iEl = document.getElementById("i_" + j);
-            var jEl = document.getElementById("j_" + j);
-            var kEl = document.getElementById("k_" + j);
-            var lEl = document.getElementById("l_" + j);
-            var curvenameEl = document.getElementById("curvename_" + j);
-            var curvedashEl = document.getElementById("curvedash_" + j);
-            var curveguideEl = document.getElementById("curveguide_" + j);
-            var curveColorEl = document.getElementById("curveColor_" + j) || document.getElementById("curvecolor_" + j);
-            if (eEl && fEl && gEl && hEl && iEl && jEl && kEl && lEl) {
-                PrintCurve(ctx, eEl, fEl, gEl, hEl, iEl, jEl, kEl, lEl, curvenameEl, curvedashEl, curveguideEl, curveColorEl);
-                if (eEl.value != 0 || fEl.value != 0 || gEl.value != 0 || hEl.value != 0 || iEl.value != 0 || jEl.value != 0 || kEl.value != 0 || lEl.value != 0) {
-                    curves += DrawCurve(eEl, fEl, gEl, hEl, iEl, jEl, kEl, lEl, curvenameEl, curvedashEl, curveColorEl);
-                }
+        if (!curveshowEl || !curveshowEl.checked) return "";
+
+        var eEl = document.getElementById("e_" + j);
+        var fEl = document.getElementById("f_" + j);
+        var gEl = document.getElementById("g_" + j);
+        var hEl = document.getElementById("h_" + j);
+        var iEl = document.getElementById("i_" + j);
+        var jEl = document.getElementById("j_" + j);
+        var kEl = document.getElementById("k_" + j);
+        var lEl = document.getElementById("l_" + j);
+        var curvenameEl = document.getElementById("curvename_" + j);
+        var curvedashEl = document.getElementById("curvedash_" + j);
+        var curveguideEl = document.getElementById("curveguide_" + j);
+        var curveColorEl = document.getElementById("curveColor_" + j) || document.getElementById("curvecolor_" + j);
+
+        if (eEl && fEl && gEl && hEl && iEl && jEl && kEl && lEl) {
+            PrintCurve(ctx, eEl, fEl, gEl, hEl, iEl, jEl, kEl, lEl, curvenameEl, curvedashEl, curveguideEl, curveColorEl);
+            if (eEl.value != 0 || fEl.value != 0 || gEl.value != 0 || hEl.value != 0 || iEl.value != 0 || jEl.value != 0 || kEl.value != 0 || lEl.value != 0) {
+                return DrawCurve(eEl, fEl, gEl, hEl, iEl, jEl, kEl, lEl, curvenameEl, curvedashEl, curveColorEl);
             }
         }
+        return "";
     }
-    for (var z = 1; z < counter_z; z++) {
+
+    function renderRectangleElement(z) {
+        if (window.isLayerVisible && !window.isLayerVisible('rectangle', z)) return "";
+
         var rectshowEl = document.getElementById("retangularshow_" + z);
-        if (rectshowEl && rectshowEl.checked) {
-            var rEl = document.getElementById("r_" + z);
-            var sEl = document.getElementById("s_" + z);
-            var tEl = document.getElementById("t_" + z);
-            var uEl = document.getElementById("u_" + z);
-            var rNameEl = document.getElementById("retangularname_" + z);
-            var rDashEl = document.getElementById("retangulardash_" + z);
-            var rColEl = document.getElementById("retangularColor_" + z);
-            var rFillEl = document.getElementById("retangularfill_" + z);
-            if (rEl && sEl && tEl && uEl) {
-                PrintRectangle(ctx, rEl, sEl, tEl, uEl, rNameEl, rDashEl, rColEl, rFillEl);
-                if (rEl.value != 0 || sEl.value != 0 || tEl.value != 0 || uEl.value != 0) {
-                    rects += DrawRectangle(rEl, sEl, tEl, uEl, rNameEl, rDashEl, rColEl, rFillEl);
-                }
+        if (!rectshowEl || !rectshowEl.checked) return "";
+
+        var rEl = document.getElementById("r_" + z);
+        var sEl = document.getElementById("s_" + z);
+        var tEl = document.getElementById("t_" + z);
+        var uEl = document.getElementById("u_" + z);
+        var rNameEl = document.getElementById("retangularname_" + z);
+        var rDashEl = document.getElementById("retangulardash_" + z);
+        var rColEl = document.getElementById("retangularColor_" + z);
+        var rFillEl = document.getElementById("retangularfill_" + z);
+
+        if (rEl && sEl && tEl && uEl) {
+            PrintRectangle(ctx, rEl, sEl, tEl, uEl, rNameEl, rDashEl, rColEl, rFillEl);
+            if (rEl.value != 0 || sEl.value != 0 || tEl.value != 0 || uEl.value != 0) {
+                return DrawRectangle(rEl, sEl, tEl, uEl, rNameEl, rDashEl, rColEl, rFillEl);
             }
         }
+        return "";
     }
 
-    var maxCircles = typeof counter_circle !== 'undefined' ? counter_circle : 2;
-    for (var c = 1; c < maxCircles; c++) {
+    function renderCircleElement(c) {
+        if (window.isLayerVisible && !window.isLayerVisible('circle', c)) return "";
+
         var cshowEl = document.getElementById("circleshow_" + c);
-        if (cshowEl && cshowEl.checked) {
-            var cxEl = document.getElementById("circle_x_" + c);
-            var cyEl = document.getElementById("circle_y_" + c);
-            var crEl = document.getElementById("circle_r_" + c);
-            var cnameEl = document.getElementById("circlename_" + c);
-            var cdashEl = document.getElementById("circledash_" + c);
-            var ccolEl = document.getElementById("circleColor_" + c);
-            var cfillEl = document.getElementById("circlefill_" + c);
-            if (cxEl && cyEl && crEl) {
-                if (typeof PrintCircle === 'function') {
-                    PrintCircle(ctx, cxEl, cyEl, crEl, cnameEl, cdashEl, ccolEl, cfillEl);
-                }
-                if (parseFloat(crEl.value) > 0 && typeof DrawCircle === 'function') {
-                    circles += DrawCircle(cxEl, cyEl, crEl, cnameEl, cdashEl, ccolEl, cfillEl);
-                }
+        if (!cshowEl || !cshowEl.checked) return "";
+
+        var cxEl = document.getElementById("circle_x_" + c);
+        var cyEl = document.getElementById("circle_y_" + c);
+        var crEl = document.getElementById("circle_r_" + c);
+        var cnameEl = document.getElementById("circlename_" + c);
+        var cdashEl = document.getElementById("circledash_" + c);
+        var ccolEl = document.getElementById("circleColor_" + c);
+        var cfillEl = document.getElementById("circlefill_" + c);
+
+        if (cxEl && cyEl && crEl) {
+            if (typeof PrintCircle === 'function') {
+                PrintCircle(ctx, cxEl, cyEl, crEl, cnameEl, cdashEl, ccolEl, cfillEl);
+            }
+            if (parseFloat(crEl.value) > 0 && typeof DrawCircle === 'function') {
+                return DrawCircle(cxEl, cyEl, crEl, cnameEl, cdashEl, ccolEl, cfillEl);
             }
         }
+        return "";
     }
- 	
-	axis += "\\node [below left] at (0,0) {$"+document.getElementById("label_origin_name").value+"$};%Origin</br>";
-	if(document.getElementById("label_x_1_name").value!=""){
-	axis += "\\node [below] at ("+document.getElementById("label_x_1").value+",0) {$"+document.getElementById("label_x_1_name").value+"$}; % X-Lable 1<br>";
-	}
-	if(document.getElementById("label_x_2_name").value!=""){
-	axis += "\\node [below] at ("+document.getElementById("label_x_2").value+",0) {$"+document.getElementById("label_x_2_name").value+"$}; % X-Lable 2<br>";                
-	}
-	if(document.getElementById("label_y_1_name").value!=""){
-	axis += "\\node [left] at (0,"+document.getElementById("label_y_1").value+") {$"+document.getElementById("label_y_1_name").value+"$}; %Y-Lable 1<br>";
-	}
-	if(document.getElementById("label_y_2_name").value!=""){
-	axis += "\\node [left] at (0,"+document.getElementById("label_y_2").value+") {$"+document.getElementById("label_y_2_name").value+"$}; % Y-Lable 2<br>";
-	}
 
-	var pointsTikz = "";
-	for (var j = 1; j < ps_j; j++) {
-		var pEl = document.getElementById("p_" + j);
-		var qEl = document.getElementById("q_" + j);
-		var pNameEl = document.getElementById("p_name_" + j);
-		var showEl = document.getElementById("pointshow_" + j);
-		var colorEl = document.getElementById("pointColor_" + j);
-		var dotEl = document.getElementById("pointdot_" + j);
-		var posEl = document.getElementById("pointpos_" + j);
+    function renderPointElement(j) {
+        if (window.isLayerVisible && !window.isLayerVisible('point', j)) return "";
 
-		var isShown = !showEl || showEl.checked;
-		if (pEl && qEl && isShown) {
-			var px = parseFloat(pEl.value) || 0;
-			var py = parseFloat(qEl.value) || 0;
-			var pName = pNameEl ? pNameEl.value.trim() : "";
-			var pCol = (colorEl && colorEl.value) ? colorEl.value : "black";
-			var hasDot = !dotEl || dotEl.checked;
-			var pPos = posEl ? posEl.value : "above_right";
+        var pEl = document.getElementById("p_" + j);
+        var qEl = document.getElementById("q_" + j);
+        var pNameEl = document.getElementById("p_name_" + j);
+        var showEl = document.getElementById("pointshow_" + j);
+        var colorEl = document.getElementById("pointColor_" + j);
+        var dotEl = document.getElementById("pointdot_" + j);
+        var posEl = document.getElementById("pointpos_" + j);
 
-			if (pName !== "" || px !== 0 || py !== 0) {
-				var tikzAnchor = pPos.replace('_', ' ');
-				var tikzCol = (pCol === 'black' || pCol === '#0f172a' || pCol === '#000000') ? '' : (window.toTikzColor ? window.toTikzColor(pCol) : pCol);
-				if (hasDot) {
-					var colPart = tikzCol ? '[' + tikzCol + '] ' : '';
-					var nodePart = pName ? ' node[' + tikzAnchor + (tikzCol ? ',' + tikzCol : '') + ']{$' + pName + '$}' : '';
-					pointsTikz += "\\filldraw " + colPart + "(" + px + "," + py + ") circle (1.5pt)" + nodePart + "; % Point " + j + "<br>";
-				} else if (pName) {
-					var nodeOpts = tikzAnchor + (tikzCol ? ',' + tikzCol : '');
-					pointsTikz += "\\node [" + nodeOpts + "] at (" + px + "," + py + ") {$" + pName + "$}; % Label " + j + "<br>";
-				}
-			}
-		}
-	}
+        var isShown = !showEl || showEl.checked;
+        if (!pEl || !qEl || !isShown) return "";
 
-	document.getElementById("answer").innerHTML = axis + lines + curves + rects + circles + pointsTikz;
-	
-	ctx.restore();
-    // restore initial coordinate system
-    //drawing label beyond axis
-    //draw origin
-    ctx.save();
-    ctx.transform(1, 0, 0, -1, x_offset - 16, logicalHeight - (y_offset - 16));
-    ctx.scale(1, -1);
-    ctx.fillText(document.getElementById("label_origin_name").value, 0, 0);
-    ctx.restore();
+        var px = parseFloat(pEl.value) || 0;
+        var py = parseFloat(qEl.value) || 0;
+        var pName = pNameEl ? pNameEl.value.trim() : "";
+        var pCol = (colorEl && colorEl.value) ? colorEl.value : "black";
+        var hasDot = !dotEl || dotEl.checked;
+        var pPos = posEl ? posEl.value : "above_right";
 
-    //draw x-axis tick notch & label 1
-    if (document.getElementById("label_x_1_name").value != "" || parseFloat(document.getElementById("label_x_1").value) > 0) {
+        if (pName === "" && px === 0 && py === 0) return "";
+
+        // Canvas drawing inside transformed context
         ctx.save();
-        ctx.transform(1, 0, 0, -1, x_offset, logicalHeight - y_offset);
-        ctx.beginPath();
-        ctx.moveTo(document.getElementById("label_x_1").value * scale, -5);
-        ctx.lineTo(document.getElementById("label_x_1").value * scale, 5);
-        ctx.strokeStyle = "black";
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
+        ctx.translate(px * scale, py * scale);
+
+        var pColHex = window.normalizeToHex ? window.normalizeToHex(pCol) : (pCol === 'black' ? '#0f172a' : pCol);
+        if (hasDot) {
+            ctx.beginPath();
+            ctx.arc(0, 0, 3.5, 0, Math.PI * 2);
+            ctx.fillStyle = pColHex;
+            ctx.fill();
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+        }
+
+        if (pName) {
+            ctx.scale(1, -1);
+            ctx.font = "bold 12px system-ui, -apple-system, sans-serif";
+            ctx.fillStyle = pColHex;
+
+            var textX = 6, textY = -6;
+            var align = "left", baseline = "bottom";
+
+            if (pPos === 'above_right') {
+                textX = 6; textY = -6; align = "left"; baseline = "bottom";
+            } else if (pPos === 'above') {
+                textX = 0; textY = -7; align = "center"; baseline = "bottom";
+            } else if (pPos === 'above_left') {
+                textX = -6; textY = -6; align = "right"; baseline = "bottom";
+            } else if (pPos === 'right') {
+                textX = 8; textY = 0; align = "left"; baseline = "middle";
+            } else if (pPos === 'left') {
+                textX = -8; textY = 0; align = "right"; baseline = "middle";
+            } else if (pPos === 'below_right') {
+                textX = 6; textY = 12; align = "left"; baseline = "top";
+            } else if (pPos === 'below') {
+                textX = 0; textY = 12; align = "center"; baseline = "top";
+            } else if (pPos === 'below_left') {
+                textX = -6; textY = 12; align = "right"; baseline = "top";
+            } else if (pPos === 'center') {
+                textX = 0; textY = 0; align = "center"; baseline = "middle";
+            }
+
+            ctx.textAlign = align;
+            ctx.textBaseline = baseline;
+            ctx.fillText(pName, textX, textY);
+        }
         ctx.restore();
+
+        // TikZ output
+        var tikzAnchor = pPos.replace('_', ' ');
+        var tikzCol = (pCol === 'black' || pCol === '#0f172a' || pCol === '#000000') ? '' : (window.toTikzColor ? window.toTikzColor(pCol) : pCol);
+        var pTikz = "";
+        if (hasDot) {
+            var colPart = tikzCol ? '[' + tikzCol + '] ' : '';
+            var nodePart = pName ? ' node[' + tikzAnchor + (tikzCol ? ',' + tikzCol : '') + ']{$' + pName + '$}' : '';
+            pTikz = "\\filldraw " + colPart + "(" + px + "," + py + ") circle (1.5pt)" + nodePart + "; % Point " + j + "<br>";
+        } else if (pName) {
+            var nodeOpts = tikzAnchor + (tikzCol ? ',' + tikzCol : '');
+            pTikz = "\\node [" + nodeOpts + "] at (" + px + "," + py + ") {$" + pName + "$}; % Label " + j + "<br>";
+        }
+        return pTikz;
     }
+
+    // Apply main viewport transform: (0,0) at lower-left origin, Y going upwards
     ctx.save();
-    ctx.transform(1, 0, 0, -1, x_offset, logicalHeight - (y_offset - 18));
-    ctx.translate(document.getElementById("label_x_1").value * scale, 0);
-    ctx.scale(1, -1);
-    ctx.fillText(document.getElementById("label_x_1_name").value, 0, 0);
+    ctx.transform(1, 0, 0, -1, x_offset, logicalHeight - y_offset);
+
+    var finalTikz = "";
+    var useLayerManager = window.layerManager && window.layerManager.hasCustomLayers();
+
+    if (useLayerManager) {
+        var order = window.layerManager.getRenderOrder(); // Bottom/Back to Top/Front
+        var rendered = {};
+
+        for (var k = 0; k < order.length; k++) {
+            var ly = order[k];
+            var key = ly.type + '_' + ly.index;
+            rendered[key] = true;
+
+            if (ly.type === 'axis') {
+                finalTikz += renderAxisElement();
+            } else if (ly.type === 'rectangle') {
+                finalTikz += renderRectangleElement(ly.index);
+            } else if (ly.type === 'circle') {
+                finalTikz += renderCircleElement(ly.index);
+            } else if (ly.type === 'line') {
+                finalTikz += renderLineElement(ly.index);
+            } else if (ly.type === 'curve') {
+                finalTikz += renderCurveElement(ly.index);
+            } else if (ly.type === 'point') {
+                finalTikz += renderPointElement(ly.index);
+            }
+        }
+
+        // Safety fallback: render any shapes in DOM not yet in layers list
+        if (!rendered['axis_1']) {
+            finalTikz = renderAxisElement() + finalTikz;
+        }
+        for (var z = 1; z < counter_z; z++) {
+            if (!rendered['rectangle_' + z]) finalTikz += renderRectangleElement(z);
+        }
+        var maxCircles = typeof counter_circle !== 'undefined' ? counter_circle : 2;
+        for (var c = 1; c < maxCircles; c++) {
+            if (!rendered['circle_' + c]) finalTikz += renderCircleElement(c);
+        }
+        for (var j = 1; j < counter_i; j++) {
+            if (!rendered['line_' + j]) finalTikz += renderLineElement(j);
+        }
+        for (var j = 1; j < counter_j; j++) {
+            if (!rendered['curve_' + j]) finalTikz += renderCurveElement(j);
+        }
+        for (var j = 1; j < ps_j; j++) {
+            if (!rendered['point_' + j]) finalTikz += renderPointElement(j);
+        }
+    } else {
+        // Standard default order: Axis -> Rectangles -> Circles -> Lines -> Curves -> Points
+        finalTikz += renderAxisElement();
+        for (var z = 1; z < counter_z; z++) {
+            finalTikz += renderRectangleElement(z);
+        }
+        var maxCircles = typeof counter_circle !== 'undefined' ? counter_circle : 2;
+        for (var c = 1; c < maxCircles; c++) {
+            finalTikz += renderCircleElement(c);
+        }
+        for (var j = 1; j < counter_i; j++) {
+            finalTikz += renderLineElement(j);
+        }
+        for (var j = 1; j < counter_j; j++) {
+            finalTikz += renderCurveElement(j);
+        }
+        for (var j = 1; j < ps_j; j++) {
+            finalTikz += renderPointElement(j);
+        }
+    }
+
     ctx.restore();
 
-    //draw x-axis tick notch & label 2
-    if (document.getElementById("label_x_2_name").value != "" || parseFloat(document.getElementById("label_x_2").value) > 0) {
-        ctx.save();
-        ctx.transform(1, 0, 0, -1, x_offset, logicalHeight - y_offset);
-        ctx.beginPath();
-        ctx.moveTo(document.getElementById("label_x_2").value * scale, -5);
-        ctx.lineTo(document.getElementById("label_x_2").value * scale, 5);
-        ctx.strokeStyle = "black";
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
-        ctx.restore();
+    var ansEl = document.getElementById("answer");
+    if (ansEl) ansEl.innerHTML = finalTikz;
+
+    if (window.layerManager) {
+        window.layerManager.updateLayerLabels();
     }
-    ctx.save();
-    ctx.transform(1, 0, 0, -1, x_offset, logicalHeight - (y_offset - 18));
-    ctx.translate(document.getElementById("label_x_2").value * scale, 0);
-    ctx.scale(1, -1);
-    ctx.fillText(document.getElementById("label_x_2_name").value, 0, 0);
-    ctx.restore();
-
-    //draw y-axis tick notch & label 1
-    if (document.getElementById("label_y_1_name").value != "" || parseFloat(document.getElementById("label_y_1").value) > 0) {
-        ctx.save();
-        ctx.transform(1, 0, 0, -1, x_offset, logicalHeight - y_offset);
-        ctx.beginPath();
-        ctx.moveTo(-5, document.getElementById("label_y_1").value * scale);
-        ctx.lineTo(5, document.getElementById("label_y_1").value * scale);
-        ctx.strokeStyle = "black";
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
-        ctx.restore();
-    }
-    ctx.save();
-    ctx.transform(1, 0, 0, -1, x_offset - 20, logicalHeight - y_offset);
-    ctx.translate(0, document.getElementById("label_y_1").value * scale);
-    ctx.scale(1, -1);
-    ctx.fillText(document.getElementById("label_y_1_name").value, 0, 0);
-    ctx.restore();
-
-    //draw y-axis tick notch & label 2
-    if (document.getElementById("label_y_2_name").value != "" || parseFloat(document.getElementById("label_y_2").value) > 0) {
-        ctx.save();
-        ctx.transform(1, 0, 0, -1, x_offset, logicalHeight - y_offset);
-        ctx.beginPath();
-        ctx.moveTo(-5, document.getElementById("label_y_2").value * scale);
-        ctx.lineTo(5, document.getElementById("label_y_2").value * scale);
-        ctx.strokeStyle = "black";
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
-        ctx.restore();
-    }
-    ctx.save();
-    ctx.transform(1, 0, 0, -1, x_offset - 20, logicalHeight - y_offset);
-    ctx.translate(0, document.getElementById("label_y_2").value * scale);
-    ctx.scale(1, -1);
-    ctx.fillText(document.getElementById("label_y_2_name").value, 0, 0);
-    ctx.restore();
-	
-	// Draw points & labels on canvas
-	for (var j = 1; j < ps_j; j++) {
-		var pEl = document.getElementById("p_" + j);
-		var qEl = document.getElementById("q_" + j);
-		var pNameEl = document.getElementById("p_name_" + j);
-		var showEl = document.getElementById("pointshow_" + j);
-		var colorEl = document.getElementById("pointColor_" + j);
-		var dotEl = document.getElementById("pointdot_" + j);
-		var posEl = document.getElementById("pointpos_" + j);
-
-		var isShown = !showEl || showEl.checked;
-		if (pEl && qEl && isShown) {
-			var px = parseFloat(pEl.value) || 0;
-			var py = parseFloat(qEl.value) || 0;
-			var pName = pNameEl ? pNameEl.value.trim() : "";
-			var pCol = (colorEl && colorEl.value) ? colorEl.value : "black";
-			var hasDot = !dotEl || dotEl.checked;
-			var pPos = posEl ? posEl.value : "above_right";
-
-			if (pName !== "" || px !== 0 || py !== 0) {
-				ctx.save();
-				ctx.transform(1, 0, 0, -1, x_offset, logicalHeight - y_offset);
-				ctx.translate(px * scale, py * scale);
-
-				// Draw dot marker if enabled
-				var pColHex = window.normalizeToHex ? window.normalizeToHex(pCol) : (pCol === 'black' ? '#0f172a' : pCol);
-				if (hasDot) {
-					ctx.beginPath();
-					ctx.arc(0, 0, 3.5, 0, Math.PI * 2);
-					ctx.fillStyle = pColHex;
-					ctx.fill();
-					ctx.strokeStyle = '#ffffff';
-					ctx.lineWidth = 1;
-					ctx.stroke();
-				}
-
-				// Draw text upright with anchor positioning
-				if (pName) {
-					ctx.scale(1, -1); // flip Y for text
-					ctx.font = "bold 12px system-ui, -apple-system, sans-serif";
-					ctx.fillStyle = pColHex;
-
-					var textX = 6, textY = -6;
-					var align = "left", baseline = "bottom";
-
-					if (pPos === 'above_right') {
-						textX = 6; textY = -6; align = "left"; baseline = "bottom";
-					} else if (pPos === 'above') {
-						textX = 0; textY = -7; align = "center"; baseline = "bottom";
-					} else if (pPos === 'above_left') {
-						textX = -6; textY = -6; align = "right"; baseline = "bottom";
-					} else if (pPos === 'right') {
-						textX = 8; textY = 0; align = "left"; baseline = "middle";
-					} else if (pPos === 'left') {
-						textX = -8; textY = 0; align = "right"; baseline = "middle";
-					} else if (pPos === 'below_right') {
-						textX = 6; textY = 12; align = "left"; baseline = "top";
-					} else if (pPos === 'below') {
-						textX = 0; textY = 12; align = "center"; baseline = "top";
-					} else if (pPos === 'below_left') {
-						textX = -6; textY = 12; align = "right"; baseline = "top";
-					} else if (pPos === 'center') {
-						textX = 0; textY = 0; align = "center"; baseline = "middle";
-					}
-
-					ctx.textAlign = align;
-					ctx.textBaseline = baseline;
-					ctx.fillText(pName, textX, textY);
-				}
-				ctx.restore();
-			}
-		}
-	}
 
     if (isExport && mult !== 1) {
         ctx.restore();

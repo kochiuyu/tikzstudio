@@ -30,6 +30,7 @@
   <script type="text/javascript" src="js/DrawGrid.js"></script>
   <script type="text/javascript" src="js/ChoosePoints.js"></script>
   <script type="text/javascript" src="js/color-picker-palette.js"></script>
+  <script type="text/javascript" src="js/layer-manager.js"></script>
   <script type="text/javascript" src="js/DrawGraph.js"></script>
   <script type="text/javascript" src="js/interactive-drawing.js"></script>
   <script type="text/javascript" src="js/individualClear.js"></script>
@@ -210,6 +211,12 @@
         <button type="button" class="btn-modern btn-modern-secondary" onclick="drawGrid()" id="btn-toggle-grid">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
           Grid
+        </button>
+
+        <button type="button" class="btn-modern btn-modern-primary" onclick="toggleLayeringSidebar()" id="btn-top-layers" title="Toggle Layering Sidebar: reorder, lock, and hide shapes (Alt+L)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+          <span>Layers</span>
+          <span class="layer-counter-badge" id="top-layer-count-badge" style="background: rgba(255,255,255,0.25); color: #fff; font-size: 0.7rem; font-weight: 600; padding: 0.05rem 0.4rem; border-radius: 9999px; margin-left: 4px;">0</span>
         </button>
 
         <button type="button" class="btn-modern btn-modern-danger" onclick="location.reload(true)" id="btn-clear-canvas" title="Clear all and reset">
@@ -1432,6 +1439,12 @@
                 <span>Color</span>
               </button>
 
+              <button type="button" class="tool-btn active" id="tool-btn-layers" onclick="toggleLayeringSidebar()" title="Toggle Layering Sidebar: reorder, lock, and hide shapes (Alt+L)">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+                <span>Layers</span>
+                <span class="layer-counter-badge" id="layer-count-badge" style="background:#4338ca; color:#fff; font-size:0.65rem; padding:0.05rem 0.35rem; border-radius:9999px; margin-left:2px;">0</span>
+              </button>
+
               <div class="toolbar-separator"></div>
 
               <!-- Viewport Navigation & Zoom Controls -->
@@ -1531,7 +1544,8 @@
             </div>
           </div>
 
-          <div class="canvas-stage-wrapper">
+          <div class="canvas-workspace-layout" id="canvas-workspace-layout">
+            <div class="canvas-stage-wrapper">
             <div class="canvas-stage">
               <!-- Overlay mouse drawing canvas -->
               <canvas id="myCanvas" width="600" height="580" style="position: absolute; top: 0; left: 0; z-index: 10;"></canvas>
@@ -1868,6 +1882,67 @@
                 <button type="button" class="btn-selected-close" onclick="deselectShape()" title="Deselect">&times;</button>
               </div>
             </div>
+          </div>
+
+          <!-- Layering Sidebar: Reorder (Z-index), Lock, and Hide Canvas Shapes -->
+          <aside class="layering-sidebar" id="layering-sidebar" aria-label="Canvas Layers Manager">
+            <!-- Sidebar Header -->
+            <div class="layering-sidebar-header">
+              <div class="layering-sidebar-title">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2.5"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+                <span>Canvas Layers</span>
+                <span class="layer-header-badge" id="layer-header-count">0 Layers</span>
+              </div>
+              <div class="layering-header-actions">
+                <button type="button" class="layer-header-btn" onclick="window.layerManager.toggleAllVisibility(true)" title="Show all layers">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+                <button type="button" class="layer-header-btn" onclick="window.layerManager.toggleAllLock(false)" title="Unlock all layers">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+                </button>
+                <button type="button" class="layer-header-btn" onclick="window.layerManager.toggleSidebar(false)" title="Collapse layers sidebar (Alt+L)">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Search & Category Filters -->
+            <div class="layering-controls-bar">
+              <div class="layer-search-wrap">
+                <svg class="layer-search-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" id="layer-search-input" class="layer-search-input" placeholder="Search layers, lines, curves...">
+              </div>
+              <div class="layer-filter-pills">
+                <button type="button" class="layer-pill active" onclick="setLayerFilterPill(this, 'all')">All</button>
+                <button type="button" class="layer-pill" onclick="setLayerFilterPill(this, 'line')">Lines</button>
+                <button type="button" class="layer-pill" onclick="setLayerFilterPill(this, 'curve')">Curves</button>
+                <button type="button" class="layer-pill" onclick="setLayerFilterPill(this, 'shape')">Shapes</button>
+                <button type="button" class="layer-pill" onclick="setLayerFilterPill(this, 'point')">Points</button>
+              </div>
+            </div>
+
+            <!-- Scrollable Layer List (Reorderable via Drag & Drop or Action Buttons) -->
+            <div class="layer-list-scrollable" id="layer-list-container">
+              <!-- Populated dynamically by layerManager.updateUI() -->
+            </div>
+
+            <!-- Footer Quick Actions & Tips -->
+            <div class="layering-sidebar-footer">
+              <div class="layer-footer-hint">
+                <span>Drag items to reorder Z-index (Front to Back).</span>
+                <span>Click lock to protect from clicks or edits.</span>
+              </div>
+              <div class="layer-footer-actions">
+                <button type="button" class="layer-footer-link-btn" onclick="window.layerManager.toggleAllLock(true)">Lock All</button>
+                <span style="color: #cbd5e1;">&bull;</span>
+                <button type="button" class="layer-footer-link-btn" onclick="window.layerManager.toggleAllLock(false)">Unlock All</button>
+                <span style="color: #cbd5e1;">&bull;</span>
+                <button type="button" class="layer-footer-link-btn" onclick="window.layerManager.toggleAllVisibility(true)">Show All</button>
+                <span style="color: #cbd5e1;">&bull;</span>
+                <button type="button" class="layer-footer-link-btn" onclick="window.layerManager.toggleAllVisibility(false)">Hide All</button>
+              </div>
+            </div>
+          </aside>
         </div>
 
         <!-- LaTeX TikZ Output Card -->

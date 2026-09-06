@@ -2282,13 +2282,104 @@
   /**
    * Hit test existing shapes on canvas when in 'select' mode
    */
+  /**
+   * Hit test existing shapes on canvas when in 'select' mode
+   */
   function hitTestExistingShapes(pos) {
     var curScale = typeof scale !== 'undefined' ? scale : 35;
     var tolerance = 12 / curScale; // Math distance tolerance ~12px
 
-    // 1. Check Rectangles
+    // 1. If layerManager is active, check shapes in Z-order from front/top to back/bottom
+    if (window.layerManager && window.layerManager.layers && window.layerManager.layers.length > 0) {
+      var layers = window.layerManager.layers; // Index 0 is Top/Front, N-1 is Bottom/Back
+      for (var k = 0; k < layers.length; k++) {
+        var ly = layers[k];
+        if (!ly.visible) continue;
+        if (ly.locked) continue; // Locked layers cannot be selected or modified on canvas
+
+        if (ly.type === 'rectangle') {
+          var showRec = document.getElementById("retangularshow_" + ly.index);
+          if (showRec && showRec.checked) {
+            var rCoords = getShapeCoordinates('rectangle', ly.index);
+            if (rCoords) {
+              var minX = Math.min(rCoords.x1, rCoords.x2);
+              var maxX = Math.max(rCoords.x1, rCoords.x2);
+              var minY = Math.min(rCoords.y1, rCoords.y2);
+              var maxY = Math.max(rCoords.y1, rCoords.y2);
+              if (pos.x >= minX - tolerance && pos.x <= maxX + tolerance &&
+                  pos.y >= minY - tolerance && pos.y <= maxY + tolerance) {
+                return { type: 'rectangle', index: ly.index };
+              }
+            }
+          }
+        } else if (ly.type === 'circle') {
+          var showCir = document.getElementById("circleshow_" + ly.index);
+          if (showCir && showCir.checked) {
+            var cCoords = getShapeCoordinates('circle', ly.index);
+            if (cCoords && cCoords.r > 0) {
+              var cDist = Math.hypot(pos.x - cCoords.cx, pos.y - cCoords.cy);
+              if (Math.abs(cDist - cCoords.r) <= tolerance || cDist <= tolerance) {
+                return { type: 'circle', index: ly.index };
+              }
+            }
+          }
+        } else if (ly.type === 'line') {
+          var showL = document.getElementById("lineshow_" + ly.index);
+          if (showL && showL.checked) {
+            var lCoords = getShapeCoordinates('line', ly.index);
+            if (lCoords) {
+              var lDist = pointToSegmentDistance(pos.x, pos.y, lCoords.x1, lCoords.y1, lCoords.x2, lCoords.y2);
+              if (lDist <= tolerance) {
+                return { type: 'line', index: ly.index };
+              }
+            }
+          }
+        } else if (ly.type === 'curve') {
+          var showC = document.getElementById("curveshow_" + ly.index);
+          if (showC && showC.checked) {
+            var cvCoords = getShapeCoordinates('curve', ly.index);
+            if (cvCoords) {
+              var cvDist = pointToBezierDistance(pos.x, pos.y, cvCoords.p1, cvCoords.c1, cvCoords.c2, cvCoords.p2);
+              if (cvDist <= tolerance) {
+                return { type: 'curve', index: ly.index };
+              }
+            }
+          }
+        } else if (ly.type === 'point') {
+          var showP = document.getElementById("pointshow_" + ly.index);
+          if (!showP || showP.checked) {
+            var px = parseFloat(document.getElementById("p_" + ly.index)?.value);
+            var py = parseFloat(document.getElementById("q_" + ly.index)?.value);
+            if (!isNaN(px) && !isNaN(py)) {
+              var pDist = Math.hypot(pos.x - px, pos.y - py);
+              if (pDist <= tolerance) {
+                return { type: 'point', index: ly.index };
+              }
+            }
+          }
+        } else if (ly.type === 'axis') {
+          var axHandle = hitTestAxisHandles(pos);
+          if (axHandle) {
+            return { type: 'axis', index: 1 };
+          }
+          var axis = getAxisData();
+          if (pos.x >= -tolerance && pos.x <= axis.effectiveXSize + tolerance && Math.abs(pos.y) <= tolerance + 0.15) {
+            return { type: 'axis', index: 1 };
+          }
+          if (pos.y >= -tolerance && pos.y <= axis.effectiveYSize + tolerance && Math.abs(pos.x) <= tolerance + 0.15) {
+            return { type: 'axis', index: 1 };
+          }
+        }
+      }
+      return null;
+    }
+
+    // 2. Default Fallback
+    // Rectangles
     var maxRec = typeof counter_z !== 'undefined' ? counter_z : 5;
     for (var z = 1; z <= maxRec; z++) {
+      if (window.layerManager && window.layerManager.isLocked('rectangle', z)) continue;
+      if (window.isLayerVisible && !window.isLayerVisible('rectangle', z)) continue;
       var show = document.getElementById("retangularshow_" + z);
       if (show && show.checked) {
         var coords = getShapeCoordinates('rectangle', z);
@@ -2298,7 +2389,6 @@
           var minY = Math.min(coords.y1, coords.y2);
           var maxY = Math.max(coords.y1, coords.y2);
 
-          // Check if cursor is inside or near the rectangle boundary
           if (pos.x >= minX - tolerance && pos.x <= maxX + tolerance &&
               pos.y >= minY - tolerance && pos.y <= maxY + tolerance) {
             return { type: 'rectangle', index: z };
@@ -2307,9 +2397,11 @@
       }
     }
 
-    // 2. Check Circles
+    // Circles
     var maxCircles = typeof counter_circle !== 'undefined' ? counter_circle : 5;
     for (var c = 1; c <= maxCircles; c++) {
+      if (window.layerManager && window.layerManager.isLocked('circle', c)) continue;
+      if (window.isLayerVisible && !window.isLayerVisible('circle', c)) continue;
       var showCircle = document.getElementById("circleshow_" + c);
       if (showCircle && showCircle.checked) {
         var circleCoords = getShapeCoordinates('circle', c);
@@ -2322,11 +2414,13 @@
       }
     }
 
-    // 2. Check Lines
+    // Lines
     var maxLines = typeof counter_i !== 'undefined' ? counter_i : 6;
     for (var i = 1; i <= maxLines; i++) {
-      var show = document.getElementById("lineshow_" + i);
-      if (show && show.checked) {
+      if (window.layerManager && window.layerManager.isLocked('line', i)) continue;
+      if (window.isLayerVisible && !window.isLayerVisible('line', i)) continue;
+      var showL = document.getElementById("lineshow_" + i);
+      if (showL && showL.checked) {
         var coords = getShapeCoordinates('line', i);
         if (coords) {
           var d = pointToSegmentDistance(pos.x, pos.y, coords.x1, coords.y1, coords.x2, coords.y2);
@@ -2337,9 +2431,11 @@
       }
     }
 
-    // 3. Check Curves
+    // Curves
     var maxCurves = typeof counter_j !== 'undefined' ? counter_j : 5;
     for (var j = 1; j <= maxCurves; j++) {
+      if (window.layerManager && window.layerManager.isLocked('curve', j)) continue;
+      if (window.isLayerVisible && !window.isLayerVisible('curve', j)) continue;
       var showC = document.getElementById("curveshow_" + j);
       if (showC && showC.checked) {
         var cCoords = getShapeCoordinates('curve', j);
@@ -2352,17 +2448,20 @@
       }
     }
 
-    // 4. Hit test Axis handles & axis lines
-    var axis = getAxisData();
-    var axHandle = hitTestAxisHandles(pos);
-    if (axHandle) {
-      return { type: 'axis', index: 1 };
-    }
-    if (pos.x >= -tolerance && pos.x <= axis.effectiveXSize + tolerance && Math.abs(pos.y) <= tolerance + 0.15) {
-      return { type: 'axis', index: 1 };
-    }
-    if (pos.y >= -tolerance && pos.y <= axis.effectiveYSize + tolerance && Math.abs(pos.x) <= tolerance + 0.15) {
-      return { type: 'axis', index: 1 };
+    // Axis
+    if (!(window.layerManager && window.layerManager.isLocked('axis', 1)) &&
+        !(window.isLayerVisible && !window.isLayerVisible('axis', 1))) {
+      var axis = getAxisData();
+      var axHandle = hitTestAxisHandles(pos);
+      if (axHandle) {
+        return { type: 'axis', index: 1 };
+      }
+      if (pos.x >= -tolerance && pos.x <= axis.effectiveXSize + tolerance && Math.abs(pos.y) <= tolerance + 0.15) {
+        return { type: 'axis', index: 1 };
+      }
+      if (pos.y >= -tolerance && pos.y <= axis.effectiveYSize + tolerance && Math.abs(pos.x) <= tolerance + 0.15) {
+        return { type: 'axis', index: 1 };
+      }
     }
 
     return null;
@@ -3053,6 +3152,13 @@
       }
     }
 
+    if (window.layerManager) {
+      window.layerManager.syncFromDOM();
+      if (target && target.type) {
+        window.layerManager.selectLayer(target.type + '_' + target.index);
+      }
+    }
+
     // Clear candidate & close card
     var createdType = candidate ? candidate.type : 'shape';
     var createdLabel = labelVal;
@@ -3186,6 +3292,11 @@
     var sel = window.drawingState.selectedShape;
     if (!sel) return;
 
+    if (window.layerManager && window.layerManager.isLocked(sel.type, sel.index)) {
+      if (window.showToast) window.showToast('Layer is locked. Unlock it in the Layers sidebar to delete.');
+      return;
+    }
+
     if (sel.type === 'axis') {
       var xsizeEl = document.getElementById("xsize");
       var ysizeEl = document.getElementById("ysize");
@@ -3218,6 +3329,9 @@
       if (show) show.checked = false;
     }
 
+    if (window.layerManager) {
+      window.layerManager.syncFromDOM();
+    }
     if (typeof DrawGraph === 'function') DrawGraph();
     window.deselectShape();
     if (window.showToast) {
@@ -3327,12 +3441,17 @@
       // 2. In 'select' mode: check handles or hit test existing shapes
       if (state.tool === 'select') {
         if (state.selectedShape) {
-          var selHandle = hitTestSelectedHandles(pos);
-          if (selHandle) {
-            state.selectedShape.activeHandle = selHandle;
-            state.isMouseDown = true;
-            state.dragPreState = window.coordinateHistory ? window.coordinateHistory.capture() : null;
-            return;
+          var isCurLocked = window.layerManager && window.layerManager.isLocked(state.selectedShape.type, state.selectedShape.index);
+          if (isCurLocked) {
+            if (window.showToast) window.showToast('Layer is locked. Unlock it in the Layers sidebar to modify.');
+          } else {
+            var selHandle = hitTestSelectedHandles(pos);
+            if (selHandle) {
+              state.selectedShape.activeHandle = selHandle;
+              state.isMouseDown = true;
+              state.dragPreState = window.coordinateHistory ? window.coordinateHistory.capture() : null;
+              return;
+            }
           }
         }
 
@@ -3341,6 +3460,9 @@
           state.selectedShape = hitShape;
           showSelectedShapeBar(hitShape);
           renderAllOverlays();
+          if (window.layerManager) {
+            window.layerManager.selectLayer(hitShape.type + '_' + hitShape.index);
+          }
           return;
         } else {
           window.deselectShape();

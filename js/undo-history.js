@@ -338,6 +338,11 @@
       window.deselectShape();
     }
 
+    // Sync layers
+    if (window.layerManager && typeof window.layerManager.syncFromDOM === 'function') {
+      window.layerManager.syncFromDOM();
+    }
+
     // Redraw graph & interactive overlays
     if (typeof window.DrawGraph === 'function') {
       window.DrawGraph();

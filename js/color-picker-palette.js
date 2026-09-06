@@ -195,44 +195,21 @@
       return 'color=' + rgbSpec;
     }
 
-    // Check if it's a known TikZ standard named color
-    var isStandardTikz = false;
-    for (var i = 0; i < TIKZ_NAMED_COLORS.length; i++) {
-      if (TIKZ_NAMED_COLORS[i].name === colLower) {
-        isStandardTikz = true;
-        break;
-      }
-    }
-
-    if (isStandardTikz) {
-      if (mode === 'fill-tint') return colLower + '!15';
-      if (mode === 'draw') return 'draw=' + colLower;
-      if (mode === 'fill') return 'fill=' + colLower;
-      if (mode === 'text') return 'text=' + colLower;
-      if (mode === 'raw' || mode === 'plain') return colLower;
-      return 'color=' + colLower;
-    }
-
-    // Academic presets or other named colors mapped to hex
+    // Map known color name to hex if available
     var hex = col;
     if (COLOR_NAME_MAP[colLower]) {
       hex = COLOR_NAME_MAP[colLower];
-    }
-
-    if (hex.startsWith('#')) {
-      // Check if hex matches a standard TikZ color exactly
-      for (var k = 0; k < TIKZ_NAMED_COLORS.length; k++) {
-        if (TIKZ_NAMED_COLORS[k].hex.toLowerCase() === hex.toLowerCase()) {
-          var sName = TIKZ_NAMED_COLORS[k].name;
-          if (mode === 'fill-tint') return sName + '!15';
-          if (mode === 'draw') return 'draw=' + sName;
-          if (mode === 'fill') return 'fill=' + sName;
-          if (mode === 'text') return 'text=' + sName;
-          if (mode === 'raw' || mode === 'plain') return sName;
-          return 'color=' + sName;
+    } else {
+      // Check in TIKZ_NAMED_COLORS
+      for (var tn = 0; tn < TIKZ_NAMED_COLORS.length; tn++) {
+        if (TIKZ_NAMED_COLORS[tn].name === colLower) {
+          hex = TIKZ_NAMED_COLORS[tn].hex;
+          break;
         }
       }
+    }
 
+    if (hex && hex.startsWith('#')) {
       var rgb = hexToRgb(hex);
       if (rgb) {
         var rgbSpec = '{rgb,255:red,' + rgb.r + ';green,' + rgb.g + ';blue,' + rgb.b + '}';

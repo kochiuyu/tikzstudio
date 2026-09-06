@@ -153,6 +153,11 @@ function resetAllCanvasElements() {
   var ly1n = document.getElementById("label_y_1_name"); if (ly1n) ly1n.value = "";
   var ly2 = document.getElementById("label_y_2"); if (ly2) ly2.value = 0;
   var ly2n = document.getElementById("label_y_2_name"); if (ly2n) ly2n.value = "";
+
+  // Reset layer manager to clear canvas shapes
+  if (window.layerManager && typeof window.layerManager.syncFromDOM === 'function') {
+    window.layerManager.syncFromDOM(true);
+  }
 }
 
 function setLine(idx, x1, y1, x2, y2, name, opts) {
@@ -653,6 +658,14 @@ function loadExampleModel(modelId) {
     return;
   }
   model.fn();
+
+  // Initiate canvas layers for the newly loaded example model
+  if (window.layerManager && typeof window.layerManager.initForExample === 'function') {
+    window.layerManager.initForExample(model);
+  } else if (window.layerManager && typeof window.layerManager.syncFromDOM === 'function') {
+    window.layerManager.syncFromDOM(true);
+  }
+
   if (typeof DrawGraph === 'function') {
     DrawGraph();
   }
