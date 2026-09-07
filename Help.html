@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TikZ Studio Documentation &amp; User Guide</title>
+  <meta name="description" content="Official unified documentation for TikZ Studio: 2D Coordinate Graphs, Extensive Game Trees, Venn Diagrams, Flowcharts & State Machines, and Timelines with LaTeX TikZ export." />
+
+  <link rel="stylesheet" href="css/modern.css">
+  <link rel="stylesheet" href="css/latex.css">
+
+  <script type="text/javascript" src="js/jquery-1.11.0.min.js"></script>
+  <style>
+    .help-tab-btn {
+      padding: 0.5rem 1rem;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border: 1px solid var(--color-border);
+      background: #ffffff;
+      color: var(--color-text-muted);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .help-tab-btn:hover {
+      background: #f8fafc;
+      color: var(--color-text-main);
+      border-color: #cbd5e1;
+    }
+    .help-tab-btn.active {
+      background: var(--color-primary, #4f46e5);
+      color: #ffffff;
+      border-color: var(--color-primary, #4f46e5);
+      box-shadow: 0 1px 3px rgba(79, 70, 229, 0.25);
+    }
+    .help-section-card {
+      background: #ffffff;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
+      box-shadow: var(--shadow-sm);
+      scroll-margin-top: 5rem;
+    }
+    .help-chip {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="app-header">
+    <div class="header-container">
+      <a href="index.html" class="brand-logo" id="brand-link">
+        <div class="brand-icon">T</div>
+        <div class="brand-text">
+          <span class="brand-title">TikZ Studio</span>
+          <span class="brand-subtitle">Documentation &amp; Help</span>
+        </div>
+      </a>
+      <ul class="nav-links">
+        <li class="nav-item"><a href="index.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Homepage
+        </a></li>
+        <li class="nav-item"><a href="Coordinate.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+          Coordinate Axis
+        </a></li>
+        <li class="nav-item"><a href="GameTree.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="3"/><circle cx="6" cy="19" r="3"/><circle cx="18" cy="19" r="3"/><line x1="12" y1="8" x2="6" y2="16"/><line x1="12" y1="8" x2="18" y2="16"/></svg>
+          Game Tree
+        </a></li>
+        <li class="nav-item"><a href="Venn.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="12" r="6"/><circle cx="15" cy="12" r="6"/></svg>
+          Venn Diagrams
+        </a></li>
+        <li class="nav-item"><a href="Flowchart.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M10 6.5h4M17.5 10v4M6.5 10v4"/></svg>
+          Flowcharts &amp; FSM
+        </a></li>
+        <li class="nav-item"><a href="Timeline.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Timeline
+        </a></li>
+        <li class="nav-item active"><a href="Help.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Docs &amp; Help
+        </a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main class="main-wrapper">
+
+    <!-- Hero Header Banner -->
+    <div style="text-align: center; max-width: 880px; margin: 1.5rem auto 2rem;">
+      <span class="nav-badge" style="margin-bottom: 0.75rem;">Central Documentation &amp; Help Center</span>
+      <h1 style="font-size: 2.25rem; font-weight: 800; color: var(--color-text-main); margin-bottom: 0.6rem; letter-spacing: -0.02em;">
+        TikZ Studio Documentation
+      </h1>
+      <p style="color: var(--color-text-muted); font-size: 1.05rem; line-height: 1.6;">
+        The complete guide to creating publication-ready LaTeX TikZ figures. Browse instructions, visual workflows, interactive keyboard shortcuts, and Overleaf integration across all 5 studios.
+      </p>
+    </div>
+
+    <!-- Sticky Studio Switcher Pills -->
+    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; margin-bottom: 2.5rem; position: sticky; top: 72px; z-index: 10; background: rgba(248, 250, 252, 0.92); backdrop-filter: blur(8px); padding: 0.6rem 0.75rem; border-radius: 9999px; border: 1px solid #e2e8f0; max-width: 960px; margin-left: auto; margin-right: auto;">
+      <a href="#overview" class="help-tab-btn active" onclick="activateHelpTab(this)">Overview</a>
+      <a href="#coordinate" class="help-tab-btn" onclick="activateHelpTab(this)">Coordinate Axis &amp; Curves</a>
+      <a href="#gametree" class="help-tab-btn" onclick="activateHelpTab(this)">Game Trees</a>
+      <a href="#venn" class="help-tab-btn" onclick="activateHelpTab(this)">Venn Diagrams</a>
+      <a href="#flowchart" class="help-tab-btn" onclick="activateHelpTab(this)">Flowcharts &amp; FSM</a>
+      <a href="#timeline" class="help-tab-btn" onclick="activateHelpTab(this)">Timelines</a>
+      <a href="#latex-preamble" class="help-tab-btn" onclick="activateHelpTab(this)">LaTeX &amp; Overleaf</a>
+      <a href="#shortcuts" class="help-tab-btn" onclick="activateHelpTab(this)">Keyboard Shortcuts</a>
+    </div>
+
+    <!-- Main Content Container -->
+    <div style="display: flex; flex-direction: column; gap: 2rem; max-width: 960px; margin: 0 auto 3.5rem;">
+
+      <!-- SECTION 0: Overview & Studio Suite Architecture -->
+      <section id="overview" class="help-section-card">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+          <h2 style="font-size: 1.35rem; font-weight: 700; color: var(--color-text-main); margin: 0;">
+            Overview &amp; Studio Suite Architecture
+          </h2>
+          <span class="help-chip" style="background: #e0e7ff; color: #4338ca;">All Studios</span>
+        </div>
+        <p style="font-size: 0.95rem; color: var(--color-text-muted); line-height: 1.6; margin-bottom: 1.25rem;">
+          TikZ Studio translates interactive visual canvas sketching into clean, syntactically correct, and compilable <strong>PGF/TikZ</strong> code for LaTeX. Each studio is purpose-built for a specific academic and scientific domain:
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem;">
+          <a href="Coordinate.html" style="text-decoration: none; display: block; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.1rem; transition: border-color 0.15s ease;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.4rem;">
+              <span style="color: #4f46e5; font-size: 1.1rem;">📈</span>
+              <strong style="color: #0f172a; font-size: 0.95rem;">Coordinate Axis Studio</strong>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45; margin: 0;">
+              Draw 2D curves, Bézier splines, 14 economics &amp; physics presets, shaded regions, and Z-index layers.
+            </p>
+          </a>
+
+          <a href="GameTree.html" style="text-decoration: none; display: block; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.1rem; transition: border-color 0.15s ease;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.4rem;">
+              <span style="color: #2563eb; font-size: 1.1rem;">🌳</span>
+              <strong style="color: #0f172a; font-size: 0.95rem;">Game Tree Studio</strong>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45; margin: 0;">
+              Extensive-form game trees with decision nodes, information sets, player strategies, and payoff vectors.
+            </p>
+          </a>
+
+          <a href="Venn.html" style="text-decoration: none; display: block; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.1rem; transition: border-color 0.15s ease;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.4rem;">
+              <span style="color: #059669; font-size: 1.1rem;">⭕</span>
+              <strong style="color: #0f172a; font-size: 0.95rem;">Venn &amp; Euler Studio</strong>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45; margin: 0;">
+              2-set and 3-set Venn diagrams, boolean algebra regions ($A \cap B, A \cup B$), and probability events.
+            </p>
+          </a>
+
+          <a href="Flowchart.html" style="text-decoration: none; display: block; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.1rem; transition: border-color 0.15s ease;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.4rem;">
+              <span style="color: #d97706; font-size: 1.1rem;">🔀</span>
+              <strong style="color: #0f172a; font-size: 0.95rem;">Flowcharts &amp; Automata (FSM)</strong>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45; margin: 0;">
+              Flowcharts, computer science DFA/NFA automata, cardinal anchor snapping, and orthogonal routing.
+            </p>
+          </a>
+
+          <a href="Timeline.html" style="text-decoration: none; display: block; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.1rem; transition: border-color 0.15s ease;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.4rem;">
+              <span style="color: #db2777; font-size: 1.1rem;">📅</span>
+              <strong style="color: #0f172a; font-size: 0.95rem;">Timeline Studio</strong>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45; margin: 0;">
+              Chronological milestone charts, historical event phases, intervals, and customized time markers.
+            </p>
+          </a>
+        </div>
+      </section>
+
+      <!-- SECTION 1: Coordinate Axis & Curves Studio -->
+      <section id="coordinate" class="help-section-card">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+          <h2 style="font-size: 1.35rem; font-weight: 700; color: var(--color-text-main); margin: 0;">
+            1. Coordinate Axis &amp; Curves Studio
+          </h2>
+          <span class="help-chip" style="background: #e0e7ff; color: #4338ca;">Coordinate.html</span>
+        </div>
+        <p style="font-size: 0.95rem; color: var(--color-text-muted); line-height: 1.6; margin-bottom: 1.25rem;">
+          The Coordinate Axis Studio features a canvas-first rubberband drafting environment, 14 domain-specific model presets, multi-layer Z-index management, and mathematical notation.
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 1rem; margin-bottom: 1.25rem;">
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+            <strong style="color: #4f46e5; display: block; margin-bottom: 0.35rem;">Canvas Rubberband Tools</strong>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45;">
+              Select &amp; Edit (<kbd>V/S</kbd>), Straight Lines (<kbd>L</kbd>), 4-Point Bézier Splines (<kbd>C</kbd>), Rectangles &amp; Shaded Regions (<kbd>R</kbd>), Circles (<kbd>O</kbd>), Points (<kbd>P</kbd>), and Grid Snapping (<kbd>G</kbd>).
+            </p>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+            <strong style="color: #059669; display: block; margin-bottom: 0.35rem;">14 Curated Domain Presets</strong>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45;">
+              Pre-built microeconomics (Supply &amp; Demand, Monopoly &amp; DWL, Utility Maximization, Cost Curves, PPF), macroeconomics (IS-LM, Keynesian Cross, Solow Growth, AD-AS), math, and physics models.
+            </p>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+            <strong style="color: #d97706; display: block; margin-bottom: 0.35rem;">Canvas Layers Drawer (<kbd>Alt+L</kbd>)</strong>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45;">
+              Control front-to-back render hierarchy, lock shapes to prevent unintended edits, toggle visibility, and search layers by type.
+            </p>
+          </div>
+        </div>
+
+        <div style="background: #eff6ff; border-left: 4px solid #3b82f6; padding: 0.85rem 1rem; border-radius: 4px; font-size: 0.85rem; color: #1e3a8a;">
+          <strong>Mathematical Notation:</strong> Supports subscripts (<code style="font-family: monospace;">Q_1</code> &rarr; $Q_1$), superscripts (<code style="font-family: monospace;">Q^*</code> &rarr; $Q^*$), Greek letters (<code style="font-family: monospace;">\pi, \theta, \alpha</code>), fractions (<code style="font-family: monospace;">\frac{a}{b}</code>), and MathML tags.
+        </div>
+      </section>
+
+      <!-- SECTION 2: Game Tree Studio -->
+      <section id="gametree" class="help-section-card">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+          <h2 style="font-size: 1.35rem; font-weight: 700; color: var(--color-text-main); margin: 0;">
+            2. Game Tree &amp; Decision Studio
+          </h2>
+          <span class="help-chip" style="background: #dbeafe; color: #1d4ed8;">GameTree.html</span>
+        </div>
+        <p style="font-size: 0.95rem; color: var(--color-text-muted); line-height: 1.6; margin-bottom: 1.25rem;">
+          Design extensive-form game trees for game theory, economics, and decision analysis. Includes backward induction paths, information sets, and payoffs:
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 1rem;">
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+            <strong style="color: #2563eb; display: block; margin-bottom: 0.35rem;">Nodes &amp; Players</strong>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45;">
+              Define root nodes, player decision turns (e.g. Player 1, Player 2, Nature), and terminal payoff vectors (e.g. <code style="font-family: monospace;">(3, 1)</code>).
+            </p>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+            <strong style="color: #7c3aed; display: block; margin-bottom: 0.35rem;">Information Sets</strong>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45;">
+              Represent games with imperfect information by linking simultaneous decision nodes with dashed connectors.
+            </p>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+            <strong style="color: #059669; display: block; margin-bottom: 0.35rem;">Equilibrium Strategies</strong>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45;">
+              Highlight subgame-perfect Nash equilibrium branches with thicker lines, custom colors, and branch probability labels.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 3: Venn & Euler Diagrams Studio -->
+      <section id="venn" class="help-section-card">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+          <h2 style="font-size: 1.35rem; font-weight: 700; color: var(--color-text-main); margin: 0;">
+            3. Venn &amp; Euler Diagrams Studio
+          </h2>
+          <span class="help-chip" style="background: #d1fae5; color: #065f46;">Venn.html</span>
+        </div>
+        <p style="font-size: 0.95rem; color: var(--color-text-muted); line-height: 1.6; margin-bottom: 1.25rem;">
+          Construct 2-set and 3-set Venn diagrams with set operations, boolean algebra logic, and mathematical probability shading:
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 1rem;">
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+            <strong style="color: #059669; display: block; margin-bottom: 0.35rem;">Atomic Set Partitions</strong>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45;">
+              Shade individual intersections ($A \cap B$), unions ($A \cup B$), differences ($A \setminus B$), or universal complement ($U \setminus (A \cup B)$).
+            </p>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+            <strong style="color: #2563eb; display: block; margin-bottom: 0.35rem;">Probability Expressions</strong>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45;">
+              Annotate joint probabilities $P(A \cap B)$, marginal probabilities $P(A)$, and conditional probabilities $P(A \mid B)$ directly in the sets.
+            </p>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+            <strong style="color: #d97706; display: block; margin-bottom: 0.35rem;">TikZ Clip &amp; Fill Output</strong>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45;">
+              Generates clean, native TikZ <code style="font-family: monospace;">\begin{scope} \clip ... \fill ... \end{scope}</code> blocks that compile natively.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 4: Flowcharts & State Machines Studio -->
+      <section id="flowchart" class="help-section-card">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+          <h2 style="font-size: 1.35rem; font-weight: 700; color: var(--color-text-main); margin: 0;">
+            4. Flowcharts, State Machines &amp; Automata
+          </h2>
+          <span class="help-chip" style="background: #fef3c7; color: #b45309;">Flowchart.html</span>
+        </div>
+        <p style="font-size: 0.95rem; color: var(--color-text-muted); line-height: 1.6; margin-bottom: 1.25rem;">
+          Create computer science automata (DFA/NFA), algorithms, business process flows, and finite state transitions:
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+            <strong style="color: #b45309; display: block; margin-bottom: 0.35rem;">Standard Shape Conventions</strong>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45;">
+              Pill/Terminals (Start/End), Rectangles (Process), Diamonds (Decisions), Parallelograms (Data I/O), Circles (States), and Double Circles (Accept States).
+            </p>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+            <strong style="color: #4f46e5; display: block; margin-bottom: 0.35rem;">Interactive Port Snapping</strong>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45;">
+              Hovering shapes reveals 4 cardinal connection ports (North, South, East, West). Drag from any port to snap directly into a target shape port.
+            </p>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+            <strong style="color: #059669; display: block; margin-bottom: 0.35rem;">Smart Routing &amp; Loops</strong>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45;">
+              Switch between Direct lines, Orthogonal 90° elbows (<code style="font-family: monospace;">-|</code> and <code style="font-family: monospace;">|-</code>), and Feedback loops with custom branch labels (<code style="font-family: monospace;">Yes / No</code>, <code style="font-family: monospace;">0, 1, &epsilon;</code>).
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 5: Timeline Studio -->
+      <section id="timeline" class="help-section-card">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+          <h2 style="font-size: 1.35rem; font-weight: 700; color: var(--color-text-main); margin: 0;">
+            5. Timeline Studio
+          </h2>
+          <span class="help-chip" style="background: #fce7f3; color: #9d174d;">Timeline.html</span>
+        </div>
+        <p style="font-size: 0.95rem; color: var(--color-text-muted); line-height: 1.6; margin-bottom: 1.25rem;">
+          Construct chronological timelines for research papers, thesis overviews, project milestones, and historical event sequences:
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 1rem;">
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+            <strong style="color: #db2777; display: block; margin-bottom: 0.35rem;">Milestone Markers</strong>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45;">
+              Place point events with dates, titles, and descriptions alternating above and below the central time axis.
+            </p>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+            <strong style="color: #7c3aed; display: block; margin-bottom: 0.35rem;">Intervals &amp; Phases</strong>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45;">
+              Span multi-year or multi-month historical eras with shaded range bars and category labels.
+            </p>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+            <strong style="color: #2563eb; display: block; margin-bottom: 0.35rem;">Clean LaTeX TikZ Code</strong>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45;">
+              Generates lightweight, scalable TikZ code ready to drop into paper preambles or presentation slides.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 6: Universal LaTeX & Overleaf Compilation -->
+      <section id="latex-preamble" class="help-section-card">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+          <h2 style="font-size: 1.35rem; font-weight: 700; color: var(--color-text-main); margin: 0;">
+            6. Compiling in LaTeX &amp; Overleaf (Preamble Requirements)
+          </h2>
+          <span class="help-chip" style="background: #dbeafe; color: #1e40af;">Compilation</span>
+        </div>
+        <p style="font-size: 0.95rem; color: var(--color-text-muted); line-height: 1.6; margin-bottom: 1rem;">
+          Every diagram generated by TikZ Studio is self-contained standard PGF/TikZ code. To compile in <strong>Overleaf</strong> or a local LaTeX distribution (such as TeX Live or MiKTeX), use this Minimal Working Example (MWE):
+        </p>
+
+        <div style="background: #1e1b4b; border-radius: 8px; padding: 1.25rem; font-family: monospace; font-size: 0.85rem; color: #e0e7ff; overflow-x: auto; margin-bottom: 1.25rem;">
+          <span style="color: #93c5fd;">\documentclass</span>{<span style="color: #fca5a5;">article</span>}<br>
+          <span style="color: #93c5fd;">\usepackage</span>{<span style="color: #fca5a5;">tikz</span>}<br>
+          <span style="color: #94a3b8;">% Recommended TikZ libraries for arrows, calculations, positioning and shapes:</span><br>
+          <span style="color: #93c5fd;">\usetikzlibrary</span>{<span style="color: #fca5a5;">arrows.meta, calc, positioning, shapes.geometric, automata</span>}<br>
+          <br>
+          <span style="color: #93c5fd;">\begin</span>{<span style="color: #86efac;">document</span>}<br>
+          <br>
+          <span style="color: #94a3b8;">% Paste the generated TikZ code from TikZ Studio here:</span><br>
+          <span style="color: #93c5fd;">\begin</span>{<span style="color: #86efac;">tikzpicture</span>}[scale=1.0]<br>
+          &nbsp;&nbsp;<span style="color: #94a3b8;">% Diagram content</span><br>
+          <span style="color: #93c5fd;">\end</span>{<span style="color: #86efac;">tikzpicture</span>}<br>
+          <br>
+          <span style="color: #93c5fd;">\end</span>{<span style="color: #86efac;">document</span>}
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem;">
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+            <strong style="color: #0f172a; font-size: 0.9rem; display: block; margin-bottom: 0.25rem;">Recommended Compilers</strong>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45; margin: 0;">
+              All TikZ code is fully compatible with <strong>pdfLaTeX</strong>, <strong>LuaLaTeX</strong>, and <strong>XeLaTeX</strong>.
+            </p>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+            <strong style="color: #0f172a; font-size: 0.9rem; display: block; margin-bottom: 0.25rem;">High-Resolution PNG Export</strong>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45; margin: 0;">
+              Export crisp images at 1x, 2x Retina, 3x High-Res, or 4x Ultra-Res with transparent or solid background options.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 7: Master Keyboard Shortcuts -->
+      <section id="shortcuts" class="help-section-card">
+        <h2 style="font-size: 1.35rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 0.75rem;">
+          7. Master Keyboard Shortcuts Cheat Sheet
+        </h2>
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; font-size: 0.875rem; border-collapse: collapse;">
+            <thead>
+              <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0; text-align: left;">
+                <th style="padding: 0.6rem 0.75rem; font-weight: 600; color: var(--color-text-main); width: 22%;">Shortcut Key</th>
+                <th style="padding: 0.6rem 0.75rem; font-weight: 600; color: var(--color-text-main); width: 38%;">Action</th>
+                <th style="padding: 0.6rem 0.75rem; font-weight: 600; color: var(--color-text-main); width: 40%;">Studio Availability</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding: 0.6rem 0.75rem;"><kbd style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; font-weight: 600;">V</kbd> or <kbd style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; font-weight: 600;">S</kbd></td>
+                <td style="padding: 0.6rem 0.75rem;">Select &amp; Edit Mode</td>
+                <td style="padding: 0.6rem 0.75rem; color: var(--color-text-muted);">Coordinate, Flowchart</td>
+              </tr>
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding: 0.6rem 0.75rem;"><kbd style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; font-weight: 600;">L</kbd></td>
+                <td style="padding: 0.6rem 0.75rem;">Straight Line Tool</td>
+                <td style="padding: 0.6rem 0.75rem; color: var(--color-text-muted);">Coordinate</td>
+              </tr>
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding: 0.6rem 0.75rem;"><kbd style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; font-weight: 600;">C</kbd></td>
+                <td style="padding: 0.6rem 0.75rem;">Bézier Curve Tool</td>
+                <td style="padding: 0.6rem 0.75rem; color: var(--color-text-muted);">Coordinate</td>
+              </tr>
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding: 0.6rem 0.75rem;"><kbd style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; font-weight: 600;">R</kbd></td>
+                <td style="padding: 0.6rem 0.75rem;">Rectangle / Region Tool</td>
+                <td style="padding: 0.6rem 0.75rem; color: var(--color-text-muted);">Coordinate, Flowchart</td>
+              </tr>
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding: 0.6rem 0.75rem;"><kbd style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; font-weight: 600;">O</kbd></td>
+                <td style="padding: 0.6rem 0.75rem;">Circle / State Tool</td>
+                <td style="padding: 0.6rem 0.75rem; color: var(--color-text-muted);">Coordinate, Flowchart</td>
+              </tr>
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding: 0.6rem 0.75rem;"><kbd style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; font-weight: 600;">P</kbd></td>
+                <td style="padding: 0.6rem 0.75rem;">Point / Label Tool</td>
+                <td style="padding: 0.6rem 0.75rem; color: var(--color-text-muted);">Coordinate</td>
+              </tr>
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding: 0.6rem 0.75rem;"><kbd style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; font-weight: 600;">G</kbd></td>
+                <td style="padding: 0.6rem 0.75rem;">Toggle Magnetic Grid Snapping</td>
+                <td style="padding: 0.6rem 0.75rem; color: var(--color-text-muted);">Coordinate, Flowchart</td>
+              </tr>
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding: 0.6rem 0.75rem;"><kbd style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; font-weight: 600;">Alt</kbd> + <kbd style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; font-weight: 600;">L</kbd></td>
+                <td style="padding: 0.6rem 0.75rem;">Toggle Canvas Layers Manager</td>
+                <td style="padding: 0.6rem 0.75rem; color: var(--color-text-muted);">Coordinate</td>
+              </tr>
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding: 0.6rem 0.75rem;"><kbd style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; font-weight: 600;">H</kbd> or <kbd style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; font-weight: 600;">Space</kbd></td>
+                <td style="padding: 0.6rem 0.75rem;">Pan Canvas Viewport</td>
+                <td style="padding: 0.6rem 0.75rem; color: var(--color-text-muted);">Coordinate, Flowchart</td>
+              </tr>
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding: 0.6rem 0.75rem;"><kbd style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; font-weight: 600;">Ctrl</kbd> + <kbd style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; font-weight: 600;">Z</kbd></td>
+                <td style="padding: 0.6rem 0.75rem;">Undo Previous Action</td>
+                <td style="padding: 0.6rem 0.75rem; color: var(--color-text-muted);">All Studios</td>
+              </tr>
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding: 0.6rem 0.75rem;"><kbd style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; font-weight: 600;">Ctrl</kbd> + <kbd style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; font-weight: 600;">Y</kbd></td>
+                <td style="padding: 0.6rem 0.75rem;">Redo Action</td>
+                <td style="padding: 0.6rem 0.75rem; color: var(--color-text-muted);">All Studios</td>
+              </tr>
+              <tr>
+                <td style="padding: 0.6rem 0.75rem;"><kbd style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; font-weight: 600;">Esc</kbd></td>
+                <td style="padding: 0.6rem 0.75rem;">Cancel Draw / Close Modals</td>
+                <td style="padding: 0.6rem 0.75rem; color: var(--color-text-muted);">All Studios</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </div>
+
+  </main>
+
+  <!-- Modern Footer -->
+  <footer class="app-footer">
+    <div class="footer-inner">
+      <div>
+        <strong>TikZ Studio Documentation</strong> &mdash; Built for LaTeX, Overleaf, and academic researchers.
+      </div>
+      <div class="footer-nav">
+        <a href="index.html">Homepage</a>
+        <a href="Coordinate.html">Coordinate Axis</a>
+        <a href="GameTree.html">Game Tree</a>
+        <a href="Venn.html">Venn Diagrams</a>
+        <a href="Flowchart.html">Flowcharts &amp; FSM</a>
+        <a href="Timeline.html">Timeline</a>
+        <a href="Help.html">Docs &amp; Help</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function activateHelpTab(el) {
+      document.querySelectorAll('.help-tab-btn').forEach(btn => btn.classList.remove('active'));
+      el.classList.add('active');
+    }
+  </script>
+
+</body>
+</html>

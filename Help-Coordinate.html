@@ -3,16 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Documentation &amp; Guide - TikZ Studio</title>
-  <meta name="description" content="Step-by-step guide and walkthrough for drawing 2D coordinate graphs and generating LaTeX TikZ diagrams." />
+  <title>2D Coordinate Axis &amp; Curves Studio Guide - TikZ Studio</title>
+  <meta name="description" content="Comprehensive step-by-step guide for creating 2D coordinate graphs, economics models, Bézier splines, layers, presets, and compiling LaTeX TikZ diagrams." />
 
   <link rel="stylesheet" href="css/modern.css">
-  <link rel="stylesheet" href="css/scroll.css">
+  <link rel="stylesheet" href="css/latex.css">
 
-  <script type="text/javascript" src="js/import.js"></script>
   <script type="text/javascript" src="js/jquery-1.11.0.min.js"></script>
-  <script type="text/javascript" src="js/jquery.hoverIntent.min.js"></script>
-  <script type="text/javascript" src="js/jquery.hoveraccordion.min.js"></script>
 </head>
 <body>
 
@@ -43,11 +40,15 @@
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="12" r="6"/><circle cx="15" cy="12" r="6"/></svg>
           Venn Diagrams
         </a></li>
+        <li class="nav-item"><a href="Flowchart.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M10 6.5h4M17.5 10v4M6.5 10v4"/></svg>
+          Flowcharts &amp; FSM
+        </a></li>
         <li class="nav-item"><a href="Timeline.html">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           Timeline
         </a></li>
-        <li class="nav-item active"><a href="Help-Coordinate.html">
+        <li class="nav-item"><a href="Help.html">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
           Docs &amp; Help
         </a></li>
@@ -57,96 +58,411 @@
 
   <main class="main-wrapper">
 
+    <!-- Unified Docs Banner -->
+    <div style="background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 8px; padding: 0.75rem 1.25rem; max-width: 860px; margin: 1rem auto -0.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+      <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: #3730a3;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        <span>Looking for documentation across all studios (Game Trees, Venn, Flowcharts, Timelines)?</span>
+      </div>
+      <a href="Help.html" class="btn-modern btn-modern-primary" style="padding: 0.35rem 0.85rem; font-size: 0.8rem; text-decoration: none;">
+        Open Central Help &rarr;
+      </a>
+    </div>
+
     <!-- Header info banner -->
-    <div style="text-align: center; max-width: 800px; margin: 1.5rem auto 2.5rem;">
+    <div style="text-align: center; max-width: 860px; margin: 1.5rem auto 2.5rem;">
       <span class="nav-badge" style="margin-bottom: 0.75rem;">Coordinate Studio User Guide</span>
-      <h1 style="font-size: 2rem; font-weight: 800; color: var(--color-text-main); margin-bottom: 0.5rem; letter-spacing: -0.02em;">
-        Coordinate Studio Walkthrough &amp; Instructions
+      <h1 style="font-size: 2.15rem; font-weight: 800; color: var(--color-text-main); margin-bottom: 0.5rem; letter-spacing: -0.02em;">
+        2D Coordinate Axis &amp; Curves Studio Guide
       </h1>
-      <p style="color: var(--color-text-muted); font-size: 1rem; line-height: 1.6;">
-        Learn how to configure axes, sketch lines and Bézier splines, and compile the generated TikZ code in LaTeX or Overleaf.
+      <p style="color: var(--color-text-muted); font-size: 1.05rem; line-height: 1.6;">
+        Design publication-quality scientific, mathematical, and economic figures. Master canvas rubberband tools, 4-point Bézier splines, Z-index layers, 14 domain presets, and compilable LaTeX TikZ export.
       </p>
     </div>
 
-    <!-- Step-by-Step Quick Guide -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
-      <div style="background: #ffffff; border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 1.5rem;">
-        <div style="font-weight: 700; color: var(--color-primary); font-size: 1.1rem; margin-bottom: 0.5rem;">1. Configure Axes &amp; Ticks</div>
+    <!-- 4 High-Level Feature Highlights -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; margin-bottom: 2.5rem;">
+      <div style="background: #ffffff; border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 1.4rem; box-shadow: var(--shadow-sm);">
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+          <div style="width: 28px; height: 28px; border-radius: 6px; background: #e0e7ff; color: #4338ca; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem;">1</div>
+          <strong style="color: var(--color-text-main); font-size: 1rem;">Canvas-First Workflow</strong>
+        </div>
         <p style="font-size: 0.875rem; color: var(--color-text-muted); line-height: 1.5;">
-          Specify maximum units for the X and Y axes, assign descriptive labels (e.g. Quantity and Price), and add labeled tick marks along both axes.
+          Directly rubberband drag lines, rectangles, circles, points, and 4-point Bézier splines on the interactive canvas with real-time HUD telemetry and snapping.
         </p>
       </div>
 
-      <div style="background: #ffffff; border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 1.5rem;">
-        <div style="font-weight: 700; color: var(--color-primary); font-size: 1.1rem; margin-bottom: 0.5rem;">2. Lines, Curves, Circles &amp; Rectangles</div>
+      <div style="background: #ffffff; border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 1.4rem; box-shadow: var(--shadow-sm);">
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+          <div style="width: 28px; height: 28px; border-radius: 6px; background: #dbeafe; color: #1d4ed8; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem;">2</div>
+          <strong style="color: var(--color-text-main); font-size: 1rem;">14 Curated Presets</strong>
+        </div>
         <p style="font-size: 0.875rem; color: var(--color-text-muted); line-height: 1.5;">
-          Either input numerical coordinates or activate <strong>Mouse Draw</strong> to click and place points directly on the canvas. Draw straight lines, Bézier splines, circles, or rectangles with customizable dashed styles, fills, and colors.
+          Instant template models across microeconomics, macroeconomics, mathematics, statistics, and physics with ready-to-use curves, equilibrium markers, and shaded areas.
         </p>
       </div>
 
-      <div style="background: #ffffff; border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 1.5rem;">
-        <div style="font-weight: 700; color: var(--color-primary); font-size: 1.1rem; margin-bottom: 0.5rem;">3. MathML &amp; Mathematical Equations</div>
+      <div style="background: #ffffff; border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 1.4rem; box-shadow: var(--shadow-sm);">
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+          <div style="width: 28px; height: 28px; border-radius: 6px; background: #fef3c7; color: #b45309; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem;">3</div>
+          <strong style="color: var(--color-text-main); font-size: 1rem;">Layers &amp; Z-Index Control</strong>
+        </div>
         <p style="font-size: 0.875rem; color: var(--color-text-muted); line-height: 1.5;">
-          Label axes, points, lines, and curves with mathematical notation: subscripts (<code style="font-family:var(--font-mono); background:#f1f5f9; padding:1px 4px; border-radius:3px;">Q_1, P_m</code>), superscripts (<code style="font-family:var(--font-mono); background:#f1f5f9; padding:1px 4px; border-radius:3px;">Q^*, x^2</code>), Greek letters (<code style="font-family:var(--font-mono); background:#f1f5f9; padding:1px 4px; border-radius:3px;">\pi, \theta, \alpha</code>), fractions (<code style="font-family:var(--font-mono); background:#f1f5f9; padding:1px 4px; border-radius:3px;">\frac{a}{b}</code>), and native <code style="font-family:var(--font-mono); background:#f1f5f9; padding:1px 4px; border-radius:3px;">&lt;math&gt;...&lt;/math&gt;</code> tags.
+          Dedicated slide-out layer manager (<kbd>Alt+L</kbd>). Reorder front-to-back render order, lock shapes against unintended modifications, and filter elements.
         </p>
       </div>
 
-      <div style="background: #ffffff; border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 1.5rem;">
-        <div style="font-weight: 700; color: var(--color-primary); font-size: 1.1rem; margin-bottom: 0.5rem;">4. Compile in LaTeX / Overleaf</div>
+      <div style="background: #ffffff; border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 1.4rem; box-shadow: var(--shadow-sm);">
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+          <div style="width: 28px; height: 28px; border-radius: 6px; background: #ecfdf5; color: #047857; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem;">4</div>
+          <strong style="color: var(--color-text-main); font-size: 1rem;">Multi-Format Output</strong>
+        </div>
         <p style="font-size: 0.875rem; color: var(--color-text-muted); line-height: 1.5;">
-          Click <strong>Copy LaTeX</strong> or <strong>Download .tex</strong>. Ensure your LaTeX preamble contains <code style="font-family: var(--font-mono); background:#eef2ff; color:#4f46e5; padding: 0.1rem 0.3rem; border-radius: 4px;">\usepackage{tikz}</code>.
+          Real-time TikZ code generation for Overleaf, one-click <code style="font-family: monospace;">.tex</code> downloads, high-res PNG export (up to 4x Ultra-Res), and CSV geometry tables.
         </p>
       </div>
     </div>
 
-    <!-- Visual Carousel Section -->
-    <div style="background: #ffffff; border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 3rem; box-shadow: var(--shadow-sm);">
-      <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 1rem; text-align: center;">
-        Visual Feature Gallery &amp; Screenshots
-      </h2>
+    <!-- Guide Detailed Sections Stack -->
+    <div style="display: flex; flex-direction: column; gap: 1.75rem; max-width: 920px; margin: 0 auto 3.5rem;">
 
-      <div class="lanrenzhijia" style="margin: 0 auto; box-shadow: 0 4px 12px rgba(0,0,0,0.06); border-radius: 8px; overflow: hidden;"> 
-        <span id="prev" class="mybtn prev"></span> 
-        <span id="next" class="mybtn next"></span> 
-        <span id="prevTop" class="mybtn prev"></span> 
-        <span id="nextTop" class="mybtn next"></span>
-
-        <div id="picBox" class="picBox">
-          <ul class="cf">
-            <li><a href="javascript:;"><img src="images/1.jpg" alt="Economic Figures"/><span>Economic Figures Example</span></a></li>
-            <li><a href="javascript:;"><img src="images/13.jpg" alt="Homepage Overview"/><span>Homepage Overview</span></a></li>
-            <li><a href="javascript:;"><img src="images/2.jpg" alt="Coordinate Axis"/><span>Coordinate Axis Interface</span></a></li>
-            <li><a href="javascript:;"><img src="images/3.jpg" alt="Coordinate Axis Canvas"/><span>Interactive Canvas</span></a></li>
-            <li><a href="javascript:;"><img src="images/4.jpg" alt="Drawing Curves"/><span>Drawing Curves &amp; Lines</span></a></li>
-            <li><a href="javascript:;"><img src="images/5.jpg" alt="Axis and Labels"/><span>Coordinate Axis - Axis and Labels</span></a></li>
-            <li><a href="javascript:;"><img src="images/6.jpg" alt="Rectangles"/><span>Coordinate Axis - Rectangles</span></a></li>
-            <li><a href="javascript:;"><img src="images/7.jpg" alt="Straight Lines"/><span>Coordinate Axis - Lines</span></a></li>
-            <li><a href="javascript:;"><img src="images/8.jpg" alt="Bezier Curves"/><span>Coordinate Axis - Curves</span></a></li>
-            <li><a href="javascript:;"><img src="images/9.jpg" alt="Graph Examples"/><span>Coordinate Axis - Examples</span></a></li>
-            <li><a href="javascript:;"><img src="images/10.jpg" alt="Export and Import"/><span>Coordinate Axis - Export and Import</span></a></li>
-            <li><a href="javascript:;"><img src="images/11.jpg" alt="CSV Export"/><span>CSV &amp; HTML Export</span></a></li>
-            <li><a href="javascript:;"><img src="images/12.jpg" alt="Overleaf Integration"/><span>LaTeX Compilation</span></a></li>
-          </ul>
+      <!-- Section 1: Interactive Canvas-First Drawing Tools -->
+      <div class="control-card" style="background: #ffffff; padding: 1.75rem;">
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+          <h2 style="font-size: 1.3rem; font-weight: 700; color: var(--color-text-main); margin: 0;">
+            1. Interactive Canvas-First Drawing Tools
+          </h2>
+          <span class="nav-badge" style="background: #e0e7ff; color: #4338ca;">Quick Toolbar</span>
         </div>
-        
-        <div id="listBox" class="listBox">
-          <ul class="cf">
-            <li class="on"><i class="arr2"></i><img src="images/1.jpg" alt="Thumb 1"/></li>
-            <li><i class="arr2"></i><img src="images/13.jpg" alt="Thumb 2"/></li>
-            <li><i class="arr2"></i><img src="images/2.jpg" alt="Thumb 3"/></li>
-            <li><i class="arr2"></i><img src="images/3.jpg" alt="Thumb 4"/></li>
-            <li><i class="arr2"></i><img src="images/4.jpg" alt="Thumb 5"/></li>
-            <li><i class="arr2"></i><img src="images/5.jpg" alt="Thumb 6"/></li>
-            <li><i class="arr2"></i><img src="images/6.jpg" alt="Thumb 7"/></li>
-            <li><i class="arr2"></i><img src="images/7.jpg" alt="Thumb 8"/></li>
-            <li><i class="arr2"></i><img src="images/8.jpg" alt="Thumb 9"/></li>
-            <li><i class="arr2"></i><img src="images/9.jpg" alt="Thumb 10"/></li>
-            <li><i class="arr2"></i><img src="images/10.jpg" alt="Thumb 11"/></li>
-            <li><i class="arr2"></i><img src="images/11.jpg" alt="Thumb 12"/></li>
-            <li><i class="arr2"></i><img src="images/12.jpg" alt="Thumb 13"/></li> 
-          </ul>
+        <p style="font-size: 0.9rem; color: var(--color-text-muted); line-height: 1.6; margin-bottom: 1.25rem;">
+          The primary drawing workflow takes place directly on the 600&times;580 canvas viewport using interactive rubberbanding. As you sketch, coordinates, angles, and lengths are calculated in real time, and the sidebar forms automatically synchronize for fine-tuning.
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 1rem; margin-bottom: 1.25rem;">
+          
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.35rem;">
+              <strong style="color: #4f46e5; font-size: 0.95rem;">Select &amp; Edit Tool</strong>
+              <code style="background: #e0e7ff; color: #3730a3; padding: 1px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: 700;">V / S</code>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45;">
+              Click any element on the canvas to inspect its parameters. Drag shape endpoints or control handles to interactively reposition them.
+            </p>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.35rem;">
+              <strong style="color: #2563eb; font-size: 0.95rem;">Straight Line Tool</strong>
+              <code style="background: #dbeafe; color: #1e40af; padding: 1px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: 700;">L</code>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45;">
+              Click and drag to span a straight line segment. Supports arrowheads (<code style="font-family: monospace;">-&gt;</code>, <code style="font-family: monospace;">&lt;-</code>, <code style="font-family: monospace;">&lt;-&gt;</code>), thicknesses (thin to ultra thick), dash styles, and real-time angle/length telemetry.
+            </p>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.35rem;">
+              <strong style="color: #059669; font-size: 0.95rem;">4-Point Bézier Curve</strong>
+              <code style="background: #d1fae5; color: #065f46; padding: 1px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: 700;">C</code>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45;">
+              Construct cubic Bézier splines by placing 4 points: Start point ($P_1$), End point ($P_2$), Control point 1 ($C_1$), and Control point 2 ($C_2$). Includes an arc shortcut (<code style="font-family: monospace;">Match C₂ = C₁</code>) and step-by-step undo.
+            </p>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.35rem;">
+              <strong style="color: #d97706; font-size: 0.95rem;">Rectangle &amp; Area Tool</strong>
+              <code style="background: #fef3c7; color: #92400e; padding: 1px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: 700;">R</code>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45;">
+              Rubberband drag to shade economic profit boxes, consumer surplus zones, or deadweight loss regions with customizable solid or dashed borders and fills.
+            </p>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.35rem;">
+              <strong style="color: #db2777; font-size: 0.95rem;">Circle Tool</strong>
+              <code style="background: #fce7f3; color: #9d174d; padding: 1px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: 700;">O</code>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45;">
+              Drag from center to radius or bounding box to draw circles, indifference bliss points, or unit circles with center point coordinates and optional fills.
+            </p>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.35rem;">
+              <strong style="color: #0891b2; font-size: 0.95rem;">Point &amp; Marker Tool</strong>
+              <code style="background: #cffafe; color: #155e75; padding: 1px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: 700;">P</code>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45;">
+              Click anywhere on the canvas to place labeled points ($A, B, E_1, \text{Max}$). Select from 8 cardinal label anchor positions (<code style="font-family: monospace;">above right</code>, <code style="font-family: monospace;">below left</code>, etc.).
+            </p>
+          </div>
+
+        </div>
+
+        <div style="background: #f1f5f9; border-left: 4px solid #4f46e5; padding: 0.85rem 1rem; border-radius: 4px; font-size: 0.85rem; color: #334155;">
+          <strong>Pro Tip &mdash; Floating Confirmation Popover:</strong> When drawing with Confirm Mode enabled, a compact on-canvas card displays real-time dimensions, length, slope angle, and allows you to rename labels, set line style (Solid/Dashed), pick colors, or press <kbd>Enter</kbd> to confirm or <kbd>Esc</kbd> to discard.
         </div>
       </div>
+
+      <!-- Section 2: 14 Curated Domain Model Presets -->
+      <div class="control-card" style="background: #ffffff; padding: 1.75rem;">
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+          <h2 style="font-size: 1.3rem; font-weight: 700; color: var(--color-text-main); margin: 0;">
+            2. Curated Domain Model Presets (14 Ready-to-Use Templates)
+          </h2>
+          <span class="nav-badge" style="background: #dbeafe; color: #1e40af;">Templates</span>
+        </div>
+        <p style="font-size: 0.9rem; color: var(--color-text-muted); line-height: 1.6; margin-bottom: 1rem;">
+          TikZ Studio includes 14 pre-built academic figures across economics, mathematics, and physics. Select any model from the <strong>Model</strong> dropdown in the toolbar or click <strong>All Models &rarr;</strong> in the sidebar to populate the canvas:
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem;">
+          
+          <div style="background: #faf5ff; border: 1px solid #e9d5ff; border-radius: 8px; padding: 1rem;">
+            <strong style="color: #7e22ce; display: block; font-size: 0.95rem; margin-bottom: 0.35rem;">Microeconomics</strong>
+            <ul style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.6; padding-left: 1.2rem; margin: 0;">
+              <li><strong>Supply &amp; Demand:</strong> Equilibrium $E^*$, consumer and producer surplus lines.</li>
+              <li><strong>Monopoly &amp; DWL:</strong> Downward demand, marginal revenue (MR), marginal cost (MC), deadweight loss area.</li>
+              <li><strong>Utility Maximization:</strong> Convex indifference curve tangent to budget constraint.</li>
+              <li><strong>Firm Cost Curves:</strong> U-shaped MC, ATC, AVC intersecting at minimum ATC.</li>
+              <li><strong>Production Possibility (PPF):</strong> Concave frontier showing resource allocation trade-offs.</li>
+              <li><strong>Negative Externality:</strong> Private vs. Social Marginal Cost with Pigouvian tax gap.</li>
+            </ul>
+          </div>
+
+          <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 1rem;">
+            <strong style="color: #1d4ed8; display: block; font-size: 0.95rem; margin-bottom: 0.35rem;">Macroeconomics</strong>
+            <ul style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.6; padding-left: 1.2rem; margin: 0;">
+              <li><strong>IS-LM Macro Model:</strong> Downward-sloping IS and upward-sloping LM intersecting at interest rate $r^*$ and output $Y^*$.</li>
+              <li><strong>Keynesian Cross (45°):</strong> Aggregate expenditure curve $AE$ intersecting 45-degree guideline.</li>
+              <li><strong>Solow-Swan Growth:</strong> Capital accumulation, saving curve $s \cdot f(k)$, and depreciation line $(n+g+\delta)k$.</li>
+              <li><strong>AD-AS Equilibrium:</strong> Aggregate demand, short-run AS, and vertical long-run aggregate supply.</li>
+            </ul>
+          </div>
+
+          <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 1rem;">
+            <strong style="color: #15803d; display: block; font-size: 0.95rem; margin-bottom: 0.35rem;">Mathematics, Stats &amp; Physics</strong>
+            <ul style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.6; padding-left: 1.2rem; margin: 0;">
+              <li><strong>Normal Distribution:</strong> Symmetric Gaussian bell curve with $\mu$ and standard deviation markers.</li>
+              <li><strong>Trigonometric Unit Circle:</strong> Circle $x^2 + y^2 = 1$ with reference angle $\theta$, $\sin\theta$, $\cos\theta$.</li>
+              <li><strong>Lorenz Curve &amp; Gini:</strong> 45° equality benchmark and convex income distribution curve.</li>
+              <li><strong>Projectile Motion:</strong> Parabolic trajectory showing initial velocity vector $v_0$ and launch angle $\theta$.</li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Section 3: Canvas Layers & Z-Index Management -->
+      <div class="control-card" style="background: #ffffff; padding: 1.75rem;">
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+          <h2 style="font-size: 1.3rem; font-weight: 700; color: var(--color-text-main); margin: 0;">
+            3. Canvas Layers &amp; Z-Index Management
+          </h2>
+          <span class="nav-badge" style="background: #fef3c7; color: #b45309;">Alt + L</span>
+        </div>
+        <p style="font-size: 0.9rem; color: var(--color-text-muted); line-height: 1.6; margin-bottom: 1rem;">
+          In LaTeX TikZ, elements are drawn in code sequential order &mdash; shapes declared earlier appear underneath shapes declared later. The <strong>Canvas Layers</strong> slide-out drawer provides complete control over this visual hierarchy:
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+            <strong style="color: #4338ca; display: block; margin-bottom: 0.25rem;">Front-to-Back Ordering</strong>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45;">
+              Drag layer items up or down to reorder the Z-index. Place background shaded rectangles at the bottom and key labels on top.
+            </p>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+            <strong style="color: #b45309; display: block; margin-bottom: 0.25rem;">Lock to Protect</strong>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45;">
+              Click the lock icon on completed curves or axes to prevent accidental dragging, clicks, or coordinate shifts while drawing nearby items.
+            </p>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+            <strong style="color: #047857; display: block; margin-bottom: 0.25rem;">Visibility Toggle &amp; Search</strong>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45;">
+              Temporarily hide dense annotations with the eye icon, or use the search bar and category pills (Lines, Curves, Shapes, Points) to isolate items quickly.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 4: Mathematical Typography & MathML -->
+      <div class="control-card" style="background: #ffffff; padding: 1.75rem;">
+        <h2 style="font-size: 1.3rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 0.75rem;">
+          4. Mathematical Notation &amp; MathML Support
+        </h2>
+        <p style="font-size: 0.9rem; color: var(--color-text-muted); line-height: 1.6; margin-bottom: 1rem;">
+          Axis labels, tick markers, points, lines, and curves support standard mathematical notation. Notation is rendered beautifully on the interactive HTML5 canvas and compiled into LaTeX math mode:
+        </p>
+
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; font-size: 0.875rem; border-collapse: collapse; margin-bottom: 1rem;">
+            <thead>
+              <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0; text-align: left;">
+                <th style="padding: 0.6rem 0.75rem; font-weight: 600; color: var(--color-text-main);">Feature</th>
+                <th style="padding: 0.6rem 0.75rem; font-weight: 600; color: var(--color-text-main);">Syntax Input</th>
+                <th style="padding: 0.6rem 0.75rem; font-weight: 600; color: var(--color-text-main);">Canvas Preview</th>
+                <th style="padding: 0.6rem 0.75rem; font-weight: 600; color: var(--color-text-main);">TikZ LaTeX Output</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding: 0.6rem 0.75rem; font-weight: 500;">Subscripts</td>
+                <td style="padding: 0.6rem 0.75rem;"><code style="font-family: monospace; background: #f1f5f9; padding: 1px 4px; border-radius: 3px;">Q_1, P_m, MC_0</code></td>
+                <td style="padding: 0.6rem 0.75rem;">Q<sub>1</sub>, P<sub>m</sub>, MC<sub>0</sub></td>
+                <td style="padding: 0.6rem 0.75rem; font-family: monospace; color: #4f46e5;">node {$Q_1$}</td>
+              </tr>
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding: 0.6rem 0.75rem; font-weight: 500;">Superscripts</td>
+                <td style="padding: 0.6rem 0.75rem;"><code style="font-family: monospace; background: #f1f5f9; padding: 1px 4px; border-radius: 3px;">Q^*, x^2, \pi^e</code></td>
+                <td style="padding: 0.6rem 0.75rem;">Q<sup>*</sup>, x<sup>2</sup>, &pi;<sup>e</sup></td>
+                <td style="padding: 0.6rem 0.75rem; font-family: monospace; color: #4f46e5;">node {$Q^*$}</td>
+              </tr>
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding: 0.6rem 0.75rem; font-weight: 500;">Greek Symbols</td>
+                <td style="padding: 0.6rem 0.75rem;"><code style="font-family: monospace; background: #f1f5f9; padding: 1px 4px; border-radius: 3px;">\pi, \theta, \alpha, \lambda, \mu</code></td>
+                <td style="padding: 0.6rem 0.75rem;">&pi;, &theta;, &alpha;, &lambda;, &mu;</td>
+                <td style="padding: 0.6rem 0.75rem; font-family: monospace; color: #4f46e5;">node {$\pi$}</td>
+              </tr>
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding: 0.6rem 0.75rem; font-weight: 500;">Fractions</td>
+                <td style="padding: 0.6rem 0.75rem;"><code style="font-family: monospace; background: #f1f5f9; padding: 1px 4px; border-radius: 3px;">\frac{a}{b}</code></td>
+                <td style="padding: 0.6rem 0.75rem;">a / b</td>
+                <td style="padding: 0.6rem 0.75rem; font-family: monospace; color: #4f46e5;">node {$\frac{a}{b}$}</td>
+              </tr>
+              <tr>
+                <td style="padding: 0.6rem 0.75rem; font-weight: 500;">Native MathML</td>
+                <td style="padding: 0.6rem 0.75rem;"><code style="font-family: monospace; background: #f1f5f9; padding: 1px 4px; border-radius: 3px;">&lt;math&gt;&lt;msub&gt;...&lt;/msub&gt;&lt;/math&gt;</code></td>
+                <td style="padding: 0.6rem 0.75rem;">Parsed MathML DOM</td>
+                <td style="padding: 0.6rem 0.75rem; font-family: monospace; color: #4f46e5;">Transpiled to LaTeX math</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Section 5: Canvas Shortcuts Table -->
+      <div class="control-card" style="background: #ffffff; padding: 1.75rem;">
+        <h2 style="font-size: 1.3rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 0.75rem;">
+          5. Interactive Canvas Keyboard Shortcuts
+        </h2>
+        <table style="width: 100%; font-size: 0.875rem; border-collapse: collapse;">
+          <thead>
+            <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0; text-align: left;">
+              <th style="padding: 0.6rem 0.75rem; font-weight: 600; color: var(--color-text-main); width: 25%;">Shortcut Key</th>
+              <th style="padding: 0.6rem 0.75rem; font-weight: 600; color: var(--color-text-main); width: 40%;">Action</th>
+              <th style="padding: 0.6rem 0.75rem; font-weight: 600; color: var(--color-text-main); width: 35%;">Scope / Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid #f1f5f9;">
+              <td style="padding: 0.6rem 0.75rem;"><kbd style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; font-weight: 600;">V</kbd> or <kbd style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; font-weight: 600;">S</kbd></td>
+              <td style="padding: 0.6rem 0.75rem;">Select &amp; Edit Tool</td>
+              <td style="padding: 0.6rem 0.75rem; color: var(--color-text-muted);">Select and drag points/handles</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #f1f5f9;">
+              <td style="padding: 0.6rem 0.75rem;"><kbd style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; font-weight: 600;">L</kbd></td>
+              <td style="padding: 0.6rem 0.75rem;">Straight Line Tool</td>
+              <td style="padding: 0.6rem 0.75rem; color: var(--color-text-muted);">Click &amp; drag line segment</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #f1f5f9;">
+              <td style="padding: 0.6rem 0.75rem;"><kbd style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; font-weight: 600;">C</kbd></td>
+              <td style="padding: 0.6rem 0.75rem;">Bézier Curve Tool</td>
+              <td style="padding: 0.6rem 0.75rem; color: var(--color-text-muted);">4-point click sequence ($P_1, P_2, C_1, C_2$)</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #f1f5f9;">
+              <td style="padding: 0.6rem 0.75rem;"><kbd style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; font-weight: 600;">R</kbd></td>
+              <td style="padding: 0.6rem 0.75rem;">Rectangle Tool</td>
+              <td style="padding: 0.6rem 0.75rem; color: var(--color-text-muted);">Drag opposite bounding corners</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #f1f5f9;">
+              <td style="padding: 0.6rem 0.75rem;"><kbd style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; font-weight: 600;">O</kbd></td>
+              <td style="padding: 0.6rem 0.75rem;">Circle Tool</td>
+              <td style="padding: 0.6rem 0.75rem; color: var(--color-text-muted);">Drag radius from center</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #f1f5f9;">
+              <td style="padding: 0.6rem 0.75rem;"><kbd style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; font-weight: 600;">P</kbd></td>
+              <td style="padding: 0.6rem 0.75rem;">Point / Label Tool</td>
+              <td style="padding: 0.6rem 0.75rem; color: var(--color-text-muted);">Click canvas to place point</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #f1f5f9;">
+              <td style="padding: 0.6rem 0.75rem;"><kbd style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; font-weight: 600;">A</kbd></td>
+              <td style="padding: 0.6rem 0.75rem;">Axis Quick Inspector</td>
+              <td style="padding: 0.6rem 0.75rem; color: var(--color-text-muted);">Open floating axis &amp; ticks card</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #f1f5f9;">
+              <td style="padding: 0.6rem 0.75rem;"><kbd style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; font-weight: 600;">G</kbd></td>
+              <td style="padding: 0.6rem 0.75rem;">Toggle Grid Snapping</td>
+              <td style="padding: 0.6rem 0.75rem; color: var(--color-text-muted);">Snap to 0.5 or 1.0 unit grid</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #f1f5f9;">
+              <td style="padding: 0.6rem 0.75rem;"><kbd style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; font-weight: 600;">H</kbd> or <kbd style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; font-weight: 600;">Space</kbd></td>
+              <td style="padding: 0.6rem 0.75rem;">Pan Viewport</td>
+              <td style="padding: 0.6rem 0.75rem; color: var(--color-text-muted);">Click &amp; drag canvas view</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #f1f5f9;">
+              <td style="padding: 0.6rem 0.75rem;"><kbd style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; font-weight: 600;">Ctrl</kbd> + <kbd style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; font-weight: 600;">Z</kbd></td>
+              <td style="padding: 0.6rem 0.75rem;">Undo Action</td>
+              <td style="padding: 0.6rem 0.75rem; color: var(--color-text-muted);">Revert previous drawing step</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #f1f5f9;">
+              <td style="padding: 0.6rem 0.75rem;"><kbd style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; font-weight: 600;">Ctrl</kbd> + <kbd style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; font-weight: 600;">Y</kbd></td>
+              <td style="padding: 0.6rem 0.75rem;">Redo Action</td>
+              <td style="padding: 0.6rem 0.75rem; color: var(--color-text-muted);">Re-apply undone drawing step</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #f1f5f9;">
+              <td style="padding: 0.6rem 0.75rem;"><kbd style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; font-weight: 600;">Alt</kbd> + <kbd style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; font-weight: 600;">L</kbd></td>
+              <td style="padding: 0.6rem 0.75rem;">Toggle Layers Drawer</td>
+              <td style="padding: 0.6rem 0.75rem; color: var(--color-text-muted);">Open or close Z-index layer sidebar</td>
+            </tr>
+            <tr>
+              <td style="padding: 0.6rem 0.75rem;"><kbd style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; font-weight: 600;">Esc</kbd></td>
+              <td style="padding: 0.6rem 0.75rem;">Cancel / Deselect</td>
+              <td style="padding: 0.6rem 0.75rem; color: var(--color-text-muted);">Cancel current draw or close cards</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Section 6: Compiling in LaTeX & Overleaf -->
+      <div class="control-card" style="background: #ffffff; padding: 1.75rem;">
+        <h2 style="font-size: 1.3rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 0.75rem;">
+          6. Compiling in LaTeX &amp; Overleaf
+        </h2>
+        <p style="font-size: 0.9rem; color: var(--color-text-muted); line-height: 1.6; margin-bottom: 0.75rem;">
+          The generated code is 100% standard PGF/TikZ and compiles with <strong>pdfLaTeX</strong>, <strong>LuaLaTeX</strong>, or <strong>XeLaTeX</strong> without external dependencies:
+        </p>
+        <div style="background: #1e1b4b; border-radius: 8px; padding: 1.25rem; font-family: monospace; font-size: 0.85rem; color: #e0e7ff; overflow-x: auto; margin-bottom: 1rem;">
+          <span style="color: #93c5fd;">\documentclass</span>{<span style="color: #fca5a5;">article</span>}<br>
+          <span style="color: #93c5fd;">\usepackage</span>{<span style="color: #fca5a5;">tikz</span>}<br>
+          <span style="color: #93c5fd;">\begin</span>{<span style="color: #86efac;">document</span>}<br>
+          <br>
+          <span style="color: #94a3b8;">% Paste the generated TikZ code from TikZ Studio here:</span><br>
+          <span style="color: #93c5fd;">\begin</span>{<span style="color: #86efac;">tikzpicture</span>}[scale=0.8]<br>
+          &nbsp;&nbsp;<span style="color: #94a3b8;">% Axes, lines, curves, rectangles, and labels</span><br>
+          &nbsp;&nbsp;<span style="color: #fde047;">\draw</span>[-&gt;, thick] (0,0) -- (10,0) node[right] {$Quantity$};<br>
+          &nbsp;&nbsp;<span style="color: #fde047;">\draw</span>[-&gt;, thick] (0,0) -- (0,10) node[above] {$Price$};<br>
+          <span style="color: #93c5fd;">\end</span>{<span style="color: #86efac;">tikzpicture</span>}<br>
+          <br>
+          <span style="color: #93c5fd;">\end</span>{<span style="color: #86efac;">document</span>}
+        </div>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <a href="Coordinate.html" class="btn-modern btn-modern-primary" style="text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+            Launch Coordinate Studio
+          </a>
+          <a href="Help-Flowchart.html" class="btn-modern btn-modern-secondary" style="text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem;">
+            Flowchart &amp; FSM Guide &rarr;
+          </a>
+        </div>
+      </div>
+
     </div>
 
   </main>
@@ -154,18 +470,19 @@
   <footer class="app-footer">
     <div class="footer-inner">
       <div>
-        <strong>TikZ Studio Documentation</strong> &mdash; Built for LaTeX and Overleaf researchers.
+        <strong>TikZ Studio Documentation</strong> &mdash; Built for LaTeX, Overleaf, and academic researchers.
       </div>
       <div class="footer-nav">
         <a href="index.html">Homepage</a>
         <a href="Coordinate.html">Coordinate Axis</a>
+        <a href="Flowchart.html">Flowcharts &amp; FSM</a>
+        <a href="GameTree.html">Game Tree</a>
+        <a href="Venn.html">Venn Diagrams</a>
         <a href="Timeline.html">Timeline</a>
-        <a href="Help-Timeline.html">Timeline Docs</a>
       </div>
     </div>
   </footer>
 
-  <script src="js/scroll.js"></script>
-
 </body>
 </html>
+

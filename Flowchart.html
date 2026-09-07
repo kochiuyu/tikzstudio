@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flowcharts &amp; State Machines Studio - TikZ Diagram Generator</title>
+  <meta name="description" content="Interactive Flowchart, Finite State Machine (FSM), and Automata Builder for LaTeX TikZ diagrams." />
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/modern.css">
+  <link rel="stylesheet" href="css/latex.css">
+
+  <!-- Core Scripts -->
+  <script type="text/javascript" src="js/jquery-1.11.0.min.js"></script>
+  <script type="text/javascript" src="js/color-picker-palette.js"></script>
+  <script type="text/javascript" src="js/math-canvas-renderer.js"></script>
+  <script type="text/javascript" src="js/modern-ui.js"></script>
+  <script type="text/javascript" src="js/export-png.js"></script>
+  <script type="text/javascript" src="js/undo-history.js"></script>
+  <script type="text/javascript" src="js/flowchart.js"></script>
+
+  <style>
+    .node-type-btn {
+      flex: 1;
+      padding: 0.4rem 0.5rem;
+      font-size: 0.775rem;
+      font-weight: 600;
+      border: 1px solid var(--color-border);
+      background: #f8fafc;
+      color: var(--color-text-muted);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      white-space: nowrap;
+    }
+    .node-type-btn:hover {
+      background: #f1f5f9;
+      color: var(--color-text-main);
+    }
+    .node-type-btn.active {
+      background: var(--color-primary);
+      color: #ffffff;
+      border-color: var(--color-primary);
+      box-shadow: 0 1px 3px rgba(79, 70, 229, 0.3);
+    }
+    .quick-shape-card {
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      padding: 0.5rem 0.4rem;
+      text-align: center;
+      background: #ffffff;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .quick-shape-card:hover {
+      border-color: var(--color-primary);
+      background: #f8fafc;
+      transform: translateY(-1px);
+    }
+    .element-list-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.35rem 0.6rem;
+      border: 1px solid #f1f5f9;
+      border-radius: 6px;
+      font-size: 0.775rem;
+      background: #ffffff;
+      margin-bottom: 0.3rem;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    .element-list-item:hover {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+    }
+    .element-list-item.selected {
+      background: #eff6ff;
+      border-color: #93c5fd;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="app-header">
+    <div class="header-container">
+      <a href="index.html" class="brand-logo" id="brand-link">
+        <div class="brand-icon">T</div>
+        <div class="brand-text">
+          <span class="brand-title">TikZ Studio</span>
+          <span class="brand-subtitle">Flowcharts &amp; State Machines</span>
+        </div>
+      </a>
+      <ul class="nav-links">
+        <li class="nav-item"><a href="index.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Homepage
+        </a></li>
+        <li class="nav-item"><a href="Coordinate.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+          Coordinate Axis
+        </a></li>
+        <li class="nav-item"><a href="GameTree.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="3"/><circle cx="6" cy="19" r="3"/><circle cx="18" cy="19" r="3"/><line x1="12" y1="8" x2="6" y2="16"/><line x1="12" y1="8" x2="18" y2="16"/></svg>
+          Game Tree
+        </a></li>
+        <li class="nav-item"><a href="Venn.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="12" r="6"/><circle cx="15" cy="12" r="6"/></svg>
+          Venn Diagrams
+        </a></li>
+        <li class="nav-item active"><a href="Flowchart.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M10 6.5h4M17.5 10v4M6.5 10v4"/></svg>
+          Flowcharts &amp; FSM
+        </a></li>
+        <li class="nav-item"><a href="Timeline.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Timeline
+        </a></li>
+        <li class="nav-item"><a href="Help.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Docs &amp; Help
+        </a></li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main class="main-wrapper">
+
+    <!-- Action Toolbar -->
+    <div class="toolbar-card">
+      <div class="toolbar-title-group">
+        <h1 class="toolbar-title">Flowcharts &amp; State Machines Studio</h1>
+        <span class="nav-badge" id="diagram-type-badge" style="background: #eef2ff; color: #4f46e5; border-color: #c7d2fe;">Automata &amp; Flowchart</span>
+      </div>
+
+      <!-- Presets & Primary Actions -->
+      <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+        <span style="font-size: 0.8rem; font-weight: 600; color: var(--color-text-muted);">Preset:</span>
+        <select id="preset-select" class="select-modern" onchange="loadPreset(this.value);" style="font-size: 0.8rem; font-weight: 500; padding: 0.3rem 0.6rem; min-width: 220px;">
+          <option value="" disabled>Select Model Preset...</option>
+          <optgroup label="Finite State Machines &amp; Automata">
+            <option value="fsm-modulo3" selected>Modulo-3 Binary Counter (DFA)</option>
+            <option value="fsm-turnstile">Turnstile Controller FSM</option>
+            <option value="fsm-tcp">TCP 3-Way Handshake Connection</option>
+            <option value="fsm-traffic">Traffic Light State Controller</option>
+          </optgroup>
+          <optgroup label="Process &amp; Algorithm Flowcharts">
+            <option value="flow-gcd">Euclidean GCD Algorithm</option>
+            <option value="flow-auth">User Authentication &amp; 2FA Flow</option>
+            <option value="flow-order">Order Processing &amp; Payment Pipeline</option>
+          </optgroup>
+          <optgroup label="Blank Canvas">
+            <option value="blank-flow">New Blank Flowchart</option>
+            <option value="blank-fsm">New Blank State Machine</option>
+          </optgroup>
+        </select>
+
+        <div style="height: 20px; width: 1px; background: var(--color-border); margin: 0 0.2rem;"></div>
+
+        <!-- Tool Mode Switcher -->
+        <div style="display: flex; gap: 0.25rem; background: #f1f5f9; padding: 3px; border-radius: 6px;">
+          <button type="button" id="tool-btn-select" class="node-type-btn active" style="padding: 0.2rem 0.6rem; font-size: 0.75rem;" onclick="setTool('select');" title="Select and move nodes, inspect properties">
+            👆 Select / Move
+          </button>
+          <button type="button" id="tool-btn-add" class="node-type-btn" style="padding: 0.2rem 0.6rem; font-size: 0.75rem;" onclick="setTool('add-node');" title="Click anywhere on the canvas to place a new node">
+            ➕ Add Node
+          </button>
+          <button type="button" id="tool-btn-connect" class="node-type-btn" style="padding: 0.2rem 0.6rem; font-size: 0.75rem;" onclick="setTool('connect');" title="Click source node then target node to connect">
+            🔗 Connect
+          </button>
+        </div>
+
+        <div style="height: 20px; width: 1px; background: var(--color-border); margin: 0 0.2rem;"></div>
+
+        <!-- Snap to Grid Toggle -->
+        <button id="snap-toggle-btn" class="btn-modern btn-modern-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.775rem; background: #eef2ff; color: #4f46e5; border-color: #c7d2fe;" onclick="toggleGridSnap();" title="Toggle snap to grid">
+          🧲 Snap Grid: ON
+        </button>
+
+        <!-- Actions -->
+        <button class="btn-modern btn-modern-secondary" onclick="fitCanvas();" title="Fit diagram to screen">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Fit View
+        </button>
+
+        <button class="btn-modern btn-modern-secondary" onclick="exportPNG();" title="Download as high-res PNG">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          PNG
+        </button>
+
+        <button class="btn-modern btn-modern-secondary" onclick="exportSVG();" title="Download vector SVG file">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><polyline points="9 11 12 14 15 11"/></svg>
+          SVG
+        </button>
+
+        <button class="btn-modern btn-modern-secondary" onclick="copyTikZ();" title="Copy TikZ LaTeX code">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy LaTeX
+        </button>
+
+        <button class="btn-modern btn-modern-primary" onclick="openOverleaf();" title="Open in Overleaf">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Overleaf
+        </button>
+      </div>
+    </div>
+
+    <!-- Main 2-Column Responsive Layout -->
+    <div style="display: grid; grid-template-columns: 340px 1fr; gap: 1.25rem; align-items: start;">
+
+      <!-- Left Sidebar: Controls & Inspector -->
+      <div style="display: flex; flex-direction: column; gap: 1rem;">
+
+        <!-- Quick Add Shapes Palette -->
+        <div class="control-card">
+          <div class="control-card-header">
+            <span class="control-card-title">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+              Quick Add Shapes
+            </span>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.45rem;">
+            <div class="quick-shape-card" onclick="quickAddNode('process');" title="Standard Rectangle Process Step">
+              <div style="width: 32px; height: 18px; border: 1.5px solid #334155; border-radius: 2px; background: #ffffff;"></div>
+              <span style="font-size: 0.72rem; font-weight: 600; color: #334155;">Process</span>
+            </div>
+            <div class="quick-shape-card" onclick="quickAddNode('decision');" title="Diamond Decision / Condition">
+              <div style="width: 22px; height: 22px; border: 1.5px solid #d97706; background: #fef3c7; transform: rotate(45deg);"></div>
+              <span style="font-size: 0.72rem; font-weight: 600; color: #d97706;">Decision</span>
+            </div>
+            <div class="quick-shape-card" onclick="quickAddNode('terminal');" title="Rounded Pill Start / End Step">
+              <div style="width: 32px; height: 18px; border: 1.5px solid #4f46e5; border-radius: 9999px; background: #e0e7ff;"></div>
+              <span style="font-size: 0.72rem; font-weight: 600; color: #4f46e5;">Start/End</span>
+            </div>
+            <div class="quick-shape-card" onclick="quickAddNode('state');" title="Circular FSM State">
+              <div style="width: 22px; height: 22px; border: 1.5px solid #2563eb; border-radius: 50%; background: #eff6ff;"></div>
+              <span style="font-size: 0.72rem; font-weight: 600; color: #2563eb;">State</span>
+            </div>
+            <div class="quick-shape-card" onclick="quickAddNode('accepting');" title="Double Circle Accepting / Final State">
+              <div style="width: 22px; height: 22px; border: 1.5px solid #2563eb; border-radius: 50%; background: #eff6ff; display: flex; align-items: center; justify-content: center;">
+                <div style="width: 14px; height: 14px; border: 1.5px solid #2563eb; border-radius: 50%;"></div>
+              </div>
+              <span style="font-size: 0.72rem; font-weight: 600; color: #2563eb;">Accepting</span>
+            </div>
+            <div class="quick-shape-card" onclick="quickAddNode('io');" title="Parallelogram Input / Output">
+              <div style="width: 30px; height: 18px; border: 1.5px solid #059669; background: #ecfdf5; transform: skewX(-20deg);"></div>
+              <span style="font-size: 0.72rem; font-weight: 600; color: #059669;">Input/Output</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Inspector Card -->
+        <div class="control-card" id="inspector-card">
+          <div class="control-card-header">
+            <span class="control-card-title" id="inspector-title">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+              Element Inspector
+            </span>
+            <span id="inspector-type-badge" class="nav-badge" style="font-size: 0.68rem;">None Selected</span>
+          </div>
+
+          <!-- Empty State -->
+          <div id="inspector-empty" style="padding: 1.25rem 0.5rem; text-align: center; color: var(--color-text-muted); font-size: 0.825rem;">
+            <p style="margin-bottom: 0.5rem;">👆 Click any node or transition on the canvas to inspect and edit its properties.</p>
+            <p style="font-size: 0.75rem; color: var(--color-text-subtle);">Tip: You can also double-click on any node or connection to quickly edit its label.</p>
+          </div>
+
+          <!-- Node Inspector Form -->
+          <div id="inspector-node-form" style="display: none; flex-direction: column; gap: 0.75rem;">
+            <div>
+              <label class="form-label" style="font-size: 0.775rem;">Node Text / Label (LaTeX Supported):</label>
+              <textarea id="node-text-input" class="input-modern" rows="2" style="width: 100%; font-size: 0.85rem; font-family: var(--font-mono); resize: vertical;" oninput="updateSelectedNodeText(this.value);"></textarea>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+              <div>
+                <label class="form-label" style="font-size: 0.775rem;">Shape Type:</label>
+                <select id="node-shape-select" class="select-modern" style="width: 100%; font-size: 0.8rem;" onchange="updateSelectedNodeShape(this.value);">
+                  <option value="process">Process (Rectangle)</option>
+                  <option value="decision">Decision (Diamond)</option>
+                  <option value="terminal">Start / End (Pill)</option>
+                  <option value="io">Input / Output (Parallelogram)</option>
+                  <option value="subroutine">Subroutine</option>
+                  <option value="cylinder">Database Cylinder</option>
+                  <option value="state">State (Circle)</option>
+                  <option value="accepting">Accepting State (Double Circle)</option>
+                  <option value="initial">Initial State (Start Arrow)</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="form-label" style="font-size: 0.775rem;">Border Style:</label>
+                <select id="node-border-style" class="select-modern" style="width: 100%; font-size: 0.8rem;" onchange="updateSelectedNodeBorderStyle(this.value);">
+                  <option value="solid">Solid Line</option>
+                  <option value="dashed">Dashed Line</option>
+                  <option value="dotted">Dotted Line</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Color Palette Row -->
+            <div>
+              <label class="form-label" style="font-size: 0.775rem;">Theme Colors:</label>
+              <div style="display: flex; gap: 0.4rem; align-items: center;">
+                <button type="button" class="node-type-btn" style="padding: 0.25rem 0.45rem; font-size: 0.72rem; background: #eff6ff; color: #2563eb; border-color: #bfdbfe;" onclick="applyNodeTheme('#eff6ff', '#2563eb');">Blue</button>
+                <button type="button" class="node-type-btn" style="padding: 0.25rem 0.45rem; font-size: 0.72rem; background: #f0fdf4; color: #16a34a; border-color: #bbf7d0;" onclick="applyNodeTheme('#f0fdf4', '#16a34a');">Green</button>
+                <button type="button" class="node-type-btn" style="padding: 0.25rem 0.45rem; font-size: 0.72rem; background: #fef3c7; color: #d97706; border-color: #fde68a;" onclick="applyNodeTheme('#fef3c7', '#d97706');">Amber</button>
+                <button type="button" class="node-type-btn" style="padding: 0.25rem 0.45rem; font-size: 0.72rem; background: #fee2e2; color: #dc2626; border-color: #fecaca;" onclick="applyNodeTheme('#fee2e2', '#dc2626');">Red</button>
+                <button type="button" class="node-type-btn" style="padding: 0.25rem 0.45rem; font-size: 0.72rem; background: #f8fafc; color: #334155; border-color: #cbd5e1;" onclick="applyNodeTheme('#ffffff', '#334155');">Slate</button>
+              </div>
+            </div>
+
+            <!-- Size Inputs -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+              <div>
+                <label class="form-label" style="font-size: 0.75rem;">Width (px):</label>
+                <input id="node-width-input" type="number" min="30" max="300" step="5" class="input-modern" style="width: 100%; font-size: 0.8rem;" oninput="updateSelectedNodeSize();">
+              </div>
+              <div>
+                <label class="form-label" style="font-size: 0.75rem;">Height (px):</label>
+                <input id="node-height-input" type="number" min="30" max="300" step="5" class="input-modern" style="width: 100%; font-size: 0.8rem;" oninput="updateSelectedNodeSize();">
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 0.5rem; margin-top: 0.25rem;">
+              <button class="btn-modern btn-modern-secondary" style="flex: 1; padding: 0.35rem 0.6rem; font-size: 0.75rem; color: #ef4444; border-color: #fecaca;" onclick="deleteSelectedElement();">
+                Delete Node
+              </button>
+            </div>
+          </div>
+
+          <!-- Edge / Transition Inspector Form -->
+          <div id="inspector-edge-form" style="display: none; flex-direction: column; gap: 0.75rem;">
+            <div>
+              <label class="form-label" style="font-size: 0.775rem;">Transition / Edge Label:</label>
+              <input id="edge-label-input" type="text" class="input-modern" style="width: 100%; font-size: 0.85rem; font-family: var(--font-mono);" placeholder="e.g. Yes, No, 0, 1, a / b" oninput="updateSelectedEdgeLabel(this.value);">
+            </div>
+
+            <!-- Anchor Ports: Source & Target -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; background: #f8fafc; padding: 0.5rem; border-radius: 6px; border: 1px solid #e2e8f0;">
+              <div>
+                <label class="form-label" style="font-size: 0.72rem; color: #3b82f6; font-weight: 600;">Source Port:</label>
+                <select id="edge-from-anchor" class="select-modern" style="width: 100%; font-size: 0.78rem;" onchange="updateSelectedEdgeFromAnchor(this.value);">
+                  <option value="auto">Auto (Smart)</option>
+                  <option value="north">North (Top)</option>
+                  <option value="south">South (Bottom)</option>
+                  <option value="east">East (Right)</option>
+                  <option value="west">West (Left)</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="form-label" style="font-size: 0.72rem; color: #10b981; font-weight: 600;">Target Port:</label>
+                <select id="edge-to-anchor" class="select-modern" style="width: 100%; font-size: 0.78rem;" onchange="updateSelectedEdgeToAnchor(this.value);">
+                  <option value="auto">Auto (Smart)</option>
+                  <option value="north">North (Top)</option>
+                  <option value="south">South (Bottom)</option>
+                  <option value="east">East (Right)</option>
+                  <option value="west">West (Left)</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+              <div>
+                <label class="form-label" style="font-size: 0.775rem;">Routing / Path:</label>
+                <select id="edge-routing-select" class="select-modern" style="width: 100%; font-size: 0.8rem;" onchange="updateSelectedEdgeRouting(this.value);">
+                  <option value="straight">Straight Line</option>
+                  <option value="orthogonal">Orthogonal (Smart)</option>
+                  <option value="orthogonal-vert">Vertical First ( |- )</option>
+                  <option value="orthogonal-horiz">Horizontal First ( -| )</option>
+                  <option value="feedback-left">Feedback Loop (Left)</option>
+                  <option value="feedback-right">Feedback Loop (Right)</option>
+                  <option value="bend-left">Bend Left</option>
+                  <option value="bend-right">Bend Right</option>
+                  <option value="loop-above">Loop (Above)</option>
+                  <option value="loop-below">Loop (Below)</option>
+                  <option value="loop-left">Loop (Left)</option>
+                  <option value="loop-right">Loop (Right)</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="form-label" style="font-size: 0.775rem;">Arrowhead:</label>
+                <select id="edge-arrow-select" class="select-modern" style="width: 100%; font-size: 0.8rem;" onchange="updateSelectedEdgeArrow(this.value);">
+                  <option value="forward">Forward ( &rarr; )</option>
+                  <option value="bidirectional">Bidirectional ( &harr; )</option>
+                  <option value="none">None ( &mdash; )</option>
+                  <option value="backward">Backward ( &larr; )</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+              <div>
+                <label class="form-label" style="font-size: 0.775rem;">Label Position:</label>
+                <select id="edge-label-pos" class="select-modern" style="width: 100%; font-size: 0.8rem;" onchange="updateSelectedEdgeLabelPos(this.value);">
+                  <option value="center">Midpoint (Center)</option>
+                  <option value="near-start">Near Source (Start)</option>
+                  <option value="near-end">Near Target (End)</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="form-label" style="font-size: 0.775rem;">Line Style:</label>
+                <select id="edge-line-style" class="select-modern" style="width: 100%; font-size: 0.8rem;" onchange="updateSelectedEdgeLineStyle(this.value);">
+                  <option value="solid">Solid</option>
+                  <option value="dashed">Dashed</option>
+                  <option value="dotted">Dotted</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label class="form-label" style="font-size: 0.775rem;">Line Width:</label>
+              <select id="edge-line-width" class="select-modern" style="width: 100%; font-size: 0.8rem;" onchange="updateSelectedEdgeLineWidth(this.value);">
+                <option value="1.5">Thin (1.5px)</option>
+                <option value="2">Normal (2.0px)</option>
+                <option value="3">Thick (3.0px)</option>
+              </select>
+            </div>
+
+            <div style="display: flex; gap: 0.5rem; margin-top: 0.25rem;">
+              <button class="btn-modern btn-modern-secondary" style="flex: 1; padding: 0.35rem 0.6rem; font-size: 0.75rem; color: #ef4444; border-color: #fecaca;" onclick="deleteSelectedElement();">
+                Delete Connection
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Elements Directory List -->
+        <div class="control-card">
+          <div class="control-card-header">
+            <span class="control-card-title">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+              Diagram Elements
+            </span>
+            <span id="element-count-badge" class="nav-badge" style="font-size: 0.68rem;">0 Nodes</span>
+          </div>
+
+          <div id="elements-tree-container" style="max-height: 200px; overflow-y: auto; padding-right: 0.2rem;">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Main Workspace: Canvas & Code -->
+      <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+
+        <!-- Canvas Card -->
+        <div class="control-card" style="padding: 0; overflow: hidden; background: #ffffff;">
+          <div class="control-card-header" style="padding: 0.6rem 1rem; border-bottom: 1px solid var(--color-border);">
+            <div style="display: flex; align-items: center; gap: 0.6rem;">
+              <span style="font-size: 0.825rem; font-weight: 700; color: var(--color-text-main);" id="canvas-status-title">
+                Flowchart &amp; State Diagram
+              </span>
+              <span id="canvas-hint-badge" class="nav-badge" style="font-family: var(--font-mono); font-size: 0.7rem; background: #f1f5f9; color: #475569;">
+                Select / Move Tool Active
+              </span>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 0.35rem;">
+              <button class="btn-modern btn-modern-secondary" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;" onclick="renderer.zoomIn();" title="Zoom In">+</button>
+              <button class="btn-modern btn-modern-secondary" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;" onclick="renderer.zoomOut();" title="Zoom Out">-</button>
+              <button class="btn-modern btn-modern-secondary" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;" onclick="fitCanvas();" title="Fit to Screen">Center</button>
+            </div>
+          </div>
+
+          <!-- Canvas Container -->
+          <div style="width: 100%; height: 500px; position: relative; background: #ffffff;">
+            <canvas id="flowchartCanvas" style="width: 100%; height: 100%; display: block;"></canvas>
+          </div>
+
+          <div style="padding: 0.5rem 1rem; background: #f8fafc; border-top: 1px solid var(--color-border); font-size: 0.75rem; color: var(--color-text-muted); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+            <span>💡 <strong>Quick controls:</strong> Drag nodes to move. Use <strong>Connect</strong> tool to link two nodes. Double-click any node/edge to edit text. Press <kbd style="background: #e2e8f0; padding: 1px 4px; border-radius: 3px;">Del</kbd> to remove.</span>
+            <span style="font-family: var(--font-mono);">TikZ PGF Library Engine</span>
+          </div>
+        </div>
+
+        <!-- Generated TikZ LaTeX Code Card -->
+        <div class="control-card" style="background: #ffffff;">
+          <div class="control-card-header">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <span class="control-card-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                Generated TikZ LaTeX Code
+              </span>
+              <div style="display: flex; gap: 0.3rem;">
+                <button type="button" id="btn-tikz-doc" class="node-type-btn active" style="padding: 0.15rem 0.45rem; font-size: 0.7rem;" onclick="setTikZMode(false);">
+                  Standalone Document
+                </button>
+                <button type="button" id="btn-tikz-snip" class="node-type-btn" style="padding: 0.15rem 0.45rem; font-size: 0.7rem;" onclick="setTikZMode(true);">
+                  tikzpicture Snippet
+                </button>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 0.35rem;">
+              <button class="btn-modern btn-modern-secondary" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;" onclick="copyTikZ();">
+                Copy Code
+              </button>
+              <button class="btn-modern btn-modern-primary" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;" onclick="downloadTex();">
+                Download .tex
+              </button>
+            </div>
+          </div>
+
+          <div style="position: relative;">
+            <pre id="tikz-output-code" style="margin: 0; padding: 1rem; background: #0f172a; color: #f8fafc; font-family: var(--font-mono); font-size: 0.8rem; line-height: 1.5; border-radius: var(--radius-md); max-height: 280px; overflow: auto; white-space: pre; tab-size: 2;"></pre>
+          </div>
+
+          <div style="margin-top: 0.75rem; padding: 0.6rem 0.85rem; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: #1e3a8a;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+              <span>Requires: <code style="font-family: var(--font-mono); font-weight: 600;">\usetikzlibrary{shapes.geometric, arrows.meta, positioning, automata}</code> in your LaTeX preamble.</span>
+            </div>
+            <button class="btn-modern btn-modern-primary" style="padding: 0.25rem 0.7rem; font-size: 0.75rem; background: #2563eb;" onclick="openOverleaf();">
+              Compile in Overleaf &rarr;
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <script>
+    let model = null;
+    let renderer = null;
+    let isSnippetOnly = false;
+
+    // Initialize Page
+    window.addEventListener('DOMContentLoaded', () => {
+      const canvas = document.getElementById('flowchartCanvas');
+      
+      // Handle canvas pixel density
+      function resizeCanvas() {
+        const rect = canvas.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = Math.round(rect.width * dpr);
+        canvas.height = Math.round(rect.height * dpr);
+        if (renderer) renderer.render();
+      }
+
+      // Initial model: Modulo-3 DFA
+      model = window.FlowchartPresets['fsm-modulo3']();
+
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+
+      renderer = new window.FlowchartCanvasRenderer(canvas, model);
+      renderer.fitToScreen();
+
+      updateCodeDisplay();
+      updateElementsList();
+
+      // Keyboard shortcuts
+      window.addEventListener('keydown', (e) => {
+        if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT')) {
+          return;
+        }
+        if (e.key === 'Delete' || e.key === 'Backspace') {
+          deleteSelectedElement();
+        } else if (e.key === 'v' || e.key === 'V' || e.key === 's' || e.key === 'S') {
+          setTool('select');
+        } else if (e.key === 'a' || e.key === 'A') {
+          setTool('add-node');
+        } else if (e.key === 'c' || e.key === 'C') {
+          setTool('connect');
+        } else if (e.key === 'f' || e.key === 'F') {
+          fitCanvas();
+        }
+      });
+    });
+
+    // Preset Loader
+    function loadPreset(presetKey) {
+      if (presetKey === 'blank-flow') {
+        model = new window.FlowchartModel();
+        model.title = 'Custom Flowchart';
+        model.diagramType = 'flowchart';
+        model.createNode({ shape: 'terminal', text: 'Start', x: 0, y: -80 });
+      } else if (presetKey === 'blank-fsm') {
+        model = new window.FlowchartModel();
+        model.title = 'Custom State Machine';
+        model.diagramType = 'fsm';
+        model.createNode({ shape: 'initial', text: 'q_0', x: 0, y: 0 });
+      } else if (window.FlowchartPresets[presetKey]) {
+        model = window.FlowchartPresets[presetKey]();
+      }
+
+      renderer.model = model;
+      renderer.selectedNodeId = null;
+      renderer.selectedEdgeId = null;
+      renderer.fitToScreen();
+
+      // Update badge
+      const badge = document.getElementById('diagram-type-badge');
+      if (badge) {
+        badge.textContent = model.diagramType === 'fsm' ? 'Finite State Machine (DFA/NFA)' : 'Process Flowchart';
+      }
+
+      updateInspector(null, null);
+      updateCodeDisplay();
+      updateElementsList();
+    }
+
+    // Tool Switcher
+    function setTool(toolName) {
+      renderer.setToolMode(toolName);
+
+      document.getElementById('tool-btn-select').classList.toggle('active', toolName === 'select');
+      document.getElementById('tool-btn-add').classList.toggle('active', toolName === 'add-node');
+      document.getElementById('tool-btn-connect').classList.toggle('active', toolName === 'connect');
+
+      const hintBadge = document.getElementById('canvas-hint-badge');
+      if (hintBadge) {
+        if (toolName === 'select') hintBadge.textContent = 'Select / Move Tool Active';
+        else if (toolName === 'add-node') hintBadge.textContent = 'Click on canvas to drop new node';
+        else if (toolName === 'connect') hintBadge.textContent = 'Click source node, then target node';
+      }
+    }
+
+    function toggleGridSnap() {
+      model.enableSnap = !model.enableSnap;
+      const btn = document.getElementById('snap-toggle-btn');
+      if (btn) {
+        btn.textContent = model.enableSnap ? '🧲 Snap Grid: ON' : '🧲 Snap Grid: OFF';
+        btn.style.color = model.enableSnap ? '#4f46e5' : '#64748b';
+        btn.style.background = model.enableSnap ? '#eef2ff' : '#f1f5f9';
+      }
+      renderer.render();
+    }
+
+    function fitCanvas() {
+      renderer.fitToScreen();
+    }
+
+    // Quick Add
+    function quickAddNode(shape) {
+      const bounds = model.getBounds();
+      const nextX = bounds.maxX + 40;
+      const nextY = bounds.centerY;
+      const node = model.createNode({
+        shape: shape,
+        x: nextX,
+        y: nextY
+      });
+      renderer.selectedNodeId = node.id;
+      renderer.selectedEdgeId = null;
+      renderer.render();
+      updateInspector('node', node);
+      updateCodeDisplay();
+      updateElementsList();
+    }
+
+    // Selection Callbacks from Canvas
+    window.onFlowchartSelectionChanged = function(type, element) {
+      updateInspector(type, element);
+      updateElementsList();
+    };
+
+    window.onFlowchartChanged = function() {
+      updateCodeDisplay();
+      updateElementsList();
+    };
+
+    window.onFlowchartNodeMoved = function(node) {
+      updateCodeDisplay();
+    };
+
+    function updateInspector(type, element) {
+      const emptyDiv = document.getElementById('inspector-empty');
+      const nodeForm = document.getElementById('inspector-node-form');
+      const edgeForm = document.getElementById('inspector-edge-form');
+      const badge = document.getElementById('inspector-type-badge');
+
+      if (!type || !element) {
+        emptyDiv.style.display = 'block';
+        nodeForm.style.display = 'none';
+        edgeForm.style.display = 'none';
+        badge.textContent = 'None Selected';
+        badge.style.background = '#f1f5f9';
+        badge.style.color = '#64748b';
+        return;
+      }
+
+      emptyDiv.style.display = 'none';
+
+      if (type === 'node') {
+        nodeForm.style.display = 'flex';
+        edgeForm.style.display = 'none';
+        badge.textContent = `Node: ${element.id}`;
+        badge.style.background = '#eff6ff';
+        badge.style.color = '#2563eb';
+
+        document.getElementById('node-text-input').value = element.text || '';
+        document.getElementById('node-shape-select').value = element.shape || 'process';
+        document.getElementById('node-border-style').value = element.borderStyle || 'solid';
+        document.getElementById('node-width-input').value = element.width || 100;
+        document.getElementById('node-height-input').value = element.height || 50;
+      } else if (type === 'edge') {
+        nodeForm.style.display = 'none';
+        edgeForm.style.display = 'flex';
+        badge.textContent = `Connection: ${element.from} &rarr; ${element.to}`;
+        badge.style.background = '#f0fdf4';
+        badge.style.color = '#16a34a';
+
+        document.getElementById('edge-label-input').value = element.label || '';
+        document.getElementById('edge-from-anchor').value = element.fromAnchor || 'auto';
+        document.getElementById('edge-to-anchor').value = element.toAnchor || 'auto';
+        document.getElementById('edge-routing-select').value = element.routing || 'straight';
+        document.getElementById('edge-arrow-select').value = element.arrow || 'forward';
+        document.getElementById('edge-label-pos').value = element.labelPosition || 'center';
+        document.getElementById('edge-line-style').value = element.lineStyle || 'solid';
+        document.getElementById('edge-line-width').value = element.lineWidth || '2';
+      }
+    }
+
+    // Node Form Updates
+    function updateSelectedNodeText(val) {
+      if (renderer.selectedNodeId) {
+        model.updateNode(renderer.selectedNodeId, { text: val });
+        renderer.render();
+        updateCodeDisplay();
+        updateElementsList();
+      }
+    }
+
+    function updateSelectedNodeShape(val) {
+      if (renderer.selectedNodeId) {
+        let w, h;
+        if (val === 'state' || val === 'accepting' || val === 'initial') {
+          w = 54; h = 54;
+        } else if (val === 'decision') {
+          w = 110; h = 70;
+        } else {
+          w = 110; h = 50;
+        }
+        model.updateNode(renderer.selectedNodeId, { shape: val, width: w, height: h });
+        document.getElementById('node-width-input').value = w;
+        document.getElementById('node-height-input').value = h;
+        renderer.render();
+        updateCodeDisplay();
+      }
+    }
+
+    function updateSelectedNodeBorderStyle(val) {
+      if (renderer.selectedNodeId) {
+        model.updateNode(renderer.selectedNodeId, { borderStyle: val });
+        renderer.render();
+        updateCodeDisplay();
+      }
+    }
+
+    function applyNodeTheme(fill, border) {
+      if (renderer.selectedNodeId) {
+        model.updateNode(renderer.selectedNodeId, { fillColor: fill, borderColor: border });
+        renderer.render();
+        updateCodeDisplay();
+      }
+    }
+
+    function updateSelectedNodeSize() {
+      if (renderer.selectedNodeId) {
+        const w = parseInt(document.getElementById('node-width-input').value, 10) || 60;
+        const h = parseInt(document.getElementById('node-height-input').value, 10) || 40;
+        model.updateNode(renderer.selectedNodeId, { width: w, height: h });
+        renderer.render();
+        updateCodeDisplay();
+      }
+    }
+
+    // Edge Form Updates
+    function updateSelectedEdgeLabel(val) {
+      if (renderer.selectedEdgeId) {
+        model.updateEdge(renderer.selectedEdgeId, { label: val });
+        renderer.render();
+        updateCodeDisplay();
+      }
+    }
+
+    function updateSelectedEdgeFromAnchor(val) {
+      if (renderer.selectedEdgeId) {
+        model.updateEdge(renderer.selectedEdgeId, { fromAnchor: val });
+        renderer.render();
+        updateCodeDisplay();
+      }
+    }
+
+    function updateSelectedEdgeToAnchor(val) {
+      if (renderer.selectedEdgeId) {
+        model.updateEdge(renderer.selectedEdgeId, { toAnchor: val });
+        renderer.render();
+        updateCodeDisplay();
+      }
+    }
+
+    function updateSelectedEdgeRouting(val) {
+      if (renderer.selectedEdgeId) {
+        model.updateEdge(renderer.selectedEdgeId, { routing: val });
+        renderer.render();
+        updateCodeDisplay();
+      }
+    }
+
+    function updateSelectedEdgeArrow(val) {
+      if (renderer.selectedEdgeId) {
+        model.updateEdge(renderer.selectedEdgeId, { arrow: val });
+        renderer.render();
+        updateCodeDisplay();
+      }
+    }
+
+    function updateSelectedEdgeLabelPos(val) {
+      if (renderer.selectedEdgeId) {
+        model.updateEdge(renderer.selectedEdgeId, { labelPosition: val });
+        renderer.render();
+        updateCodeDisplay();
+      }
+    }
+
+    function updateSelectedEdgeLineStyle(val) {
+      if (renderer.selectedEdgeId) {
+        model.updateEdge(renderer.selectedEdgeId, { lineStyle: val });
+        renderer.render();
+        updateCodeDisplay();
+      }
+    }
+
+    function updateSelectedEdgeLineWidth(val) {
+      if (renderer.selectedEdgeId) {
+        model.updateEdge(renderer.selectedEdgeId, { lineWidth: parseFloat(val) || 2 });
+        renderer.render();
+        updateCodeDisplay();
+      }
+    }
+
+    function deleteSelectedElement() {
+      if (renderer.selectedNodeId) {
+        model.deleteNode(renderer.selectedNodeId);
+        renderer.selectedNodeId = null;
+      } else if (renderer.selectedEdgeId) {
+        model.deleteEdge(renderer.selectedEdgeId);
+        renderer.selectedEdgeId = null;
+      }
+      renderer.render();
+      updateInspector(null, null);
+      updateCodeDisplay();
+      updateElementsList();
+    }
+
+    // Elements List Tree in Sidebar
+    function updateElementsList() {
+      const container = document.getElementById('elements-tree-container');
+      const badge = document.getElementById('element-count-badge');
+      if (!container) return;
+
+      const nodes = Object.values(model.nodes);
+      const edges = Object.values(model.edges);
+
+      badge.textContent = `${nodes.length} Nodes, ${edges.length} Edges`;
+
+      let html = '';
+
+      if (nodes.length === 0 && edges.length === 0) {
+        html = `<div style="font-size: 0.75rem; color: #94a3b8; text-align: center; padding: 0.5rem;">No elements placed yet.</div>`;
+      } else {
+        // Nodes section
+        nodes.forEach(n => {
+          const isSel = (n.id === renderer.selectedNodeId);
+          html += `
+            <div class="element-list-item ${isSel ? 'selected' : ''}" onclick="selectNodeFromList('${n.id}');">
+              <div style="display: flex; align-items: center; gap: 0.4rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                <span style="font-size: 0.7rem; color: #64748b; font-family: var(--font-mono);">[${n.shape}]</span>
+                <span style="font-weight: 600; color: #0f172a;">${n.text.slice(0, 18) || 'Node'}</span>
+              </div>
+              <button style="border: none; background: transparent; color: #94a3b8; cursor: pointer; padding: 0 4px;" onclick="event.stopPropagation(); model.deleteNode('${n.id}'); renderer.render(); updateElementsList(); updateCodeDisplay();" title="Delete">&times;</button>
+            </div>
+          `;
+        });
+
+        // Edges section
+        edges.forEach(e => {
+          const isSel = (e.id === renderer.selectedEdgeId);
+          html += `
+            <div class="element-list-item ${isSel ? 'selected' : ''}" onclick="selectEdgeFromList('${e.id}');">
+              <div style="display: flex; align-items: center; gap: 0.4rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                <span style="color: #6366f1;">&rarr;</span>
+                <span style="font-size: 0.75rem; color: #334155;">${e.from} &rarr; ${e.to} ${e.label ? `("${e.label}")` : ''}</span>
+              </div>
+              <button style="border: none; background: transparent; color: #94a3b8; cursor: pointer; padding: 0 4px;" onclick="event.stopPropagation(); model.deleteEdge('${e.id}'); renderer.render(); updateElementsList(); updateCodeDisplay();" title="Delete">&times;</button>
+            </div>
+          `;
+        });
+      }
+
+      container.innerHTML = html;
+    }
+
+    function selectNodeFromList(id) {
+      renderer.selectedNodeId = id;
+      renderer.selectedEdgeId = null;
+      renderer.render();
+      updateInspector('node', model.getNode(id));
+      updateElementsList();
+    }
+
+    function selectEdgeFromList(id) {
+      renderer.selectedEdgeId = id;
+      renderer.selectedNodeId = null;
+      renderer.render();
+      updateInspector('edge', model.getEdge(id));
+      updateElementsList();
+    }
+
+    // TikZ Code Mode Toggle
+    function setTikZMode(snippetOnly) {
+      isSnippetOnly = snippetOnly;
+      document.getElementById('btn-tikz-doc').classList.toggle('active', !snippetOnly);
+      document.getElementById('btn-tikz-snip').classList.toggle('active', snippetOnly);
+      updateCodeDisplay();
+    }
+
+    function updateCodeDisplay() {
+      const pre = document.getElementById('tikz-output-code');
+      if (!pre || !model) return;
+      pre.textContent = model.generateTikZ({ standalone: !isSnippetOnly });
+    }
+
+    // Export & Overleaf Actions
+    function copyTikZ() {
+      const code = model.generateTikZ({ standalone: !isSnippetOnly });
+      navigator.clipboard.writeText(code).then(() => {
+        if (window.showToast) window.showToast('TikZ code copied to clipboard!');
+        else alert('TikZ code copied to clipboard!');
+      });
+    }
+
+    function downloadTex() {
+      const code = model.generateTikZ({ standalone: true });
+      const blob = new Blob([code], { type: 'text/plain;charset=utf-8' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'diagram.tex';
+      a.click();
+    }
+
+    function exportPNG() {
+      const canvas = document.getElementById('flowchartCanvas');
+      const dataUrl = canvas.toDataURL('image/png');
+      const a = document.createElement('a');
+      a.href = dataUrl;
+      a.download = 'flowchart-diagram.png';
+      a.click();
+    }
+
+    function exportSVG() {
+      const svgCode = renderer.exportSVG();
+      const blob = new Blob([svgCode], { type: 'image/svg+xml;charset=utf-8' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'diagram.svg';
+      a.click();
+    }
+
+    function openOverleaf() {
+      const fullDoc = model.generateTikZ({ standalone: true });
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = 'https://www.overleaf.com/docs';
+      form.target = '_blank';
+
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = 'snip';
+      input.value = fullDoc;
+      form.appendChild(input);
+
+      document.body.appendChild(form);
+      form.submit();
+      document.body.removeChild(form);
+    }
+  </script>
+
+</body>
+</html>

@@ -33,6 +33,9 @@
       // Regions (Atoms of the Venn partition)
       this.regions = {};
 
+      // Custom Labels & Element Annotations
+      this.labels = [];
+
       this.initDefaultLayout(mode);
     }
 
@@ -40,6 +43,7 @@
       this.mode = mode;
       this.circles = [];
       this.regions = {};
+      this.labels = [];
 
       if (mode === '2-set') {
         const r = 110;
@@ -387,6 +391,47 @@
         return true;
       }
       return false;
+    }
+
+    // Custom Label Management
+    addLabel(opt = {}) {
+      const id = uid('lbl_');
+      const label = {
+        id: id,
+        text: opt.text !== undefined ? opt.text : 'x',
+        x: opt.x !== undefined ? Math.round(opt.x) : 0,
+        y: opt.y !== undefined ? Math.round(opt.y) : 0,
+        fontSize: opt.fontSize || 14,
+        color: opt.color || '#0f172a',
+        showPoint: opt.showPoint !== undefined ? opt.showPoint : false,
+        mathMode: opt.mathMode !== undefined ? opt.mathMode : true
+      };
+      this.labels.push(label);
+      return label;
+    }
+
+    getLabel(id) {
+      return this.labels.find(l => l.id === id) || null;
+    }
+
+    updateLabel(id, props) {
+      const l = this.getLabel(id);
+      if (!l) return false;
+      Object.assign(l, props);
+      return true;
+    }
+
+    removeLabel(id) {
+      const idx = this.labels.findIndex(l => l.id === id);
+      if (idx !== -1) {
+        this.labels.splice(idx, 1);
+        return true;
+      }
+      return false;
+    }
+
+    clearLabels() {
+      this.labels = [];
     }
 
     updateAutoLabelPositions() {
@@ -861,6 +906,29 @@
         out += '\n';
       }
 
+      // 5. Draw Custom Text & Element Labels
+      if (this.labels && this.labels.length > 0) {
+        out += '  % Custom Labels & Element Annotations\n';
+        this.labels.forEach(lbl => {
+          const lx = toCmX(lbl.x);
+          const ly = toCmY(lbl.y);
+          let fontOpt = '\\small';
+          if (lbl.fontSize >= 18) fontOpt = '\\large';
+          else if (lbl.fontSize >= 16) fontOpt = '\\normalsize';
+          else if (lbl.fontSize <= 12) fontOpt = '\\footnotesize';
+
+          const textContent = lbl.mathMode ? (lbl.text.startsWith('$') ? lbl.text : `$${lbl.text}$`) : lbl.text;
+
+          if (lbl.showPoint) {
+            out += `  \\fill[black] (${lx}, ${ly}) circle (1.5pt);\n`;
+            out += `  \\node[right=2pt, font=${fontOpt}] at (${lx}, ${ly}) {${textContent}};\n`;
+          } else {
+            out += `  \\node[font=${fontOpt}] at (${lx}, ${ly}) {${textContent}};\n`;
+          }
+        });
+        out += '\n';
+      }
+
       out += '\\end{tikzpicture}\n';
 
       if (!isSnippet) {
@@ -876,7 +944,8 @@
         mode: this.mode,
         universalSet: this.universalSet,
         circles: this.circles,
-        regions: this.regions
+        regions: this.regions,
+        labels: this.labels
       };
     }
 
@@ -887,6 +956,7 @@
       if (data.universalSet) this.universalSet = data.universalSet;
       if (data.circles) this.circles = data.circles;
       if (data.regions) this.regions = data.regions;
+      if (data.labels) this.labels = data.labels;
       return true;
     }
   }
@@ -1012,9 +1082,10 @@
       this.panY = 0;
 
       // Interactive tool state
-      this.toolMode = 'shade'; // 'shade' | 'move'
+      this.toolMode = 'shade'; // 'shade' | 'move' | 'label'
       this.selectedCircleId = (this.model.circles[0] && this.model.circles[0].id) || 'A';
-      this.dragTarget = null; // { type: 'circle'|'resize'|'label', id, startWx, startWy, ... }
+      this.selectedLabelId = null;
+      this.dragTarget = null; // { type: 'circle'|'resize'|'label'|'customLabel'|'regionLabel', id, startWx, startWy, ... }
 
       // Region interaction state
       this.hoveredRegionId = null;
@@ -1039,6 +1110,15 @@
       const c = this.model.getCircle(circleId);
       if (c && window.onVennCircleSelected) {
         window.onVennCircleSelected(c.id, c);
+      }
+      this.render();
+    }
+
+    selectLabel(labelId) {
+      this.selectedLabelId = labelId;
+      const lbl = this.model.getLabel(labelId);
+      if (lbl && window.onVennLabelSelected) {
+        window.onVennLabelSelected(lbl.id, lbl);
       }
       this.render();
     }
@@ -1068,6 +1148,35 @@
         x: (clientX - rect.left) * scaleX,
         y: (clientY - rect.top) * scaleY
       };
+    }
+
+    hitTestLabels(worldPos) {
+      const hitTolerance = Math.max(16, 20 / this.scale);
+
+      // 1. Check custom labels (reverse order for top-most)
+      if (this.model.labels && this.model.labels.length > 0) {
+        for (let i = this.model.labels.length - 1; i >= 0; i--) {
+          const lbl = this.model.labels[i];
+          const dist = Math.hypot(worldPos.x - lbl.x, worldPos.y - lbl.y);
+          if (dist <= hitTolerance) {
+            return { type: 'customLabel', label: lbl };
+          }
+        }
+      }
+
+      // 2. Check region labels
+      if (this.model.regions) {
+        for (const r of Object.values(this.model.regions)) {
+          if (r.label && r.label.trim().length > 0 && r.labelPos) {
+            const dist = Math.hypot(worldPos.x - r.labelPos.x, worldPos.y - r.labelPos.y);
+            if (dist <= hitTolerance) {
+              return { type: 'regionLabel', region: r };
+            }
+          }
+        }
+      }
+
+      return null;
     }
 
     hitTestCircleHandles(worldPos) {
@@ -1149,8 +1258,45 @@
         }
 
         const worldPos = this.screenToWorld(coords.x, coords.y);
-        const hit = this.hitTestCircleHandles(worldPos);
 
+        // 1. Check custom labels and region labels first
+        const hitLbl = this.hitTestLabels(worldPos);
+        if (hitLbl) {
+          if (hitLbl.type === 'customLabel') {
+            this.selectedLabelId = hitLbl.label.id;
+            if (window.onVennLabelSelected) {
+              window.onVennLabelSelected(hitLbl.label.id, hitLbl.label);
+            }
+            this.dragTarget = {
+              type: 'customLabel',
+              id: hitLbl.label.id,
+              startWx: worldPos.x,
+              startWy: worldPos.y,
+              origX: hitLbl.label.x,
+              origY: hitLbl.label.y
+            };
+            this.render();
+            return;
+          } else if (hitLbl.type === 'regionLabel') {
+            this.selectedRegionId = hitLbl.region.id;
+            if (window.onVennRegionSelected) {
+              window.onVennRegionSelected(hitLbl.region.id, hitLbl.region);
+            }
+            this.dragTarget = {
+              type: 'regionLabel',
+              id: hitLbl.region.id,
+              startWx: worldPos.x,
+              startWy: worldPos.y,
+              origX: hitLbl.region.labelPos.x,
+              origY: hitLbl.region.labelPos.y
+            };
+            this.render();
+            return;
+          }
+        }
+
+        // 2. Check circle handles & borders
+        const hit = this.hitTestCircleHandles(worldPos);
         if (hit) {
           const circle = hit.circle;
           this.selectedCircleId = circle.id;
@@ -1190,7 +1336,33 @@
           return;
         }
 
-        // If in shade tool mode and didn't hit circle handle, check regions
+        // 3. If in 'label' tool mode, clicking places a new label at clicked coordinates!
+        if (this.toolMode === 'label') {
+          const newLbl = this.model.addLabel({
+            x: Math.round(worldPos.x),
+            y: Math.round(worldPos.y),
+            text: 'x',
+            mathMode: true
+          });
+          this.selectedLabelId = newLbl.id;
+          if (window.onVennLabelAdded) {
+            window.onVennLabelAdded(newLbl);
+          }
+          this.dragTarget = {
+            type: 'customLabel',
+            id: newLbl.id,
+            startWx: worldPos.x,
+            startWy: worldPos.y,
+            origX: newLbl.x,
+            origY: newLbl.y
+          };
+          this.render();
+          if (window.updateTikZDisplay) window.updateTikZDisplay();
+          if (window.updateUI) window.updateUI();
+          return;
+        }
+
+        // 4. If in shade tool mode, check regions
         if (this.toolMode === 'shade') {
           const regionId = this.model.getRegionAtPoint(worldPos.x, worldPos.y);
           if (regionId) {
@@ -1218,6 +1390,26 @@
 
         // Handle Active Dragging
         if (this.dragTarget) {
+          if (this.dragTarget.type === 'customLabel') {
+            const lbl = this.model.getLabel(this.dragTarget.id);
+            if (lbl) {
+              lbl.x = Math.round(this.dragTarget.origX + (worldPos.x - this.dragTarget.startWx));
+              lbl.y = Math.round(this.dragTarget.origY + (worldPos.y - this.dragTarget.startWy));
+              if (window.onVennLabelMoved) window.onVennLabelMoved(lbl);
+              this.render();
+            }
+            return;
+          } else if (this.dragTarget.type === 'regionLabel') {
+            const reg = this.model.regions[this.dragTarget.id];
+            if (reg && reg.labelPos) {
+              reg.labelPos.x = Math.round(this.dragTarget.origX + (worldPos.x - this.dragTarget.startWx));
+              reg.labelPos.y = Math.round(this.dragTarget.origY + (worldPos.y - this.dragTarget.startWy));
+              if (window.onVennRegionLabelMoved) window.onVennRegionLabelMoved(reg);
+              this.render();
+            }
+            return;
+          }
+
           const circle = this.model.getCircle(this.dragTarget.id);
           if (circle) {
             if (this.dragTarget.type === 'circle') {
@@ -1257,11 +1449,22 @@
         }
 
         // Handle Hover States and Cursor Changes
+        const hitLabel = this.hitTestLabels(worldPos);
+        if (hitLabel) {
+          c.style.cursor = 'move';
+          return;
+        }
+
         const hit = this.hitTestCircleHandles(worldPos);
         if (hit) {
           if (hit.type === 'resize') c.style.cursor = 'ew-resize';
           else if (hit.type === 'label') c.style.cursor = 'move';
           else if (hit.type === 'center' || hit.type === 'border' || hit.type === 'body') c.style.cursor = 'grab';
+          return;
+        }
+
+        if (this.toolMode === 'label') {
+          c.style.cursor = 'crosshair';
           return;
         }
 
@@ -1282,6 +1485,46 @@
         }
       };
 
+      const handleDblClick = (e) => {
+        const coords = this.getCanvasCoords(e);
+        const worldPos = this.screenToWorld(coords.x, coords.y);
+        const hitLbl = this.hitTestLabels(worldPos);
+
+        if (hitLbl) {
+          if (hitLbl.type === 'customLabel') {
+            const val = prompt('Edit Label Text (LaTeX math supported):', hitLbl.label.text);
+            if (val !== null && val.trim().length > 0) {
+              hitLbl.label.text = val.trim();
+              this.render();
+              if (window.updateUI) window.updateUI();
+              if (window.updateTikZDisplay) window.updateTikZDisplay();
+            }
+          } else if (hitLbl.type === 'regionLabel') {
+            const val = prompt('Edit Region Cardinality / Label:', hitLbl.region.label || '');
+            if (val !== null) {
+              hitLbl.region.label = val.trim();
+              this.render();
+              if (window.updateUI) window.updateUI();
+              if (window.updateTikZDisplay) window.updateTikZDisplay();
+            }
+          }
+        } else {
+          const val = prompt('Place a new label at this location (e.g. x, 15, \\bullet e_1):', 'x');
+          if (val !== null && val.trim().length > 0) {
+            const newLbl = this.model.addLabel({
+              x: Math.round(worldPos.x),
+              y: Math.round(worldPos.y),
+              text: val.trim(),
+              mathMode: true
+            });
+            this.selectedLabelId = newLbl.id;
+            this.render();
+            if (window.updateUI) window.updateUI();
+            if (window.updateTikZDisplay) window.updateTikZDisplay();
+          }
+        }
+      };
+
       const handlePointerUp = (e) => {
         if (this.dragTarget) {
           this.dragTarget = null;
@@ -1293,6 +1536,7 @@
 
       c.addEventListener('mousedown', handlePointerDown);
       c.addEventListener('mousemove', handlePointerMove);
+      c.addEventListener('dblclick', handleDblClick);
       window.addEventListener('mouseup', handlePointerUp);
 
       c.addEventListener('touchstart', (e) => {
@@ -1419,6 +1663,9 @@
 
       // Render Region Labels / Cardinalities
       this.renderRegionLabels(ctx);
+
+      // Render Custom Text & Element Labels
+      this.renderCustomLabels(ctx);
 
       ctx.restore();
     }
@@ -1691,22 +1938,120 @@
         if (!r.label || r.label.trim().length === 0) return;
 
         ctx.save();
+        const isSelected = (this.selectedRegionId === r.id);
         ctx.font = 'bold 13px Inter, sans-serif';
-        ctx.fillStyle = '#0f172a';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
 
         // Draw pill background behind text for readability
-        const text = r.label;
+        let text = r.label;
+        if (text.startsWith('$') && text.endsWith('$') && text.length > 2) {
+          text = text.slice(1, -1);
+        }
         const textW = Math.max(26, text.length * 8.5);
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.88)';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.92)';
         ctx.fillRect(r.labelPos.x - textW / 2, r.labelPos.y - 10, textW, 20);
-        ctx.strokeStyle = '#cbd5e1';
-        ctx.lineWidth = 1;
+        ctx.strokeStyle = isSelected ? '#4f46e5' : '#cbd5e1';
+        ctx.lineWidth = isSelected ? 1.75 : 1;
+        if (isSelected) ctx.setLineDash([3, 2]);
         ctx.strokeRect(r.labelPos.x - textW / 2, r.labelPos.y - 10, textW, 20);
 
+        ctx.setLineDash([]);
         ctx.fillStyle = '#0f172a';
         ctx.fillText(text, r.labelPos.x, r.labelPos.y);
+        ctx.restore();
+      });
+    }
+
+    renderCustomLabels(ctx) {
+      if (!this.model.labels || this.model.labels.length === 0) return;
+
+      this.model.labels.forEach(lbl => {
+        ctx.save();
+        const isSelected = (this.selectedLabelId === lbl.id);
+        const fontSize = lbl.fontSize || 14;
+        ctx.font = `600 ${fontSize}px Inter, system-ui, sans-serif`;
+
+        const text = lbl.text || '';
+        let displayText = text;
+        if (displayText.startsWith('$') && displayText.endsWith('$') && displayText.length > 2) {
+          displayText = displayText.slice(1, -1);
+        }
+
+        const metrics = ctx.measureText(displayText);
+        const textW = Math.max(16, metrics.width);
+        const textH = fontSize;
+
+        let posX = lbl.x;
+        let posY = lbl.y;
+
+        if (lbl.showPoint) {
+          // Draw solid bullet dot point
+          ctx.beginPath();
+          ctx.arc(lbl.x, lbl.y, 3.5, 0, Math.PI * 2);
+          ctx.fillStyle = lbl.color || '#0f172a';
+          ctx.fill();
+
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+
+          posX = lbl.x + 8;
+          posY = lbl.y;
+          ctx.textAlign = 'left';
+          ctx.textBaseline = 'middle';
+        } else {
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+        }
+
+        // Draw pill background behind text for maximum legibility
+        const bgPadX = 6;
+        const bgPadY = 4;
+        const bgX = lbl.showPoint ? posX - 2 : posX - textW / 2 - bgPadX;
+        const bgY = posY - textH / 2 - bgPadY / 2;
+        const bgW = textW + bgPadX * 2;
+        const bgH = textH + bgPadY;
+
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+        if (ctx.roundRect) {
+          ctx.beginPath();
+          ctx.roundRect(bgX, bgY, bgW, bgH, 4);
+          ctx.fill();
+        } else {
+          ctx.fillRect(bgX, bgY, bgW, bgH);
+        }
+
+        ctx.fillStyle = lbl.color || '#0f172a';
+        ctx.fillText(displayText, posX, posY);
+
+        // If selected, draw active highlight box
+        if (isSelected) {
+          ctx.strokeStyle = '#4f46e5';
+          ctx.lineWidth = 1.5;
+          ctx.setLineDash([4, 3]);
+          const selPad = 4;
+          const boxX = (lbl.showPoint ? lbl.x - 5 : bgX) - selPad;
+          const boxY = bgY - selPad;
+          const boxW = (lbl.showPoint ? (posX + textW - lbl.x + 8) : bgW) + selPad * 2;
+          const boxH = bgH + selPad * 2;
+
+          if (ctx.roundRect) {
+            ctx.beginPath();
+            ctx.roundRect(boxX, boxY, boxW, boxH, 6);
+            ctx.stroke();
+          } else {
+            ctx.strokeRect(boxX, boxY, boxW, boxH);
+          }
+
+          // Move indicator dot
+          ctx.setLineDash([]);
+          ctx.fillStyle = '#4f46e5';
+          ctx.beginPath();
+          ctx.arc(boxX + boxW, boxY, 3.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
         ctx.restore();
       });
     }
@@ -1736,6 +2081,25 @@
           svg += `  <text x="${c.x + c.labelOffset.x}" y="${c.y + c.labelOffset.y}" font-size="16" font-weight="bold" fill="${c.strokeColor}" text-anchor="middle" dominant-baseline="middle">${c.label}</text>\n`;
         }
       });
+
+      // Region Cardinality labels
+      Object.values(this.model.regions).forEach(r => {
+        if (r.label && r.label.trim().length > 0 && r.labelPos) {
+          svg += `  <text x="${r.labelPos.x}" y="${r.labelPos.y}" font-size="13" font-weight="bold" fill="#0f172a" text-anchor="middle" dominant-baseline="middle">${r.label}</text>\n`;
+        }
+      });
+
+      // Custom element labels
+      if (this.model.labels && this.model.labels.length > 0) {
+        this.model.labels.forEach(lbl => {
+          if (lbl.showPoint) {
+            svg += `  <circle cx="${lbl.x}" cy="${lbl.y}" r="3" fill="${lbl.color || '#0f172a'}" />\n`;
+            svg += `  <text x="${lbl.x + 8}" y="${lbl.y}" font-size="${lbl.fontSize || 14}" font-weight="600" fill="${lbl.color || '#0f172a'}" dominant-baseline="middle">${lbl.text}</text>\n`;
+          } else {
+            svg += `  <text x="${lbl.x}" y="${lbl.y}" font-size="${lbl.fontSize || 14}" font-weight="600" fill="${lbl.color || '#0f172a'}" text-anchor="middle" dominant-baseline="middle">${lbl.text}</text>\n`;
+          }
+        });
+      }
 
       svg += `</svg>`;
       return svg;

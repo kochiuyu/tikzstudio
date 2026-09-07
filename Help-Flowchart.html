@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flowcharts &amp; State Machines Guide - TikZ Studio</title>
+  <meta name="description" content="Step-by-step guide for designing algorithm flowcharts, finite state machines, DFA/NFA automata, and exporting compilable LaTeX TikZ code." />
+
+  <link rel="stylesheet" href="css/modern.css">
+  <link rel="stylesheet" href="css/latex.css">
+
+  <script type="text/javascript" src="js/jquery-1.11.0.min.js"></script>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="app-header">
+    <div class="header-container">
+      <a href="index.html" class="brand-logo" id="brand-link">
+        <div class="brand-icon">T</div>
+        <div class="brand-text">
+          <span class="brand-title">TikZ Studio</span>
+          <span class="brand-subtitle">Documentation &amp; Guide</span>
+        </div>
+      </a>
+      <ul class="nav-links">
+        <li class="nav-item"><a href="index.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Homepage
+        </a></li>
+        <li class="nav-item"><a href="Coordinate.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+          Coordinate Axis
+        </a></li>
+        <li class="nav-item"><a href="GameTree.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="3"/><circle cx="6" cy="19" r="3"/><circle cx="18" cy="19" r="3"/><line x1="12" y1="8" x2="6" y2="16"/><line x1="12" y1="8" x2="18" y2="16"/></svg>
+          Game Tree
+        </a></li>
+        <li class="nav-item"><a href="Venn.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="12" r="6"/><circle cx="15" cy="12" r="6"/></svg>
+          Venn Diagrams
+        </a></li>
+        <li class="nav-item"><a href="Flowchart.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M10 6.5h4M17.5 10v4M6.5 10v4"/></svg>
+          Flowcharts &amp; FSM
+        </a></li>
+        <li class="nav-item"><a href="Timeline.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Timeline
+        </a></li>
+        <li class="nav-item"><a href="Help.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Docs &amp; Help
+        </a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main class="main-wrapper">
+
+    <!-- Header Banner -->
+    <div style="text-align: center; max-width: 800px; margin: 1.5rem auto 2.5rem;">
+      <span class="nav-badge" style="margin-bottom: 0.75rem;">Flowcharts &amp; State Machines Guide</span>
+      <h1 style="font-size: 2rem; font-weight: 800; color: var(--color-text-main); margin-bottom: 0.5rem; letter-spacing: -0.02em;">
+        Flowcharts, State Machines &amp; Automata
+      </h1>
+      <p style="color: var(--color-text-muted); font-size: 1rem; line-height: 1.6;">
+        Build computer science automata (DFA/NFA), business process flowcharts, algorithms, and transition diagrams with instant TikZ LaTeX export.
+      </p>
+    </div>
+
+    <!-- Guide Grid -->
+    <div style="display: flex; flex-direction: column; gap: 1.5rem; max-width: 900px; margin: 0 auto 3rem;">
+
+      <!-- Section 1: Standard Flowchart Shapes -->
+      <div class="control-card" style="background: #ffffff; padding: 1.75rem;">
+        <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 0.75rem;">
+          1. Standard Flowchart Shape Conventions
+        </h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.4rem;">
+              <span style="width: 24px; height: 14px; border: 1.5px solid #4f46e5; border-radius: 9999px; background: #e0e7ff; display: inline-block;"></span>
+              <strong style="color: #3730a3;">Terminal / Pill (Start &amp; End)</strong>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45;">
+              Marks the entry and exit points of an algorithm, process, or workflow.
+            </p>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.4rem;">
+              <span style="width: 20px; height: 14px; border: 1.5px solid #334155; border-radius: 2px; background: #ffffff; display: inline-block;"></span>
+              <strong style="color: #0f172a;">Process (Rectangle)</strong>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45;">
+              An operational action, computation, assignment, or task (e.g. <code style="font-family: monospace;">x := x + 1</code>).
+            </p>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.4rem;">
+              <span style="width: 16px; height: 16px; border: 1.5px solid #d97706; background: #fef3c7; transform: rotate(45deg); display: inline-block;"></span>
+              <strong style="color: #b45309;">Decision (Diamond)</strong>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45;">
+              A conditional branch asking a question (e.g. <code style="font-family: monospace;">b = 0?</code>) leading to <code style="font-family: monospace;">Yes</code> / <code style="font-family: monospace;">No</code> paths.
+            </p>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.4rem;">
+              <span style="width: 22px; height: 14px; border: 1.5px solid #059669; background: #ecfdf5; transform: skewX(-20deg); display: inline-block;"></span>
+              <strong style="color: #065f46;">Data I/O (Parallelogram)</strong>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45;">
+              User input or system output operations (e.g. <code style="font-family: monospace;">Read(a, b)</code>, <code style="font-family: monospace;">Print Result</code>).
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Precise Connection Anchors & Routing -->
+      <div class="control-card" style="background: #ffffff; padding: 1.75rem;">
+        <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 0.75rem;">
+          2. Shape Connections, Anchors &amp; Routing
+        </h2>
+        <p style="font-size: 0.9rem; color: var(--color-text-muted); line-height: 1.55; margin-bottom: 0.75rem;">
+          Flowchart arrows and state transitions can be connected with precision using cardinal anchors and specialized routing patterns:
+        </p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+            <strong style="color: #2563eb; display: block; margin-bottom: 0.25rem;">Interactive Port Snapping</strong>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45;">
+              Hover or select any shape to reveal the 4 cardinal ports (<strong>North / Top</strong>, <strong>South / Bottom</strong>, <strong>East / Right</strong>, <strong>West / Left</strong>). Drag from any port directly to another shape to snap into place.
+            </p>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+            <strong style="color: #4f46e5; display: block; margin-bottom: 0.25rem;">Orthogonal Step Routing</strong>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45;">
+              Supports <strong>Smart Orthogonal</strong>, <strong>Vertical First</strong> (<code style="font-family: monospace;">|-</code>), and <strong>Horizontal First</strong> (<code style="font-family: monospace;">-|</code>), generating clean right-angle engineering pathways.
+            </p>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+            <strong style="color: #059669; display: block; margin-bottom: 0.25rem;">Feedback &amp; Algorithm Loops</strong>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45;">
+              Use <strong>Feedback Loop (Left / Right)</strong> to route loopback branches cleanly outside the diagram hierarchy without overlapping other shapes.
+            </p>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+            <strong style="color: #d97706; display: block; margin-bottom: 0.25rem;">Anchor Control &amp; Label Placement</strong>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45;">
+              In the connection inspector, customize source and target anchors (<code style="font-family: monospace;">.south</code>, <code style="font-family: monospace;">.north</code>, etc.) and choose label position (<strong>Midpoint</strong>, <strong>Near Source</strong>, <strong>Near Target</strong>).
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Finite State Machines & Automata -->
+      <div class="control-card" style="background: #ffffff; padding: 1.75rem;">
+        <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 0.75rem;">
+          3. Finite State Machines (FSM) &amp; Automata
+        </h2>
+        <p style="font-size: 0.9rem; color: var(--color-text-muted); line-height: 1.55; margin-bottom: 0.75rem;">
+          TikZ Studio generates standard LaTeX code compatible with the <code style="font-family: monospace; color: #4f46e5;">automata</code> TikZ library:
+        </p>
+        <ul style="font-size: 0.875rem; color: var(--color-text-main); line-height: 1.6; margin-left: 1.5rem; margin-bottom: 1rem;">
+          <li><strong>Initial State:</strong> Displays the incoming arrow indicator from the left (<code style="font-family: monospace;">\node[initial]</code>).</li>
+          <li><strong>Accepting / Final State:</strong> Styled with concentric double concentric circles (<code style="font-family: monospace;">\node[accepting]</code>).</li>
+          <li><strong>Transitions:</strong> Supports curved bidirectional edges (<code style="font-family: monospace;">bend left</code>, <code style="font-family: monospace;">bend right</code>) and self-loops (<code style="font-family: monospace;">loop above</code>, <code style="font-family: monospace;">loop below</code>).</li>
+          <li><strong>Mathematical Labels:</strong> Input symbols such as <code style="font-family: monospace;">0</code>, <code style="font-family: monospace;">1</code>, <code style="font-family: monospace;">\epsilon</code>, or Mealy/Moore machine inputs/outputs <code style="font-family: monospace;">a / b</code> are automatically typeset in math mode.</li>
+        </ul>
+      </div>
+
+      <!-- Section 4: Canvas Shortcuts -->
+      <div class="control-card" style="background: #ffffff; padding: 1.75rem;">
+        <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 0.75rem;">
+          4. Interactive Canvas Shortcuts
+        </h2>
+        <table style="width: 100%; font-size: 0.875rem; border-collapse: collapse;">
+          <thead>
+            <tr style="text-align: left; border-bottom: 2px solid var(--color-border); color: var(--color-text-muted);">
+              <th style="padding: 0.5rem 0;">Key / Action</th>
+              <th style="padding: 0.5rem 0;">Function</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid #f1f5f9;">
+              <td style="padding: 0.5rem 0;"><kbd style="background: #e2e8f0; padding: 2px 6px; border-radius: 4px;">S</kbd> or <kbd style="background: #e2e8f0; padding: 2px 6px; border-radius: 4px;">V</kbd></td>
+              <td>Switch to Select &amp; Move tool</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #f1f5f9;">
+              <td style="padding: 0.5rem 0;"><kbd style="background: #e2e8f0; padding: 2px 6px; border-radius: 4px;">A</kbd></td>
+              <td>Activate Add Node tool</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #f1f5f9;">
+              <td style="padding: 0.5rem 0;"><kbd style="background: #e2e8f0; padding: 2px 6px; border-radius: 4px;">C</kbd></td>
+              <td>Activate Connect tool (click source, then destination)</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #f1f5f9;">
+              <td style="padding: 0.5rem 0;"><kbd style="background: #e2e8f0; padding: 2px 6px; border-radius: 4px;">Del</kbd> / <kbd style="background: #e2e8f0; padding: 2px 6px; border-radius: 4px;">Backspace</kbd></td>
+              <td>Delete the currently selected node or connection</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #f1f5f9;">
+              <td style="padding: 0.5rem 0;">Double Click</td>
+              <td>Directly edit the text of any node or connection</td>
+            </tr>
+            <tr>
+              <td style="padding: 0.5rem 0;"><kbd style="background: #e2e8f0; padding: 2px 6px; border-radius: 4px;">F</kbd></td>
+              <td>Fit all elements to the canvas view</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Section 5: Overleaf LaTeX Integration -->
+      <div class="control-card" style="background: #ffffff; padding: 1.75rem;">
+        <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 0.75rem;">
+          5. Compiling in LaTeX &amp; Overleaf
+        </h2>
+        <p style="font-size: 0.9rem; color: var(--color-text-muted); line-height: 1.55; margin-bottom: 0.75rem;">
+          Include the necessary TikZ libraries in your document preamble:
+        </p>
+        <pre style="background: #0f172a; color: #f8fafc; padding: 1rem; border-radius: 8px; font-family: var(--font-mono); font-size: 0.825rem; line-height: 1.5; overflow-x: auto;">\documentclass{article}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, automata}
+
+\begin{document}
+
+\begin{figure}[htbp]
+  \centering
+  % Paste generated TikZ code here
+\end{figure}
+
+\end{document}</pre>
+      </div>
+
+    </div>
+
+  </main>
+
+</body>
+</html>

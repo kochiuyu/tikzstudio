@@ -95,11 +95,15 @@
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="12" r="6"/><circle cx="15" cy="12" r="6"/></svg>
           Venn Diagrams
         </a></li>
+        <li class="nav-item"><a href="Flowchart.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M10 6.5h4M17.5 10v4M6.5 10v4"/></svg>
+          Flowcharts &amp; FSM
+        </a></li>
         <li class="nav-item"><a href="Timeline.html">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           Timeline
         </a></li>
-        <li class="nav-item"><a href="Help-Venn.html">
+        <li class="nav-item"><a href="Help.html">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
           Docs &amp; Help
         </a></li>
@@ -225,14 +229,107 @@
         <div class="control-card" style="background: #ffffff; border-top: 3px solid #8b5cf6;">
           <div class="control-card-header">
             <span class="control-card-title">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
-              Regions &amp; Element Labels
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+              Labels &amp; Region Elements
             </span>
-            <span style="font-size: 0.7rem; color: var(--color-text-muted);">Click region in canvas to toggle</span>
+            <span id="labels-count-badge" style="font-size: 0.7rem; color: #8b5cf6; font-weight: 600;">0 labels</span>
           </div>
 
-          <div id="regions-list-container" style="max-height: 280px; overflow-y: auto; padding-right: 0.25rem;">
-            <!-- Rendered dynamically by JavaScript -->
+          <!-- Tabs: Custom Labels vs Region Partitions -->
+          <div style="display: flex; gap: 0.25rem; background: #f1f5f9; padding: 3px; border-radius: 6px; margin-bottom: 0.75rem;">
+            <button type="button" id="tab-btn-custom-labels" class="node-type-btn active" style="flex: 1; padding: 0.25rem 0.5rem; font-size: 0.75rem;" onclick="switchLabelsTab('custom');">
+              🏷️ Custom Labels
+            </button>
+            <button type="button" id="tab-btn-region-partitions" class="node-type-btn" style="flex: 1; padding: 0.25rem 0.5rem; font-size: 0.75rem;" onclick="switchLabelsTab('regions');">
+              🌐 Region Partitions
+            </button>
+          </div>
+
+          <!-- Section 1: Custom Labels Content -->
+          <div id="section-custom-labels">
+            <!-- Add Label Button & Quick Presets -->
+            <div style="margin-bottom: 0.65rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem; flex-wrap: wrap; gap: 0.35rem;">
+                <button type="button" class="btn-modern btn-modern-primary" style="padding: 0.25rem 0.6rem; font-size: 0.75rem; font-weight: 600;" onclick="addNewCustomLabel();">
+                  + Add Label
+                </button>
+                <div style="display: flex; gap: 0.25rem; align-items: center;">
+                  <span style="font-size: 0.7rem; color: var(--color-text-muted);">Presets:</span>
+                  <button type="button" class="btn-modern btn-modern-secondary" style="padding: 0.15rem 0.35rem; font-size: 0.7rem;" onclick="addNewCustomLabel('15');">15</button>
+                  <button type="button" class="btn-modern btn-modern-secondary" style="padding: 0.15rem 0.35rem; font-size: 0.7rem;" onclick="addNewCustomLabel('x');">$x$</button>
+                  <button type="button" class="btn-modern btn-modern-secondary" style="padding: 0.15rem 0.35rem; font-size: 0.7rem;" onclick="addNewCustomLabel('e_1', { showPoint: true });">• $e_1$</button>
+                  <button type="button" class="btn-modern btn-modern-secondary" style="padding: 0.15rem 0.35rem; font-size: 0.7rem;" onclick="addNewCustomLabel('0.25');">0.25</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Selected Label Inspector -->
+            <div id="selected-label-inspector" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 0.75rem; margin-bottom: 0.65rem; display: none;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <span style="font-size: 0.75rem; font-weight: 700; color: #4f46e5;">Selected Label:</span>
+                <button type="button" class="btn-modern btn-modern-secondary" style="font-size: 0.7rem; padding: 0.15rem 0.4rem; color: #dc2626;" onclick="deleteSelectedCustomLabel();" title="Remove this label">
+                  Delete
+                </button>
+              </div>
+
+              <!-- Label Text Input -->
+              <div style="margin-bottom: 0.5rem;">
+                <span class="form-label" style="font-size: 0.7rem;">Label Text (LaTeX Math Supported):</span>
+                <input type="text" id="input-custom-label-text" class="input-modern" placeholder="e.g. x, 15, \\mu, e_1" style="width: 100%; font-size: 0.8rem; padding: 0.25rem 0.4rem; font-weight: 600;" oninput="onCustomLabelTextChange(this.value);">
+              </div>
+
+              <!-- Font Size, Color & Bullet marker -->
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.5rem;">
+                <div>
+                  <span class="form-label" style="font-size: 0.7rem;">Font Size:</span>
+                  <select id="select-custom-label-size" class="select-modern" style="width: 100%; font-size: 0.75rem; padding: 0.2rem 0.3rem;" onchange="onCustomLabelSizeChange(this.value);">
+                    <option value="12">12px (Small)</option>
+                    <option value="14" selected>14px (Normal)</option>
+                    <option value="16">16px (Medium)</option>
+                    <option value="20">20px (Large)</option>
+                  </select>
+                </div>
+                <div>
+                  <span class="form-label" style="font-size: 0.7rem;">Color:</span>
+                  <div style="display: flex; align-items: center; gap: 0.35rem;">
+                    <input type="color" id="input-custom-label-color" value="#0f172a" style="width: 28px; height: 26px; border: none; padding: 0; background: none; cursor: pointer;" onchange="onCustomLabelColorChange(this.value);">
+                    <label style="display: flex; align-items: center; gap: 0.25rem; font-size: 0.725rem; cursor: pointer; white-space: nowrap;">
+                      <input type="checkbox" id="check-custom-label-point" onchange="onCustomLabelPointChange(this.checked);"> Dot (•)
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Label Position Coordinates -->
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                <div>
+                  <div style="display: flex; justify-content: space-between;">
+                    <span class="form-label" style="font-size: 0.7rem;">X Pos:</span>
+                    <span id="val-custom-label-x" style="font-size: 0.7rem; font-family: var(--font-mono); color: #4f46e5;">0px</span>
+                  </div>
+                  <input type="number" id="num-custom-label-x" class="input-modern" style="width: 100%; font-size: 0.75rem; padding: 0.2rem 0.3rem; text-align: center;" oninput="onCustomLabelXChange(this.value);">
+                </div>
+                <div>
+                  <div style="display: flex; justify-content: space-between;">
+                    <span class="form-label" style="font-size: 0.7rem;">Y Pos:</span>
+                    <span id="val-custom-label-y" style="font-size: 0.7rem; font-family: var(--font-mono); color: #4f46e5;">0px</span>
+                  </div>
+                  <input type="number" id="num-custom-label-y" class="input-modern" style="width: 100%; font-size: 0.75rem; padding: 0.2rem 0.3rem; text-align: center;" oninput="onCustomLabelYChange(this.value);">
+                </div>
+              </div>
+            </div>
+
+            <!-- Labels List Container -->
+            <div id="custom-labels-list-container" style="max-height: 190px; overflow-y: auto; padding-right: 0.25rem;">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+
+          <!-- Section 2: Region Partitions Content -->
+          <div id="section-region-partitions" style="display: none;">
+            <div id="regions-list-container" style="max-height: 280px; overflow-y: auto; padding-right: 0.25rem;">
+              <!-- Rendered dynamically by JavaScript -->
+            </div>
           </div>
         </div>
 
@@ -416,10 +513,13 @@
             <!-- Canvas Interaction Tool Switcher -->
             <div style="display: flex; gap: 0.25rem; background: #f1f5f9; padding: 3px; border-radius: 6px;">
               <button type="button" id="tool-btn-shade" class="node-type-btn active" style="padding: 0.2rem 0.55rem; font-size: 0.725rem;" onclick="setCanvasTool('shade');" title="Click regions to toggle fill shading">
-                👆 Shade Regions
+                👆 Shade
               </button>
               <button type="button" id="tool-btn-move" class="node-type-btn" style="padding: 0.2rem 0.55rem; font-size: 0.725rem;" onclick="setCanvasTool('move');" title="Drag circles directly to change location and drag borders to resize">
-                ✋ Move &amp; Resize Sets
+                ✋ Move Sets
+              </button>
+              <button type="button" id="tool-btn-label" class="node-type-btn" style="padding: 0.2rem 0.55rem; font-size: 0.725rem;" onclick="setCanvasTool('label');" title="Click anywhere on canvas to drop a label, or drag existing labels">
+                🏷️ Place Labels
               </button>
             </div>
 
@@ -436,7 +536,7 @@
           </div>
 
           <div style="padding: 0.5rem 1rem; background: #f8fafc; border-top: 1px solid var(--color-border); font-size: 0.75rem; color: var(--color-text-muted); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
-            <span>💡 <strong>Interactive Placement:</strong> Switch to <strong>Move &amp; Resize Sets</strong> or drag any set's center anchor, border, or label directly on the canvas! Shift-drag to pan. Scroll to zoom.</span>
+            <span>💡 <strong>Interactive Tools:</strong> <strong>Shade</strong> to fill, <strong>Move Sets</strong> to drag circles, or <strong>Place Labels</strong> to drop elements ($x, 15, \bullet e_1$). Double-click anywhere to add or edit a label!</span>
             <span style="font-family: var(--font-mono);">High-DPI 2D Engine</span>
           </div>
         </div>
@@ -534,6 +634,29 @@
         updateTikZDisplay();
       };
 
+      window.onVennLabelSelected = function (labelId, label) {
+        switchLabelsTab('custom');
+        renderCustomLabelsList();
+        syncLabelInspectorValues(label);
+      };
+
+      window.onVennLabelMoved = function (label) {
+        syncLabelInspectorValues(label);
+        updateTikZDisplay();
+      };
+
+      window.onVennLabelAdded = function (label) {
+        switchLabelsTab('custom');
+        renderCustomLabelsList();
+        syncLabelInspectorValues(label);
+        updateTikZDisplay();
+      };
+
+      window.onVennRegionLabelMoved = function (region) {
+        renderRegionsList();
+        updateTikZDisplay();
+      };
+
       updateUI();
     }
 
@@ -542,8 +665,11 @@
       canvasRenderer.setToolMode(tool);
       $('#tool-btn-shade').toggleClass('active', tool === 'shade');
       $('#tool-btn-move').toggleClass('active', tool === 'move');
+      $('#tool-btn-label').toggleClass('active', tool === 'label');
       if (tool === 'move') {
-        $('#hover-region-badge').text('Move Mode: Drag any set to reposition').css({ background: '#f0fdf4', color: '#15803d' });
+        $('#hover-region-badge').text('Move Sets: Drag circles or resize handles').css({ background: '#f0fdf4', color: '#15803d' });
+      } else if (tool === 'label') {
+        $('#hover-region-badge').text('Place Labels: Click canvas to drop a label').css({ background: '#faf5ff', color: '#7e22ce' });
       } else {
         $('#hover-region-badge').text('Shade Mode: Click regions to shade').css({ background: '#f1f5f9', color: '#475569' });
       }
@@ -564,6 +690,7 @@
       const toolMode = canvasRenderer ? canvasRenderer.toolMode : 'shade';
       $('#tool-btn-shade').toggleClass('active', toolMode === 'shade');
       $('#tool-btn-move').toggleClass('active', toolMode === 'move');
+      $('#tool-btn-label').toggleClass('active', toolMode === 'label');
 
       if (tikzSnippetOnly) {
         $('#btn-tikz-snip').addClass('active');
@@ -582,9 +709,205 @@
 
       renderCircleTabs();
       syncSetInspectorValues();
+      renderCustomLabelsList();
+      syncLabelInspectorValues();
       renderRegionsList();
       canvasRenderer.render();
       updateTikZDisplay();
+    }
+
+    let activeLabelsTab = 'custom'; // 'custom' | 'regions'
+
+    function switchLabelsTab(tab) {
+      activeLabelsTab = tab;
+      $('#tab-btn-custom-labels').toggleClass('active', tab === 'custom');
+      $('#tab-btn-region-partitions').toggleClass('active', tab === 'regions');
+      $('#section-custom-labels').toggle(tab === 'custom');
+      $('#section-region-partitions').toggle(tab === 'regions');
+    }
+
+    function addNewCustomLabel(defaultText, opt = {}) {
+      if (!activeVennModel) return;
+      let text = defaultText;
+      if (text === undefined) {
+        text = prompt('Enter label text (LaTeX math supported, e.g. x, 15, \\mu, e_1):', 'x');
+        if (text === null) return;
+        text = text.trim();
+        if (!text) return;
+      }
+
+      const newLbl = activeVennModel.addLabel({
+        text: text,
+        x: opt.x !== undefined ? opt.x : Math.round((Math.random() - 0.5) * 60),
+        y: opt.y !== undefined ? opt.y : Math.round((Math.random() - 0.5) * 60),
+        showPoint: opt.showPoint !== undefined ? opt.showPoint : false,
+        fontSize: opt.fontSize || 14
+      });
+
+      if (canvasRenderer) {
+        canvasRenderer.selectedLabelId = newLbl.id;
+      }
+      switchLabelsTab('custom');
+      renderCustomLabelsList();
+      syncLabelInspectorValues(newLbl);
+      if (canvasRenderer) canvasRenderer.render();
+      updateTikZDisplay();
+    }
+
+    function deleteSelectedCustomLabel() {
+      if (!canvasRenderer || !canvasRenderer.selectedLabelId) return;
+      deleteCustomLabel(canvasRenderer.selectedLabelId);
+    }
+
+    function deleteCustomLabel(id) {
+      activeVennModel.removeLabel(id);
+      if (canvasRenderer && canvasRenderer.selectedLabelId === id) {
+        canvasRenderer.selectedLabelId = (activeVennModel.labels[0] && activeVennModel.labels[0].id) || null;
+      }
+      renderCustomLabelsList();
+      syncLabelInspectorValues();
+      if (canvasRenderer) canvasRenderer.render();
+      updateTikZDisplay();
+    }
+
+    function getSelectedLabel() {
+      const id = canvasRenderer ? canvasRenderer.selectedLabelId : (activeVennModel.labels[0] && activeVennModel.labels[0].id);
+      return activeVennModel.getLabel(id);
+    }
+
+    function syncLabelInspectorValues(lbl) {
+      if (!lbl && canvasRenderer && canvasRenderer.selectedLabelId) {
+        lbl = activeVennModel.getLabel(canvasRenderer.selectedLabelId);
+      }
+      if (!lbl && activeVennModel && activeVennModel.labels && activeVennModel.labels.length > 0) {
+        lbl = activeVennModel.labels[0];
+        if (canvasRenderer) canvasRenderer.selectedLabelId = lbl.id;
+      }
+
+      const $inspector = $('#selected-label-inspector');
+      if (!lbl) {
+        $inspector.hide();
+        return;
+      }
+
+      $inspector.show();
+      $('#input-custom-label-text').val(lbl.text || '');
+      $('#select-custom-label-size').val(lbl.fontSize || 14);
+      $('#input-custom-label-color').val(lbl.color || '#0f172a');
+      const chkPoint = document.getElementById('check-custom-label-point');
+      if (chkPoint) chkPoint.checked = !!lbl.showPoint;
+      $('#num-custom-label-x').val(lbl.x || 0);
+      $('#val-custom-label-x').text((lbl.x || 0) + 'px');
+      $('#num-custom-label-y').val(lbl.y || 0);
+      $('#val-custom-label-y').text((lbl.y || 0) + 'px');
+    }
+
+    function onCustomLabelTextChange(val) {
+      const lbl = getSelectedLabel();
+      if (!lbl) return;
+      lbl.text = val;
+      renderCustomLabelsList();
+      if (canvasRenderer) canvasRenderer.render();
+      updateTikZDisplay();
+    }
+
+    function onCustomLabelSizeChange(val) {
+      const lbl = getSelectedLabel();
+      if (!lbl) return;
+      lbl.fontSize = parseInt(val, 10) || 14;
+      if (canvasRenderer) canvasRenderer.render();
+      updateTikZDisplay();
+    }
+
+    function onCustomLabelColorChange(val) {
+      const lbl = getSelectedLabel();
+      if (!lbl) return;
+      lbl.color = val;
+      renderCustomLabelsList();
+      if (canvasRenderer) canvasRenderer.render();
+      updateTikZDisplay();
+    }
+
+    function onCustomLabelPointChange(checked) {
+      const lbl = getSelectedLabel();
+      if (!lbl) return;
+      lbl.showPoint = !!checked;
+      renderCustomLabelsList();
+      if (canvasRenderer) canvasRenderer.render();
+      updateTikZDisplay();
+    }
+
+    function onCustomLabelXChange(val) {
+      const lbl = getSelectedLabel();
+      if (!lbl) return;
+      const num = parseInt(val, 10);
+      if (isNaN(num)) return;
+      lbl.x = num;
+      $('#val-custom-label-x').text(num + 'px');
+      if (canvasRenderer) canvasRenderer.render();
+      updateTikZDisplay();
+    }
+
+    function onCustomLabelYChange(val) {
+      const lbl = getSelectedLabel();
+      if (!lbl) return;
+      const num = parseInt(val, 10);
+      if (isNaN(num)) return;
+      lbl.y = num;
+      $('#val-custom-label-y').text(num + 'px');
+      if (canvasRenderer) canvasRenderer.render();
+      updateTikZDisplay();
+    }
+
+    function renderCustomLabelsList() {
+      const $container = $('#custom-labels-list-container');
+      $container.empty();
+
+      const labels = activeVennModel.labels || [];
+      $('#labels-count-badge').text(labels.length + (labels.length === 1 ? ' label' : ' labels'));
+
+      if (labels.length === 0) {
+        $container.html(`
+          <div style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 6px; padding: 0.85rem; text-align: center; color: var(--color-text-muted); font-size: 0.75rem;">
+            <div style="font-size: 1.25rem; margin-bottom: 0.25rem;">🏷️</div>
+            <div><strong>No custom labels placed yet</strong></div>
+            <div style="margin-top: 0.25rem; font-size: 0.7rem; color: #64748b;">Click <strong>+ Add Label</strong> above, use preset chips, or select <strong>🏷️ Place Labels</strong> on the canvas to drop elements anywhere.</div>
+          </div>
+        `);
+        return;
+      }
+
+      const selId = canvasRenderer ? canvasRenderer.selectedLabelId : (labels[0] && labels[0].id);
+
+      labels.forEach((lbl) => {
+        const isSelected = (lbl.id === selId);
+        const escapedId = lbl.id.replace(/'/g, "\\'");
+        const $item = $(`
+          <div class="card-item-row" style="display: flex; align-items: center; justify-content: space-between; padding: 0.35rem 0.5rem; margin-bottom: 0.3rem; border-radius: 6px; background: ${isSelected ? '#e0e7ff' : '#f8fafc'}; border: 1px solid ${isSelected ? '#818cf8' : '#e2e8f0'}; cursor: pointer;">
+            <div style="display: flex; align-items: center; gap: 0.45rem; flex: 1; min-width: 0;" onclick="selectActiveLabel('${escapedId}');">
+              ${lbl.showPoint ? '<span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #4f46e5;"></span>' : ''}
+              <span style="font-weight: 700; font-size: 0.8rem; color: ${lbl.color || '#0f172a'}; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                ${lbl.text || '<em>(empty)</em>'}
+              </span>
+              <span style="font-family: var(--font-mono); font-size: 0.675rem; color: var(--color-text-muted); background: #ffffff; padding: 1px 4px; border-radius: 4px; border: 1px solid #e2e8f0;">
+                (${lbl.x}, ${lbl.y})
+              </span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.25rem;">
+              <button type="button" class="btn-modern btn-modern-secondary" style="padding: 0.15rem 0.35rem; font-size: 0.65rem; color: #dc2626;" onclick="event.stopPropagation(); deleteCustomLabel('${escapedId}');" title="Delete label">
+                ✕
+              </button>
+            </div>
+          </div>
+        `);
+        $container.append($item);
+      });
+    }
+
+    function selectActiveLabel(id) {
+      if (canvasRenderer) canvasRenderer.selectLabel(id);
+      renderCustomLabelsList();
+      syncLabelInspectorValues(activeVennModel.getLabel(id));
     }
 
     function renderCircleTabs() {

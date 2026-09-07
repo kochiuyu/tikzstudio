@@ -38,11 +38,15 @@
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="12" r="6"/><circle cx="15" cy="12" r="6"/></svg>
           Venn Diagrams
         </a></li>
+        <li class="nav-item"><a href="Flowchart.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M10 6.5h4M17.5 10v4M6.5 10v4"/></svg>
+          Flowcharts &amp; FSM
+        </a></li>
         <li class="nav-item"><a href="Timeline.html">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           Timeline
         </a></li>
-        <li class="nav-item"><a href="Help-Coordinate.html">
+        <li class="nav-item"><a href="Help.html">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
           Docs & Help
         </a></li>
@@ -72,6 +76,10 @@
         <a href="Venn.html" class="btn-modern btn-modern-primary" style="padding: 0.55rem 1.25rem; font-size: 0.925rem; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="12" r="6"/><circle cx="15" cy="12" r="6"/></svg>
           Venn Studio
+        </a>
+        <a href="Flowchart.html" class="btn-modern btn-modern-primary" style="padding: 0.55rem 1.25rem; font-size: 0.925rem; background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M10 6.5h4M17.5 10v4M6.5 10v4"/></svg>
+          Flowcharts &amp; FSM
         </a>
         <a href="Timeline.html" class="btn-modern btn-modern-secondary" style="padding: 0.55rem 1.25rem; font-size: 0.925rem;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -219,6 +227,40 @@
         </div>
       </div>
 
+      <!-- Flowcharts & State Machines Card (NEW) -->
+      <div class="control-card" style="padding: 0; overflow: hidden; background: #ffffff; display: flex; flex-direction: column; border-top: 3px solid #0d9488;">
+        <div style="height: 175px; overflow: hidden; position: relative; background: #134e4a;">
+          <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=800&q=80" alt="Flowcharts and State Machines Illustration" referrerpolicy="no-referrer" style="width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform 0.35s ease; filter: brightness(0.88);">
+          <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(19,78,74,0.2) 0%, rgba(19,78,74,0.75) 100%); pointer-events: none;"></div>
+          <span style="position: absolute; top: 10px; left: 10px; background: rgba(19, 78, 74, 0.88); color: #ffffff; font-size: 0.725rem; font-weight: 600; padding: 0.25rem 0.6rem; border-radius: 9999px; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.15); display: flex; align-items: center; gap: 0.35rem;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M10 6.5h4M17.5 10v4M6.5 10v4"/></svg>
+            Flowcharts &amp; FSM Studio
+          </span>
+          <span style="position: absolute; bottom: 10px; right: 10px; background: rgba(19, 78, 74, 0.75); color: #99f6e4; font-size: 0.68rem; font-family: var(--font-mono); padding: 0.15rem 0.45rem; border-radius: 4px; backdrop-filter: blur(4px);">
+            tikz: automata &amp; shapes
+          </span>
+        </div>
+        <div style="padding: 1.25rem; flex: 1; display: flex; flex-direction: column;">
+          <h2 style="font-size: 1.2rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 0.35rem;">
+            Flowcharts &amp; State Machines
+          </h2>
+          <p style="color: var(--color-text-muted); font-size: 0.875rem; line-height: 1.55; margin-bottom: 0.85rem;">
+            Design computer science automata (DFA/NFA), algorithmic decision trees, and business process flows. Direct canvas manipulation with snap-to-grid, custom node shapes, self-loops, and curved transitions.
+          </p>
+          <div style="display: flex; gap: 0.35rem; flex-wrap: wrap; margin-bottom: 1rem;">
+            <span class="nav-badge">DFA / NFA Automata</span>
+            <span class="nav-badge">Algorithm Flows</span>
+            <span class="nav-badge">Self-Loops &amp; Curves</span>
+            <span class="nav-badge">Overleaf TikZ Export</span>
+          </div>
+          <div style="margin-top: auto;">
+            <a href="Flowchart.html" class="btn-modern btn-modern-primary" style="width: 100%; padding: 0.5rem 1rem; font-size: 0.875rem; background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);">
+              Open Flowchart &amp; FSM Studio &rarr;
+            </a>
+          </div>
+        </div>
+      </div>
+
     </div>
 
     <!-- Feature Grid -->
@@ -261,10 +303,10 @@
       <div class="footer-nav">
         <a href="Coordinate.html">Coordinate Axis</a>
         <a href="GameTree.html">Game Tree Studio</a>
+        <a href="Venn.html">Venn Diagrams</a>
+        <a href="Flowchart.html">Flowcharts &amp; FSM</a>
         <a href="Timeline.html">Timeline</a>
-        <a href="Help-Coordinate.html">Coordinate Docs</a>
-        <a href="Help-GameTree.html">Game Tree Docs</a>
-        <a href="Help-Timeline.html">Timeline Docs</a>
+        <a href="Help.html">Docs &amp; Help</a>
       </div>
     </div>
   </footer>
