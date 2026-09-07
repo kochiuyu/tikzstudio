@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Venn Diagram Studio - TikZ Studio</title>
+  <meta name="description" content="Interactive Venn and Euler diagram builder. Generate compilable LaTeX TikZ code for set theory, probability, and logic with customizable shading and cardinalities." />
+
+  <link rel="stylesheet" href="css/modern.css">
+  <link rel="stylesheet" href="css/scroll.css">
+
+  <script type="text/javascript" src="js/jquery-1.11.0.min.js"></script>
+  <script type="text/javascript" src="js/venn-diagram.js"></script>
+
+  <style>
+    .node-type-btn {
+      flex: 1;
+      padding: 0.4rem 0.5rem;
+      border: 1px solid var(--color-border);
+      background: #ffffff;
+      color: var(--color-text-main);
+      font-size: 0.775rem;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .node-type-btn:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+    .node-type-btn.active {
+      background: var(--color-primary);
+      color: #ffffff;
+      border-color: var(--color-primary);
+    }
+    .region-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.45rem 0.6rem;
+      border-radius: 6px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      margin-bottom: 0.4rem;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .region-row:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+    .region-row.selected {
+      background: #eff6ff;
+      border-color: #93c5fd;
+    }
+    .color-chip {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      border: 1px solid rgba(0,0,0,0.15);
+      cursor: pointer;
+      display: inline-block;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="app-header">
+    <div class="header-container">
+      <a href="index.html" class="brand-logo" id="brand-link">
+        <div class="brand-icon">T</div>
+        <div class="brand-text">
+          <span class="brand-title">TikZ Studio</span>
+          <span class="brand-subtitle">Venn &amp; Euler Studio</span>
+        </div>
+      </a>
+      <ul class="nav-links">
+        <li class="nav-item"><a href="index.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Homepage
+        </a></li>
+        <li class="nav-item"><a href="Coordinate.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+          Coordinate Axis
+        </a></li>
+        <li class="nav-item"><a href="GameTree.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="3"/><circle cx="6" cy="19" r="3"/><circle cx="18" cy="19" r="3"/><line x1="12" y1="8" x2="6" y2="16"/><line x1="12" y1="8" x2="18" y2="16"/></svg>
+          Game Tree
+        </a></li>
+        <li class="nav-item active"><a href="Venn.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="12" r="6"/><circle cx="15" cy="12" r="6"/></svg>
+          Venn Diagrams
+        </a></li>
+        <li class="nav-item"><a href="Timeline.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Timeline
+        </a></li>
+        <li class="nav-item"><a href="Help-Venn.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Docs &amp; Help
+        </a></li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main class="main-wrapper">
+
+    <!-- Action Toolbar -->
+    <div class="toolbar-card">
+      <div class="toolbar-title-group">
+        <h1 class="toolbar-title">Venn &amp; Euler Diagram Studio</h1>
+        <span class="nav-badge" id="venn-mode-badge" style="background: #eff6ff; color: #2563eb; border-color: #bfdbfe;">2-Set Model</span>
+      </div>
+
+      <!-- Presets & Primary Actions -->
+      <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+        <span style="font-size: 0.8rem; font-weight: 600; color: var(--color-text-muted);">Preset:</span>
+        <select id="preset-select" class="select-modern" onchange="loadPreset(this.value);" style="font-size: 0.8rem; font-weight: 500; padding: 0.3rem 0.6rem; min-width: 210px;">
+          <option value="" disabled>Select Diagram Preset...</option>
+          <optgroup label="2-Set Diagrams">
+            <option value="2set-intersect" selected>Intersection (A ∩ B)</option>
+            <option value="2set-union">Union (A ∪ B)</option>
+            <option value="2set-diff-ab">Relative Difference (A \ B)</option>
+            <option value="2set-symdiff">Symmetric Difference (A Δ B)</option>
+            <option value="2set-demorgan">De Morgan's Law ((A ∪ B)ᶜ)</option>
+          </optgroup>
+          <optgroup label="3-Set Diagrams">
+            <option value="3set-triple-intersect">Triple Intersection (A ∩ B ∩ C)</option>
+            <option value="3set-pairwise">Pairwise Intersections</option>
+            <option value="3set-inclusion-exclusion">Inclusion-Exclusion Cardinalities</option>
+          </optgroup>
+          <optgroup label="Euler &amp; Probability">
+            <option value="euler-subset">Subset / Inclusion (A ⊂ B)</option>
+            <option value="euler-disjoint">Disjoint / Mutually Exclusive (A ∩ B = ∅)</option>
+          </optgroup>
+        </select>
+
+        <div style="height: 20px; width: 1px; background: var(--color-border); margin: 0 0.2rem;"></div>
+
+        <button class="btn-modern btn-modern-secondary" onclick="fitCanvasView();" title="Fit diagram to canvas view">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Fit View
+        </button>
+
+        <button class="btn-modern btn-modern-secondary" onclick="downloadPNG();" title="Download diagram as high-resolution PNG">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          PNG
+        </button>
+
+        <button class="btn-modern btn-modern-secondary" onclick="copyTikZCode();" title="Copy clean TikZ code to clipboard">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy LaTeX
+        </button>
+
+        <button class="btn-modern btn-modern-primary" onclick="openInOverleaf();" title="Compile and edit directly in Overleaf">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Overleaf &rarr;
+        </button>
+      </div>
+    </div>
+
+    <!-- Two-Column Workspace Layout -->
+    <div style="display: grid; grid-template-columns: 370px 1fr; gap: 1.5rem; align-items: start;">
+
+      <!-- Left Column: Controls & Inspectors -->
+      <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+
+        <!-- Card 1: Model Type & Quick Operations -->
+        <div class="control-card" style="background: #ffffff; border-top: 3px solid #2563eb;">
+          <div class="control-card-header">
+            <span class="control-card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="12" r="6"/><circle cx="15" cy="12" r="6"/></svg>
+              Set Architecture &amp; Operations
+            </span>
+          </div>
+
+          <!-- Diagram Archetype Switcher -->
+          <div style="margin-bottom: 0.85rem;">
+            <span class="form-label">Number of Sets:</span>
+            <div style="display: flex; gap: 0.35rem; margin-top: 0.25rem;">
+              <button type="button" id="mode-btn-2set" class="node-type-btn active" onclick="switchModelMode('2-set');">
+                2 Sets (A, B)
+              </button>
+              <button type="button" id="mode-btn-3set" class="node-type-btn" onclick="switchModelMode('3-set');">
+                3 Sets (A, B, C)
+              </button>
+              <button type="button" id="mode-btn-euler" class="node-type-btn" onclick="switchModelMode('euler');">
+                Euler / Subsets
+              </button>
+            </div>
+          </div>
+
+          <!-- Quick Set Operations -->
+          <div>
+            <span class="form-label">Quick Set Shading Operations:</span>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.35rem; margin-top: 0.25rem;">
+              <button type="button" class="btn-modern btn-modern-secondary" style="font-size: 0.75rem; padding: 0.35rem 0.5rem;" onclick="applyOperation('intersect');">
+                Intersection (∩)
+              </button>
+              <button type="button" class="btn-modern btn-modern-secondary" style="font-size: 0.75rem; padding: 0.35rem 0.5rem;" onclick="applyOperation('union');">
+                Union (∪)
+              </button>
+              <button type="button" class="btn-modern btn-modern-secondary" style="font-size: 0.75rem; padding: 0.35rem 0.5rem;" onclick="applyOperation('diff_A_B');">
+                Difference (A \ B)
+              </button>
+              <button type="button" class="btn-modern btn-modern-secondary" style="font-size: 0.75rem; padding: 0.35rem 0.5rem;" onclick="applyOperation('sym_diff');">
+                Sym. Diff (A Δ B)
+              </button>
+              <button type="button" class="btn-modern btn-modern-secondary" style="font-size: 0.75rem; padding: 0.35rem 0.5rem;" onclick="applyOperation('complement_union');">
+                Complement ((A∪B)ᶜ)
+              </button>
+              <button type="button" class="btn-modern btn-modern-secondary" style="font-size: 0.75rem; padding: 0.35rem 0.5rem;" onclick="applyOperation('clear');">
+                Clear Shading
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: Regions & Partition Inspector -->
+        <div class="control-card" style="background: #ffffff; border-top: 3px solid #8b5cf6;">
+          <div class="control-card-header">
+            <span class="control-card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+              Regions &amp; Element Labels
+            </span>
+            <span style="font-size: 0.7rem; color: var(--color-text-muted);">Click region in canvas to toggle</span>
+          </div>
+
+          <div id="regions-list-container" style="max-height: 280px; overflow-y: auto; padding-right: 0.25rem;">
+            <!-- Rendered dynamically by JavaScript -->
+          </div>
+        </div>
+
+        <!-- Card 3: Circle Geometry & Styling -->
+        <!-- Card 3: Set Locations & Circle Inspector -->
+        <div class="control-card" style="background: #ffffff; border-top: 3px solid #0284c7;">
+          <div class="control-card-header">
+            <span class="control-card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg>
+              Set Locations &amp; Circle Inspector
+            </span>
+            <span style="font-size: 0.7rem; color: #0284c7; font-weight: 600;">Drag directly on canvas</span>
+          </div>
+
+          <!-- Active Set Selector Tabs -->
+          <div style="margin-bottom: 0.75rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+              <span class="form-label" style="margin-bottom: 0;">Select Set to Reposition:</span>
+              <button id="btn-add-euler-set" class="btn-modern btn-modern-secondary" style="padding: 0.15rem 0.45rem; font-size: 0.7rem; display: none;" onclick="addNewEulerSet();" title="Add a custom set circle">
+                + Add Set
+              </button>
+            </div>
+            <div id="circle-tabs-container" style="display: flex; gap: 0.35rem; flex-wrap: wrap;">
+              <!-- Dynamic Set Tabs: Set A, Set B, Set C -->
+            </div>
+          </div>
+
+          <!-- Individual Properties for Selected Circle -->
+          <div id="selected-circle-inspector" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 0.75rem;">
+            <!-- Set Label & Border Color -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.6rem;">
+              <div>
+                <span class="form-label" style="font-size: 0.7rem;">Set Label:</span>
+                <input type="text" id="input-set-label" class="input-modern" value="A" style="width: 100%; font-size: 0.8rem; padding: 0.25rem 0.4rem; font-weight: 600;" oninput="onSetLabelChange(this.value);">
+              </div>
+              <div>
+                <span class="form-label" style="font-size: 0.7rem;">Border Color:</span>
+                <div style="display: flex; align-items: center; gap: 0.35rem;">
+                  <input type="color" id="input-set-color" value="#2563eb" style="width: 28px; height: 26px; border: none; padding: 0; background: none; cursor: pointer;" onchange="onSetColorChange(this.value);">
+                  <span id="label-set-color" style="font-family: var(--font-mono); font-size: 0.75rem; color: #475569;">#2563eb</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Center X -->
+            <div style="margin-bottom: 0.55rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="form-label" style="font-size: 0.7rem;">Center X (Horizontal Position):</span>
+                <span id="val-set-x" style="font-size: 0.725rem; font-family: var(--font-mono); color: #0284c7; font-weight: 600;">-70px</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <input type="range" id="slider-set-x" min="-220" max="220" value="-70" class="input-modern" style="flex: 1; padding: 0.15rem 0;" oninput="onSetXChange(this.value);">
+                <input type="number" id="num-set-x" value="-70" min="-240" max="240" class="input-modern" style="width: 58px; font-size: 0.75rem; padding: 0.2rem 0.3rem; text-align: center;" onchange="onSetXChange(this.value);">
+              </div>
+            </div>
+
+            <!-- Center Y -->
+            <div style="margin-bottom: 0.55rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="form-label" style="font-size: 0.7rem;">Center Y (Vertical Position):</span>
+                <span id="val-set-y" style="font-size: 0.725rem; font-family: var(--font-mono); color: #0284c7; font-weight: 600;">0px</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <input type="range" id="slider-set-y" min="-160" max="160" value="0" class="input-modern" style="flex: 1; padding: 0.15rem 0;" oninput="onSetYChange(this.value);">
+                <input type="number" id="num-set-y" value="0" min="-180" max="180" class="input-modern" style="width: 58px; font-size: 0.75rem; padding: 0.2rem 0.3rem; text-align: center;" onchange="onSetYChange(this.value);">
+              </div>
+            </div>
+
+            <!-- Radius R -->
+            <div style="margin-bottom: 0.55rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="form-label" style="font-size: 0.7rem;">Circle Radius (Size):</span>
+                <span id="val-set-r" style="font-size: 0.725rem; font-family: var(--font-mono); color: #0284c7; font-weight: 600;">110px</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <input type="range" id="slider-set-r" min="35" max="180" value="110" class="input-modern" style="flex: 1; padding: 0.15rem 0;" oninput="onSetRChange(this.value);">
+                <input type="number" id="num-set-r" value="110" min="30" max="220" class="input-modern" style="width: 58px; font-size: 0.75rem; padding: 0.2rem 0.3rem; text-align: center;" onchange="onSetRChange(this.value);">
+              </div>
+            </div>
+
+            <!-- Stroke style & width -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.6rem;">
+              <div>
+                <span class="form-label" style="font-size: 0.7rem;">Line Style:</span>
+                <select id="select-set-style" class="select-modern" style="width: 100%; font-size: 0.75rem; padding: 0.2rem 0.3rem;" onchange="onSetStyleChange(this.value);">
+                  <option value="solid">Solid</option>
+                  <option value="dashed">Dashed</option>
+                  <option value="dotted">Dotted</option>
+                </select>
+              </div>
+              <div>
+                <span class="form-label" style="font-size: 0.7rem;">Line Width:</span>
+                <select id="select-set-width" class="select-modern" style="width: 100%; font-size: 0.75rem; padding: 0.2rem 0.3rem;" onchange="onSetWidthChange(this.value);">
+                  <option value="1.5">1.5 pt (Thin)</option>
+                  <option value="2.5" selected>2.5 pt (Medium)</option>
+                  <option value="3.5">3.5 pt (Thick)</option>
+                  <option value="5.0">5.0 pt (Heavy)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Quick Position Actions -->
+            <div style="display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.4rem;">
+              <button type="button" class="btn-modern btn-modern-secondary" style="font-size: 0.7rem; padding: 0.2rem 0.45rem;" onclick="centerSelectedSet();">
+                Center at (0, 0)
+              </button>
+              <button type="button" class="btn-modern btn-modern-secondary" style="font-size: 0.7rem; padding: 0.2rem 0.45rem;" onclick="resetSelectedSetOffset();">
+                Reset Symmetry
+              </button>
+              <button type="button" id="btn-delete-euler-set" class="btn-modern btn-modern-secondary" style="font-size: 0.7rem; padding: 0.2rem 0.45rem; color: #dc2626; display: none;" onclick="deleteSelectedEulerSet();">
+                Delete Set
+              </button>
+            </div>
+          </div>
+
+          <!-- Global Symmetry Sliders (Collapsible) -->
+          <details style="margin-top: 0.65rem; font-size: 0.75rem; border-top: 1px dashed #e2e8f0; padding-top: 0.5rem;">
+            <summary style="cursor: pointer; color: var(--color-text-muted); font-weight: 600;">Symmetric Overlap Sliders (All Sets)</summary>
+            <div style="margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
+              <div>
+                <div style="display: flex; justify-content: space-between;">
+                  <span class="form-label" style="font-size: 0.7rem;">Uniform Radius:</span>
+                  <span id="val-circle-radius" style="font-size: 0.7rem; color: var(--color-text-muted);">110px</span>
+                </div>
+                <input type="range" id="slider-circle-radius" min="70" max="160" value="110" class="input-modern" style="width: 100%; padding: 0.15rem 0;" oninput="updateCircleGeometry();">
+              </div>
+              <div>
+                <div style="display: flex; justify-content: space-between;">
+                  <span class="form-label" style="font-size: 0.7rem;">Spacing / Overlap:</span>
+                  <span id="val-circle-overlap" style="font-size: 0.7rem; color: var(--color-text-muted);">70px</span>
+                </div>
+                <input type="range" id="slider-circle-overlap" min="30" max="150" value="70" class="input-modern" style="width: 100%; padding: 0.15rem 0;" oninput="updateCircleGeometry();">
+              </div>
+            </div>
+          </details>
+
+          <!-- Universal Set Box Config -->
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 0.65rem; margin-top: 0.65rem;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+              <span style="font-size: 0.775rem; font-weight: 700; color: var(--color-text-main);">Universal Set ($U$ / $\Omega$):</span>
+              <label style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.75rem; cursor: pointer;">
+                <input type="checkbox" id="check-universe-enable" checked onchange="onUniverseToggle();"> Show Box
+              </label>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+              <div>
+                <span class="form-label" style="font-size: 0.7rem;">Universe Label:</span>
+                <input type="text" id="input-universe-label" class="input-modern" value="U" style="width: 100%; font-size: 0.8rem; padding: 0.25rem 0.4rem;" oninput="onUniverseLabelChange();">
+              </div>
+              <div>
+                <span class="form-label" style="font-size: 0.7rem;">Label Position:</span>
+                <select id="select-universe-pos" class="select-modern" style="width: 100%; font-size: 0.8rem; padding: 0.25rem 0.4rem;" onchange="onUniversePosChange();">
+                  <option value="top-left" selected>Top-Left</option>
+                  <option value="top-right">Top-Right</option>
+                  <option value="bottom-left">Bottom-Left</option>
+                  <option value="bottom-right">Bottom-Right</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Canvas Viewport & TikZ Generator -->
+      <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+
+        <!-- Canvas Container -->
+        <div class="control-card" style="padding: 0; overflow: hidden; background: #ffffff; position: relative;">
+          <!-- Canvas Top Info Bar -->
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.65rem 1rem; border-bottom: 1px solid var(--color-border); background: #ffffff; flex-wrap: wrap; gap: 0.5rem;">
+            <div style="display: flex; align-items: center; gap: 0.6rem;">
+              <span style="font-size: 0.825rem; font-weight: 700; color: var(--color-text-main);" id="diagram-title-text">
+                Venn Diagram Canvas
+              </span>
+              <span id="hover-region-badge" class="nav-badge" style="font-family: var(--font-mono); font-size: 0.7rem; background: #f1f5f9; color: #475569;">
+                Hover over a region or drag a set
+              </span>
+            </div>
+
+            <!-- Canvas Interaction Tool Switcher -->
+            <div style="display: flex; gap: 0.25rem; background: #f1f5f9; padding: 3px; border-radius: 6px;">
+              <button type="button" id="tool-btn-shade" class="node-type-btn active" style="padding: 0.2rem 0.55rem; font-size: 0.725rem;" onclick="setCanvasTool('shade');" title="Click regions to toggle fill shading">
+                👆 Shade Regions
+              </button>
+              <button type="button" id="tool-btn-move" class="node-type-btn" style="padding: 0.2rem 0.55rem; font-size: 0.725rem;" onclick="setCanvasTool('move');" title="Drag circles directly to change location and drag borders to resize">
+                ✋ Move &amp; Resize Sets
+              </button>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 0.35rem;">
+              <button class="btn-modern btn-modern-secondary" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;" onclick="zoomCanvas(1.15);" title="Zoom In">+</button>
+              <button class="btn-modern btn-modern-secondary" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;" onclick="zoomCanvas(0.85);" title="Zoom Out">-</button>
+              <button class="btn-modern btn-modern-secondary" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;" onclick="fitCanvasView();" title="Reset View">Center</button>
+            </div>
+          </div>
+
+          <!-- Canvas Element -->
+          <div style="width: 100%; height: 440px; position: relative; background: #f8fafc;">
+            <canvas id="vennCanvas" style="width: 100%; height: 100%; display: block;"></canvas>
+          </div>
+
+          <div style="padding: 0.5rem 1rem; background: #f8fafc; border-top: 1px solid var(--color-border); font-size: 0.75rem; color: var(--color-text-muted); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+            <span>💡 <strong>Interactive Placement:</strong> Switch to <strong>Move &amp; Resize Sets</strong> or drag any set's center anchor, border, or label directly on the canvas! Shift-drag to pan. Scroll to zoom.</span>
+            <span style="font-family: var(--font-mono);">High-DPI 2D Engine</span>
+          </div>
+        </div>
+
+        <!-- Live TikZ Code Generation Card -->
+        <div class="control-card" style="background: #ffffff;">
+          <div class="control-card-header">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <span class="control-card-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                Generated TikZ LaTeX Code
+              </span>
+              <div style="display: flex; gap: 0.3rem;">
+                <button type="button" id="btn-tikz-doc" class="node-type-btn active" style="padding: 0.15rem 0.45rem; font-size: 0.7rem;" onclick="setTikZExportMode(false);">
+                  Standalone Document
+                </button>
+                <button type="button" id="btn-tikz-snip" class="node-type-btn" style="padding: 0.15rem 0.45rem; font-size: 0.7rem;" onclick="setTikZExportMode(true);">
+                  tikzpicture Only
+                </button>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 0.35rem;">
+              <button class="btn-modern btn-modern-secondary" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;" onclick="copyTikZCode();">
+                Copy Code
+              </button>
+              <button class="btn-modern btn-modern-primary" style="padding: 0.25rem 0.65rem; font-size: 0.75rem;" onclick="openInOverleaf();">
+                Open in Overleaf &rarr;
+              </button>
+            </div>
+          </div>
+
+          <pre id="tikz-output-code" style="background: #0f172a; color: #f8fafc; font-family: var(--font-mono); font-size: 0.8rem; line-height: 1.45; padding: 1rem; border-radius: 6px; overflow-x: auto; max-height: 240px; margin: 0; white-space: pre; border: 1px solid #1e293b;"></pre>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <script type="text/javascript">
+    let activeVennModel = null;
+    let canvasRenderer = null;
+    let tikzSnippetOnly = false;
+
+    $(document).ready(function () {
+      initStudio();
+    });
+
+    function initStudio() {
+      const canvas = document.getElementById('vennCanvas');
+
+      const syncCanvasSize = () => {
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
+        if (rect.width > 0 && rect.height > 0) {
+          const targetW = Math.round(rect.width * dpr);
+          const targetH = Math.round(rect.height * dpr);
+          if (canvas.width !== targetW || canvas.height !== targetH) {
+            canvas.width = targetW;
+            canvas.height = targetH;
+            if (canvasRenderer) canvasRenderer.render();
+          }
+        }
+      };
+      syncCanvasSize();
+      window.addEventListener('resize', syncCanvasSize);
+
+      // Load initial preset
+      activeVennModel = window.VennPresets['2set-intersect']();
+      canvasRenderer = new window.VennCanvasRenderer(canvas, activeVennModel);
+
+      // Listen for canvas hover & selection events
+      window.onVennRegionHovered = function (regionId, region) {
+        if (region) {
+          $('#hover-region-badge').text(region.name + ' (' + region.texExpression + ')').css({ background: '#eff6ff', color: '#1d4ed8' });
+        } else {
+          $('#hover-region-badge').text('Hover over a region or drag a set').css({ background: '#f1f5f9', color: '#475569' });
+        }
+      };
+
+      window.onVennRegionSelected = function (regionId, region) {
+        renderRegionsList();
+        updateTikZDisplay();
+      };
+
+      window.onVennCircleSelected = function (circleId, circle) {
+        renderCircleTabs();
+        syncSetInspectorValues(circle);
+      };
+
+      window.onVennCircleMoved = function (circle) {
+        syncSetInspectorValues(circle);
+        updateTikZDisplay();
+      };
+
+      updateUI();
+    }
+
+    function setCanvasTool(tool) {
+      if (!canvasRenderer) return;
+      canvasRenderer.setToolMode(tool);
+      $('#tool-btn-shade').toggleClass('active', tool === 'shade');
+      $('#tool-btn-move').toggleClass('active', tool === 'move');
+      if (tool === 'move') {
+        $('#hover-region-badge').text('Move Mode: Drag any set to reposition').css({ background: '#f0fdf4', color: '#15803d' });
+      } else {
+        $('#hover-region-badge').text('Shade Mode: Click regions to shade').css({ background: '#f1f5f9', color: '#475569' });
+      }
+    }
+
+    function updateUI() {
+      // Sync badges & title
+      $('#diagram-title-text').text(activeVennModel.title);
+      $('#venn-mode-badge').text(activeVennModel.mode === '2-set' ? '2-Set Venn' : (activeVennModel.mode === '3-set' ? '3-Set Venn' : 'Euler / Subset'));
+
+      // Mode buttons
+      $('.node-type-btn').removeClass('active');
+      if (activeVennModel.mode === '2-set') $('#mode-btn-2set').addClass('active');
+      else if (activeVennModel.mode === '3-set') $('#mode-btn-3set').addClass('active');
+      else if (activeVennModel.mode === 'euler') $('#mode-btn-euler').addClass('active');
+
+      // Keep tool mode button state in sync
+      const toolMode = canvasRenderer ? canvasRenderer.toolMode : 'shade';
+      $('#tool-btn-shade').toggleClass('active', toolMode === 'shade');
+      $('#tool-btn-move').toggleClass('active', toolMode === 'move');
+
+      if (tikzSnippetOnly) {
+        $('#btn-tikz-snip').addClass('active');
+        $('#btn-tikz-doc').removeClass('active');
+      } else {
+        $('#btn-tikz-doc').addClass('active');
+        $('#btn-tikz-snip').removeClass('active');
+      }
+
+      // Sync Universe config
+      const uChk = document.getElementById('check-universe-enable');
+      if (uChk) uChk.checked = !!activeVennModel.universalSet.enabled;
+      if (typeof $.fn.prop === 'function') $('#check-universe-enable').prop('checked', !!activeVennModel.universalSet.enabled);
+      $('#input-universe-label').val(activeVennModel.universalSet.label);
+      $('#select-universe-pos').val(activeVennModel.universalSet.labelPos || 'top-left');
+
+      renderCircleTabs();
+      syncSetInspectorValues();
+      renderRegionsList();
+      canvasRenderer.render();
+      updateTikZDisplay();
+    }
+
+    function renderCircleTabs() {
+      const $container = $('#circle-tabs-container');
+      $container.empty();
+
+      if (!activeVennModel || !activeVennModel.circles) return;
+
+      const selId = canvasRenderer ? canvasRenderer.selectedCircleId : (activeVennModel.circles[0] && activeVennModel.circles[0].id);
+
+      activeVennModel.circles.forEach((c) => {
+        const isSelected = (c.id === selId);
+        const tab = $(`
+          <button type="button" class="btn-modern ${isSelected ? 'btn-modern-primary' : 'btn-modern-secondary'}" style="padding: 0.2rem 0.6rem; font-size: 0.75rem; display: flex; align-items: center; gap: 0.35rem; ${isSelected ? '' : 'border-color: #cbd5e1;'}" onclick="selectActiveCircle('${c.id}');">
+            <span style="width: 8px; height: 8px; border-radius: 50%; background: ${c.strokeColor || '#2563eb'}; display: inline-block;"></span>
+            <span>Set ${c.label || c.id}</span>
+          </button>
+        `);
+        $container.append(tab);
+      });
+
+      // Show/hide Euler specific actions
+      if (activeVennModel.mode === 'euler') {
+        $('#btn-add-euler-set').show();
+        $('#btn-delete-euler-set').toggle(activeVennModel.circles.length > 1);
+      } else {
+        $('#btn-add-euler-set').hide();
+        $('#btn-delete-euler-set').hide();
+      }
+    }
+
+    function selectActiveCircle(circleId) {
+      if (!canvasRenderer) return;
+      canvasRenderer.selectCircle(circleId);
+      renderCircleTabs();
+      const circle = activeVennModel.getCircle(circleId);
+      if (circle) syncSetInspectorValues(circle);
+    }
+
+    function syncSetInspectorValues(circle) {
+      if (!circle && canvasRenderer) {
+        circle = activeVennModel.getCircle(canvasRenderer.selectedCircleId);
+      }
+      if (!circle && activeVennModel && activeVennModel.circles.length > 0) {
+        circle = activeVennModel.circles[0];
+      }
+      if (!circle) return;
+
+      $('#input-set-label').val(circle.label || circle.id);
+      $('#input-set-color').val(circle.strokeColor || '#2563eb');
+      $('#label-set-color').text(circle.strokeColor || '#2563eb');
+
+      $('#slider-set-x').val(circle.x);
+      $('#num-set-x').val(circle.x);
+      $('#val-set-x').text(circle.x + 'px');
+
+      $('#slider-set-y').val(circle.y);
+      $('#num-set-y').val(circle.y);
+      $('#val-set-y').text(circle.y + 'px');
+
+      $('#slider-set-r').val(circle.r);
+      $('#num-set-r').val(circle.r);
+      $('#val-set-r').text(circle.r + 'px');
+
+      $('#select-set-style').val(circle.strokeStyle || 'solid');
+      $('#select-set-width').val(circle.strokeWidth || 2.5);
+    }
+
+    function getSelectedCircle() {
+      const id = canvasRenderer ? canvasRenderer.selectedCircleId : (activeVennModel.circles[0] && activeVennModel.circles[0].id);
+      return activeVennModel.getCircle(id);
+    }
+
+    function onSetLabelChange(val) {
+      const c = getSelectedCircle();
+      if (!c) return;
+      c.label = val.trim();
+      renderCircleTabs();
+      canvasRenderer.render();
+      updateTikZDisplay();
+    }
+
+    function onSetColorChange(val) {
+      const c = getSelectedCircle();
+      if (!c) return;
+      c.strokeColor = val;
+      $('#label-set-color').text(val);
+      renderCircleTabs();
+      canvasRenderer.render();
+      updateTikZDisplay();
+    }
+
+    function onSetXChange(val) {
+      const c = getSelectedCircle();
+      if (!c) return;
+      const num = parseInt(val, 10);
+      if (isNaN(num)) return;
+      c.x = num;
+      $('#slider-set-x').val(num);
+      $('#num-set-x').val(num);
+      $('#val-set-x').text(num + 'px');
+      activeVennModel.updateAutoLabelPositions();
+      canvasRenderer.render();
+      updateTikZDisplay();
+    }
+
+    function onSetYChange(val) {
+      const c = getSelectedCircle();
+      if (!c) return;
+      const num = parseInt(val, 10);
+      if (isNaN(num)) return;
+      c.y = num;
+      $('#slider-set-y').val(num);
+      $('#num-set-y').val(num);
+      $('#val-set-y').text(num + 'px');
+      activeVennModel.updateAutoLabelPositions();
+      canvasRenderer.render();
+      updateTikZDisplay();
+    }
+
+    function onSetRChange(val) {
+      const c = getSelectedCircle();
+      if (!c) return;
+      const num = parseInt(val, 10);
+      if (isNaN(num)) return;
+      c.r = Math.max(25, Math.min(240, num));
+      $('#slider-set-r').val(c.r);
+      $('#num-set-r').val(c.r);
+      $('#val-set-r').text(c.r + 'px');
+      activeVennModel.updateAutoLabelPositions();
+      canvasRenderer.render();
+      updateTikZDisplay();
+    }
+
+    function onSetStyleChange(val) {
+      const c = getSelectedCircle();
+      if (!c) return;
+      c.strokeStyle = val;
+      canvasRenderer.render();
+      updateTikZDisplay();
+    }
+
+    function onSetWidthChange(val) {
+      const c = getSelectedCircle();
+      if (!c) return;
+      c.strokeWidth = parseFloat(val) || 2.5;
+      canvasRenderer.render();
+      updateTikZDisplay();
+    }
+
+    function centerSelectedSet() {
+      const c = getSelectedCircle();
+      if (!c) return;
+      c.x = 0;
+      c.y = 0;
+      syncSetInspectorValues(c);
+      activeVennModel.updateAutoLabelPositions();
+      canvasRenderer.render();
+      updateTikZDisplay();
+    }
+
+    function resetSelectedSetOffset() {
+      const c = getSelectedCircle();
+      if (!c) return;
+      const idx = activeVennModel.circles.findIndex(item => item.id === c.id);
+      if (idx === 0) {
+        c.x = -70; c.y = 0;
+      } else if (idx === 1) {
+        c.x = 70; c.y = 0;
+      } else if (idx === 2) {
+        c.x = 0; c.y = 80;
+      } else {
+        c.x = (idx - 1) * 60; c.y = 0;
+      }
+      syncSetInspectorValues(c);
+      activeVennModel.updateAutoLabelPositions();
+      canvasRenderer.render();
+      updateTikZDisplay();
+    }
+
+    function addNewEulerSet() {
+      const newC = activeVennModel.addCircle();
+      canvasRenderer.selectCircle(newC.id);
+      renderCircleTabs();
+      syncSetInspectorValues(newC);
+      canvasRenderer.render();
+      updateTikZDisplay();
+    }
+
+    function deleteSelectedEulerSet() {
+      const c = getSelectedCircle();
+      if (!c || activeVennModel.circles.length <= 1) return;
+      const toDeleteId = c.id;
+      activeVennModel.removeCircle(toDeleteId);
+      const remaining = activeVennModel.circles[0];
+      canvasRenderer.selectCircle(remaining.id);
+      renderCircleTabs();
+      syncSetInspectorValues(remaining);
+      canvasRenderer.render();
+      updateTikZDisplay();
+    }
+
+    function renderRegionsList() {
+      const $container = $('#regions-list-container');
+      $container.empty();
+
+      const regions = Object.values(activeVennModel.regions);
+      regions.forEach(r => {
+        const isSelected = (canvasRenderer && canvasRenderer.selectedRegionId === r.id);
+        const row = $(`
+          <div class="region-row ${isSelected ? 'selected' : ''}" id="row-${r.id}">
+            <div style="flex: 1; min-width: 0; margin-right: 0.5rem;">
+              <div style="display: flex; align-items: center; gap: 0.4rem;">
+                <input type="checkbox" id="check-${r.id}" ${r.shaded ? 'checked' : ''} onchange="toggleRegionShading('${r.id}', this.checked);" style="cursor: pointer;">
+                <label for="check-${r.id}" style="font-size: 0.775rem; font-weight: 600; color: var(--color-text-main); cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                  ${r.name}
+                </label>
+              </div>
+              <div style="font-size: 0.68rem; font-family: var(--font-mono); color: #64748b; margin-left: 1.35rem;">
+                $${r.texExpression}$
+              </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 0.4rem;">
+              <input type="color" value="${r.fillColor || '#3b82f6'}" style="width: 24px; height: 24px; border: none; padding: 0; background: none; cursor: pointer;" onchange="onRegionColorChange('${r.id}', this.value);" title="Region Fill Color">
+              <input type="text" class="input-modern" value="${r.label || ''}" placeholder="Label / |#|" style="width: 70px; font-size: 0.75rem; padding: 0.2rem 0.35rem;" oninput="onRegionLabelChange('${r.id}', this.value);">
+            </div>
+          </div>
+        `);
+        $container.append(row);
+      });
+    }
+
+    function toggleRegionShading(regionId, shaded) {
+      if (activeVennModel.regions[regionId]) {
+        activeVennModel.regions[regionId].shaded = shaded;
+        canvasRenderer.selectedRegionId = regionId;
+        canvasRenderer.render();
+        updateTikZDisplay();
+      }
+    }
+
+    function onRegionColorChange(regionId, color) {
+      if (activeVennModel.regions[regionId]) {
+        activeVennModel.regions[regionId].fillColor = color;
+        canvasRenderer.render();
+        updateTikZDisplay();
+      }
+    }
+
+    function onRegionLabelChange(regionId, text) {
+      if (activeVennModel.regions[regionId]) {
+        activeVennModel.regions[regionId].label = text.trim();
+        canvasRenderer.render();
+        updateTikZDisplay();
+      }
+    }
+
+    function applyOperation(op) {
+      activeVennModel.applySetOperation(op);
+      updateUI();
+    }
+
+    function switchModelMode(mode) {
+      activeVennModel = new window.VennDiagramModel(mode);
+      canvasRenderer.model = activeVennModel;
+      canvasRenderer.selectedRegionId = null;
+      canvasRenderer.fitToScreen();
+      updateUI();
+    }
+
+    function loadPreset(key) {
+      if (!window.VennPresets[key]) return;
+      activeVennModel = window.VennPresets[key]();
+      canvasRenderer.model = activeVennModel;
+      canvasRenderer.selectedRegionId = null;
+      canvasRenderer.fitToScreen();
+      updateUI();
+    }
+
+    function updateCircleGeometry() {
+      const r = parseInt($('#slider-circle-radius').val(), 10);
+      const overlap = parseInt($('#slider-circle-overlap').val(), 10);
+
+      $('#val-circle-radius').text(r + 'px');
+      $('#val-circle-overlap').text(overlap + 'px');
+
+      if (activeVennModel.mode === '2-set') {
+        const cA = activeVennModel.circles.find(c => c.id === 'A');
+        const cB = activeVennModel.circles.find(c => c.id === 'B');
+        if (cA && cB) {
+          cA.r = r;
+          cB.r = r;
+          cA.x = -overlap;
+          cB.x = overlap;
+          if (activeVennModel.regions['A_only']) activeVennModel.regions['A_only'].labelPos.x = -overlap - r * 0.35;
+          if (activeVennModel.regions['B_only']) activeVennModel.regions['B_only'].labelPos.x = overlap + r * 0.35;
+        }
+      } else if (activeVennModel.mode === '3-set') {
+        const cA = activeVennModel.circles.find(c => c.id === 'A');
+        const cB = activeVennModel.circles.find(c => c.id === 'B');
+        const cC = activeVennModel.circles.find(c => c.id === 'C');
+        if (cA && cB && cC) {
+          cA.r = r; cB.r = r; cC.r = r;
+          cA.x = -overlap; cB.x = overlap;
+          cC.y = overlap * 0.85 + 25;
+        }
+      }
+
+      activeVennModel.updateAutoLabelPositions();
+      syncSetInspectorValues();
+      canvasRenderer.render();
+      updateTikZDisplay();
+    }
+
+    function onUniverseToggle() {
+      activeVennModel.universalSet.enabled = $('#check-universe-enable').is(':checked');
+      canvasRenderer.render();
+      updateTikZDisplay();
+    }
+
+    function onUniverseLabelChange() {
+      activeVennModel.universalSet.label = $('#input-universe-label').val().trim();
+      canvasRenderer.render();
+      updateTikZDisplay();
+    }
+
+    function onUniversePosChange() {
+      activeVennModel.universalSet.labelPos = $('#select-universe-pos').val();
+      canvasRenderer.render();
+      updateTikZDisplay();
+    }
+
+    function setTikZExportMode(snippet) {
+      tikzSnippetOnly = snippet;
+      updateUI();
+    }
+
+    function updateTikZDisplay() {
+      const code = activeVennModel.generateTikZ({ snippetOnly: tikzSnippetOnly });
+      $('#tikz-output-code').text(code);
+    }
+
+    function zoomCanvas(factor) {
+      canvasRenderer.scale = Math.min(Math.max(0.4, canvasRenderer.scale * factor), 3.0);
+      canvasRenderer.render();
+    }
+
+    function fitCanvasView() {
+      canvasRenderer.fitToScreen();
+    }
+
+    function copyTikZCode() {
+      const code = activeVennModel.generateTikZ({ snippetOnly: tikzSnippetOnly });
+      const copyBtn = document.getElementById('btn-copy-tikz');
+      const showCopiedFeedback = () => {
+        if (copyBtn) {
+          const origText = copyBtn.innerHTML;
+          copyBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Copied!`;
+          copyBtn.style.background = '#059669';
+          setTimeout(() => {
+            copyBtn.innerHTML = origText;
+            copyBtn.style.background = '';
+          }, 2000);
+        }
+      };
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(code).then(showCopiedFeedback).catch(() => {
+          fallbackCopy(code, showCopiedFeedback);
+        });
+      } else {
+        fallbackCopy(code, showCopiedFeedback);
+      }
+    }
+
+    function fallbackCopy(text, cb) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        if (cb) cb();
+      } catch (e) {
+        console.error('Failed to copy', e);
+      }
+      document.body.removeChild(ta);
+    }
+
+    function downloadPNG() {
+      const canvas = document.getElementById('vennCanvas');
+      const link = document.createElement('a');
+      link.download = (activeVennModel.title.toLowerCase().replace(/[^a-z0-9]+/g, '-') || 'venn-diagram') + '.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    function openInOverleaf() {
+      const fullDoc = activeVennModel.generateTikZ({ snippetOnly: false });
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = 'https://www.overleaf.com/docs';
+      form.target = '_blank';
+
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = 'snip';
+      input.value = fullDoc;
+
+      form.appendChild(input);
+      document.body.appendChild(form);
+      form.submit();
+      document.body.removeChild(form);
+    }
+  </script>
+
+</body>
+</html>

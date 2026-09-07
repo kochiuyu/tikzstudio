@@ -12,8 +12,8 @@
 
   <!-- Core Scripts -->
   <script type="text/javascript" src="js/jquery-1.11.0.min.js"></script>
-  <script type="text/javascript" src="js/jquery.min.js"></script>
   <script type="text/javascript" src="js/color-picker-palette.js"></script>
+  <script type="text/javascript" src="js/math-canvas-renderer.js"></script>
   <script type="text/javascript" src="js/modern-ui.js"></script>
   <script type="text/javascript" src="js/export-png.js"></script>
   <script type="text/javascript" src="js/undo-history.js"></script>
@@ -38,6 +38,14 @@
         <li class="nav-item"><a href="Coordinate.html">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
           Coordinate Axis
+        </a></li>
+        <li class="nav-item"><a href="GameTree.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="3"/><circle cx="6" cy="19" r="3"/><circle cx="18" cy="19" r="3"/><line x1="12" y1="8" x2="6" y2="16"/><line x1="12" y1="8" x2="18" y2="16"/></svg>
+          Game Tree
+        </a></li>
+        <li class="nav-item"><a href="Venn.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="12" r="6"/><circle cx="15" cy="12" r="6"/></svg>
+          Venn Diagrams
         </a></li>
         <li class="nav-item active"><a href="Timeline.html">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -365,6 +373,7 @@
       <div class="footer-nav">
         <a href="index.html">Homepage</a>
         <a href="Coordinate.html">Coordinate Axis</a>
+        <a href="GameTree.html">Game Tree</a>
         <a href="Timeline.html">Timeline</a>
         <a href="Help-Timeline.html">Docs &amp; Help</a>
       </div>
@@ -450,7 +459,11 @@
         ctx.font = fontSize + " 'Inter', sans-serif";
         ctx.textAlign = 'center';
         ctx.fillStyle = textHex;
-        ctx.fillText(startyear, 30, 100 + 22);
+        if (window.drawMathText) {
+          window.drawMathText(ctx, startyear, 30, 100 + 22, { fontSize: parseInt(fontSize, 10) || 12, color: textHex, align: 'center', baseline: 'alphabetic' });
+        } else {
+          ctx.fillText(startyear, 30, 100 + 22);
+        }
 
         // End year marker
         ctx.fillStyle = lineHex;
@@ -459,7 +472,11 @@
         ctx.closePath();
         ctx.fill();
         ctx.fillStyle = textHex;
-        ctx.fillText(endyear, 30 + linewidth, 100 + 22);
+        if (window.drawMathText) {
+          window.drawMathText(ctx, endyear, 30 + linewidth, 100 + 22, { fontSize: parseInt(fontSize, 10) || 12, color: textHex, align: 'center', baseline: 'alphabetic' });
+        } else {
+          ctx.fillText(endyear, 30 + linewidth, 100 + 22);
+        }
 
         answer.innerHTML = '';
         answer.innerHTML += '\\draw [->, ' + lineTikz + '] (0pt,0pt)--(' + linewidth + 'pt,0pt);\n';
@@ -500,7 +517,11 @@
         ctx.font = fontSize + " 'Inter', sans-serif";
         ctx.textAlign = 'left';
         ctx.fillStyle = textHex;
-        ctx.fillText(startyear, y_coordinate + 12, 50 + 4);
+        if (window.drawMathText) {
+          window.drawMathText(ctx, startyear, y_coordinate + 12, 50 + 4, { fontSize: parseInt(fontSize, 10) || 12, color: textHex, align: 'left', baseline: 'middle' });
+        } else {
+          ctx.fillText(startyear, y_coordinate + 12, 50 + 4);
+        }
 
         // End year marker
         ctx.fillStyle = lineHex;
@@ -509,7 +530,11 @@
         ctx.closePath();
         ctx.fill();
         ctx.fillStyle = textHex;
-        ctx.fillText(endyear, y_coordinate + 12, 50 + linewidth + 4);
+        if (window.drawMathText) {
+          window.drawMathText(ctx, endyear, y_coordinate + 12, 50 + linewidth + 4, { fontSize: parseInt(fontSize, 10) || 12, color: textHex, align: 'left', baseline: 'middle' });
+        } else {
+          ctx.fillText(endyear, y_coordinate + 12, 50 + linewidth + 4);
+        }
 
         answer.innerHTML = '';
         answer.innerHTML += '\\draw [->, ' + lineTikz + '] (0pt,0pt)--(0pt,-' + linewidth + 'pt);\n';
@@ -555,7 +580,12 @@
       ctx.rotate(-Math.PI / 4);
       ctx.textAlign = 'left';
       ctx.fillStyle = textHex;
-      ctx.fillText(description + " (" + year + ")", 8, -4);
+      var pointLabel = description + " (" + year + ")";
+      if (window.drawMathText) {
+        window.drawMathText(ctx, pointLabel, 8, -4, { fontSize: parseInt(fontSize, 10) || 12, color: textHex, align: 'left', baseline: 'middle' });
+      } else {
+        ctx.fillText(pointLabel, 8, -4);
+      }
       ctx.restore();
 
       if (coordinate == 'x') {
@@ -591,9 +621,17 @@
 
       ctx.fillStyle = textHex;
       ctx.textAlign = 'left';
-      ctx.fillText(year, y_coordinate + 12, yearPoint + 54);
+      if (window.drawMathText) {
+        window.drawMathText(ctx, year, y_coordinate + 12, yearPoint + 54, { fontSize: parseInt(fontSize, 10) || 12, color: textHex, align: 'left', baseline: 'middle' });
+      } else {
+        ctx.fillText(year, y_coordinate + 12, yearPoint + 54);
+      }
       ctx.textAlign = 'right';
-      ctx.fillText(description, y_coordinate - 12, yearPoint + 54);
+      if (window.drawMathText) {
+        window.drawMathText(ctx, description, y_coordinate - 12, yearPoint + 54, { fontSize: parseInt(fontSize, 10) || 12, color: textHex, align: 'right', baseline: 'middle' });
+      } else {
+        ctx.fillText(description, y_coordinate - 12, yearPoint + 54);
+      }
 
       if (coordinate == 'y') {
         answer.innerHTML += '\\node[left' + textTikzOption + '] at(0pt,-' + yearPoint + 'pt) {' + description + '};\n';

@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game Tree & Decision Studio - TikZ Diagram Generator</title>
+  <meta name="description" content="Interactive Extensive-Form Game Tree and Decision Tree Generator for LaTeX TikZ diagrams." />
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/modern.css">
+  <link rel="stylesheet" href="css/latex.css">
+
+  <!-- Core Scripts -->
+  <script type="text/javascript" src="js/jquery-1.11.0.min.js"></script>
+  <script type="text/javascript" src="js/color-picker-palette.js"></script>
+  <script type="text/javascript" src="js/math-canvas-renderer.js"></script>
+  <script type="text/javascript" src="js/modern-ui.js"></script>
+  <script type="text/javascript" src="js/export-png.js"></script>
+  <script type="text/javascript" src="js/undo-history.js"></script>
+  <script type="text/javascript" src="js/game-tree.js"></script>
+
+  <style>
+    .node-type-btn {
+      flex: 1;
+      padding: 0.4rem 0.5rem;
+      font-size: 0.775rem;
+      font-weight: 600;
+      border: 1px solid var(--color-border);
+      background: #f8fafc;
+      color: var(--color-text-muted);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s ease;
+    }
+    .node-type-btn.active {
+      background: var(--color-primary);
+      color: #ffffff;
+      border-color: var(--color-primary);
+      box-shadow: 0 1px 3px rgba(79, 70, 229, 0.3);
+    }
+    .info-set-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 0.45rem 0.65rem;
+      font-size: 0.8rem;
+      margin-bottom: 0.4rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="app-header">
+    <div class="header-container">
+      <a href="index.html" class="brand-logo" id="brand-link">
+        <div class="brand-icon">T</div>
+        <div class="brand-text">
+          <span class="brand-title">TikZ Studio</span>
+          <span class="brand-subtitle">Game &amp; Decision Tree Studio</span>
+        </div>
+      </a>
+      <ul class="nav-links">
+        <li class="nav-item"><a href="index.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Homepage
+        </a></li>
+        <li class="nav-item"><a href="Coordinate.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+          Coordinate Axis
+        </a></li>
+        <li class="nav-item active"><a href="GameTree.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="3"/><circle cx="6" cy="19" r="3"/><circle cx="18" cy="19" r="3"/><line x1="12" y1="8" x2="6" y2="16"/><line x1="12" y1="8" x2="18" y2="16"/></svg>
+          Game Tree
+        </a></li>
+        <li class="nav-item"><a href="Venn.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="12" r="6"/><circle cx="15" cy="12" r="6"/></svg>
+          Venn Diagrams
+        </a></li>
+        <li class="nav-item"><a href="Timeline.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Timeline
+        </a></li>
+        <li class="nav-item"><a href="Help-GameTree.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Docs &amp; Help
+        </a></li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main class="main-wrapper">
+
+    <!-- Action Toolbar -->
+    <div class="toolbar-card">
+      <div class="toolbar-title-group">
+        <h1 class="toolbar-title">Game Tree &amp; Decision Studio</h1>
+        <span class="nav-badge" id="tree-info-badge">Extensive Form Game</span>
+      </div>
+
+      <!-- Quick Preset & Main Actions -->
+      <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+        <span style="font-size: 0.8rem; font-weight: 600; color: var(--color-text-muted);">Model:</span>
+        <select id="preset-select" class="select-modern" onchange="loadPreset(this.value);" style="font-size: 0.8rem; font-weight: 500; padding: 0.3rem 0.6rem; min-width: 200px;">
+          <option value="" disabled>Select Game Model Preset...</option>
+          <option value="market-entry" selected>Market Entry (Subgame Perfect)</option>
+          <option value="spence-signaling">Spence Signaling (Info Sets)</option>
+          <option value="centipede">4-Stage Centipede Game</option>
+          <option value="sequential-dilemma">Sequential Prisoner's Dilemma</option>
+          <option value="ultimatum">Ultimatum Bargaining Game</option>
+          <option value="matching-pennies-imperfect">Matching Pennies (Imperfect Info)</option>
+        </select>
+
+        <div style="height: 20px; width: 1px; background: var(--color-border); margin: 0 0.2rem;"></div>
+
+        <button class="btn-modern btn-modern-secondary" onclick="fitCanvasView();" title="Center and fit tree to canvas">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Fit View
+        </button>
+
+        <button class="btn-modern btn-modern-secondary" onclick="createNewTree();" title="Start with a blank root node">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New Tree
+        </button>
+
+        <button class="btn-modern btn-modern-secondary" onclick="copyTikZCode();" title="Copy TikZ code to clipboard">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy LaTeX
+        </button>
+
+        <button class="btn-modern btn-modern-primary" onclick="openInOverleaf();" title="Open directly in Overleaf with full LaTeX preamble">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Overleaf &rarr;
+        </button>
+      </div>
+    </div>
+
+    <!-- Two-Column Workspace Layout -->
+    <div style="display: grid; grid-template-columns: 360px 1fr; gap: 1.5rem; align-items: start;">
+
+      <!-- Left Column: Settings, Active Node Inspector, Info Sets -->
+      <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+
+        <!-- Card 1: Tree Layout & Geometry -->
+        <div class="control-card" style="background: #ffffff;">
+          <div class="control-card-header">
+            <span class="control-card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+              Tree Layout &amp; Geometry
+            </span>
+          </div>
+
+          <div style="margin-bottom: 0.75rem;">
+            <span class="form-label">Orientation:</span>
+            <div style="display: flex; gap: 0.5rem; margin-top: 0.25rem;">
+              <button type="button" id="btn-orient-vert" class="node-type-btn active" onclick="setOrientation('vertical');">
+                Vertical (Top-to-Bottom)
+              </button>
+              <button type="button" id="btn-orient-horiz" class="node-type-btn" onclick="setOrientation('horizontal');">
+                Horizontal (Left-to-Right)
+              </button>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+            <div>
+              <div style="display: flex; justify-content: space-between;">
+                <span class="form-label">Level Spacing:</span>
+                <span id="val-level-dist" style="font-size: 0.75rem; color: var(--color-text-muted);">90px</span>
+              </div>
+              <input type="range" id="slider-level-dist" min="50" max="160" value="90" class="input-modern" style="width: 100%; padding: 0.2rem 0;" oninput="updateSpacing();">
+            </div>
+            <div>
+              <div style="display: flex; justify-content: space-between;">
+                <span class="form-label">Sibling Spacing:</span>
+                <span id="val-sibling-dist" style="font-size: 0.75rem; color: var(--color-text-muted);">110px</span>
+              </div>
+              <input type="range" id="slider-sibling-dist" min="40" max="180" value="110" class="input-modern" style="width: 100%; padding: 0.2rem 0;" oninput="updateSpacing();">
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: Selected Node & Branch Inspector -->
+        <div class="control-card" style="background: #ffffff; border-top: 3px solid var(--color-primary);">
+          <div class="control-card-header">
+            <span class="control-card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              Node &amp; Branch Inspector
+            </span>
+            <span id="selected-node-badge" class="nav-badge" style="font-family: var(--font-mono); font-size: 0.7rem;">node_1</span>
+          </div>
+
+          <!-- Quick Node Hierarchy Selector -->
+          <div style="margin-bottom: 0.85rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 0.5rem 0.65rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+              <span class="form-label" style="margin-bottom: 0; font-size: 0.725rem;">Active Node / Branch:</span>
+              <span style="font-size: 0.68rem; color: var(--color-text-muted);">or click node/branch in canvas</span>
+            </div>
+            <select id="select-tree-node" class="input-modern" style="width: 100%; font-size: 0.8rem; font-weight: 600; cursor: pointer; background: #ffffff; padding: 0.35rem 0.5rem;" onchange="onSelectNodeDropdown(this.value);">
+            </select>
+          </div>
+
+          <!-- Node Type Switcher -->
+          <div style="margin-bottom: 0.85rem;">
+            <span class="form-label">Node Archetype:</span>
+            <div style="display: flex; gap: 0.35rem; margin-top: 0.25rem;">
+              <button type="button" id="type-btn-decision" class="node-type-btn active" onclick="setNodeType('decision');">
+                Decision ($P_i$)
+              </button>
+              <button type="button" id="type-btn-chance" class="node-type-btn" onclick="setNodeType('chance');">
+                Nature ($\mathcal{N}$)
+              </button>
+              <button type="button" id="type-btn-terminal" class="node-type-btn" onclick="setNodeType('terminal');">
+                Terminal (Payoff)
+              </button>
+            </div>
+          </div>
+
+          <!-- Player / Node Label -->
+          <div id="field-player-group" style="margin-bottom: 0.75rem;">
+            <span class="form-label">Player / Decision Maker:</span>
+            <input type="text" id="input-node-player" class="input-modern" value="P_1" placeholder="e.g. P_1, Firm A, \mathcal{N}" style="width: 100%; margin-top: 0.25rem;" oninput="onNodeFieldChanged();">
+            <div style="font-size: 0.7rem; color: var(--color-text-muted); margin-top: 0.2rem;">Supports math notation: <code style="font-family: monospace;">P_1, \theta, \text{Entrant}</code></div>
+          </div>
+
+          <!-- Payoff (for terminal nodes) -->
+          <div id="field-payoff-group" style="margin-bottom: 0.75rem; display: none;">
+            <span class="form-label">Payoff Vector:</span>
+            <input type="text" id="input-node-payoff" class="input-modern" value="(0, 0)" placeholder="e.g. (3, 1) or (-c, \pi)" style="width: 100%; margin-top: 0.25rem;" oninput="onNodeFieldChanged();">
+            <div style="font-size: 0.7rem; color: var(--color-text-muted); margin-top: 0.2rem;">Formats outcomes: <code style="font-family: monospace;">(u_1, u_2)</code></div>
+          </div>
+
+          <!-- Branch leading to this node -->
+          <div id="field-branch-section" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 0.75rem; margin-bottom: 0.85rem;">
+            <div style="font-size: 0.775rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 0.5rem;">
+              Branch Leading to this Node
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.5rem;">
+              <div>
+                <span class="form-label" style="font-size: 0.72rem;">Action Label:</span>
+                <input type="text" id="input-branch-action" class="input-modern" value="Enter" placeholder="e.g. L, Enter" style="width: 100%; margin-top: 0.2rem; font-size: 0.8rem;" oninput="onNodeFieldChanged();">
+              </div>
+              <div>
+                <span class="form-label" style="font-size: 0.72rem;">Probability:</span>
+                <input type="text" id="input-branch-prob" class="input-modern" value="" placeholder="e.g. p, 0.5" style="width: 100%; margin-top: 0.2rem; font-size: 0.8rem;" oninput="onNodeFieldChanged();">
+              </div>
+            </div>
+
+            <!-- Equilibrium Path Highlight Toggle -->
+            <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; font-weight: 600; color: #dc2626; cursor: pointer; user-select: none;">
+              <input type="checkbox" id="check-equilibrium" onchange="onNodeFieldChanged();">
+              <span>Equilibrium / Subgame Perfect Path</span>
+            </label>
+          </div>
+
+          <!-- Actions on Node -->
+          <div style="display: flex; gap: 0.5rem;">
+            <button type="button" class="btn-modern btn-modern-primary" style="flex: 1; padding: 0.45rem 0.5rem; font-size: 0.8rem;" onclick="addChildBranch();">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              + Add Branch
+            </button>
+            <button type="button" class="btn-modern btn-modern-secondary" style="color: #dc2626; border-color: #fecaca; padding: 0.45rem 0.65rem; font-size: 0.8rem;" onclick="deleteActiveNode();" title="Delete selected node and its subtree">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              Delete
+            </button>
+          </div>
+        </div>
+
+        <!-- Card 3: Information Sets (Imperfect Information) -->
+        <div class="control-card" style="background: #ffffff;">
+          <div class="control-card-header">
+            <span class="control-card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              Information Sets
+            </span>
+          </div>
+
+          <p style="font-size: 0.775rem; color: var(--color-text-muted); line-height: 1.45; margin-bottom: 0.75rem;">
+            Connect decision nodes with dashed curves to indicate imperfect information (the player cannot distinguish which node they are at).
+          </p>
+
+          <div id="info-sets-list" style="margin-bottom: 0.75rem;">
+            <!-- Rendered dynamically -->
+          </div>
+
+          <div style="display: flex; gap: 0.4rem;">
+            <input type="text" id="new-infoset-label" class="input-modern" placeholder="Info set label (e.g. I_1)" style="flex: 1; font-size: 0.8rem;">
+            <button type="button" class="btn-modern btn-modern-secondary" style="font-size: 0.775rem; padding: 0.4rem 0.65rem;" onclick="addInfoSetFromSelection();">
+              + Add Set
+            </button>
+          </div>
+          <div style="font-size: 0.7rem; color: var(--color-text-muted); margin-top: 0.35rem;">
+            Click two or more sibling nodes while holding Shift, or use preset models.
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Interactive Canvas & LaTeX Code Output -->
+      <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+
+        <!-- Canvas Container Card -->
+        <div class="canvas-card" style="padding: 0; overflow: hidden; background: #ffffff;">
+          <div class="canvas-header" style="padding: 0.65rem 1.25rem; border-bottom: 1px solid var(--color-border); display: flex; align-items: center; justify-content: space-between; background: #f8fafc;">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <span style="font-weight: 700; font-size: 0.9rem; color: var(--color-text-main);">Interactive Tree Canvas</span>
+              <span class="nav-badge" style="background: #e0e7ff; color: #4338ca;">Vector MathML</span>
+            </div>
+
+            <!-- Canvas Viewport Controls -->
+            <div style="display: flex; align-items: center; gap: 0.35rem;">
+              <button class="btn-modern btn-modern-secondary" style="padding: 0.25rem 0.55rem; font-size: 0.75rem;" onclick="zoomCanvas(1.15);" title="Zoom In">+</button>
+              <button class="btn-modern btn-modern-secondary" style="padding: 0.25rem 0.55rem; font-size: 0.75rem;" onclick="zoomCanvas(0.85);" title="Zoom Out">&minus;</button>
+              <button class="btn-modern btn-modern-secondary" style="padding: 0.25rem 0.55rem; font-size: 0.75rem;" onclick="fitCanvasView();" title="Reset View">1:1</button>
+              <div style="width: 1px; height: 16px; background: #cbd5e1; margin: 0 0.2rem;"></div>
+              <button class="btn-modern btn-modern-secondary" style="padding: 0.25rem 0.55rem; font-size: 0.75rem;" onclick="downloadPNG();" title="Download High-Res PNG">PNG</button>
+              <button class="btn-modern btn-modern-secondary" style="padding: 0.25rem 0.55rem; font-size: 0.75rem;" onclick="downloadSVG();" title="Download Vector SVG">SVG</button>
+            </div>
+          </div>
+
+          <!-- Canvas Element -->
+          <div style="position: relative; width: 100%; height: 500px; background: #f8fafc; overflow: hidden;">
+            <canvas id="treeCanvas" width="900" height="500" style="display: block; width: 100%; height: 100%; cursor: default;"></canvas>
+            <div style="position: absolute; bottom: 8px; left: 12px; font-size: 0.725rem; color: #64748b; background: rgba(255,255,255,0.85); padding: 2px 8px; border-radius: 4px; pointer-events: none;">
+              Tip: Click node to inspect &bull; Drag background to pan &bull; Mouse wheel to zoom
+            </div>
+          </div>
+        </div>
+
+        <!-- LaTeX TikZ Output Box -->
+        <div class="latex-editor-container" style="background: #ffffff; border: 1px solid var(--color-border); border-radius: var(--radius-lg); overflow: hidden;">
+          <div class="latex-editor-header" style="background: #f8fafc; padding: 0.65rem 1.25rem; border-bottom: 1px solid var(--color-border); display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <span style="font-weight: 700; font-size: 0.9rem; color: var(--color-text-main);">Compilable LaTeX TikZ Code</span>
+              <span class="nav-badge" style="font-family: var(--font-mono); font-size: 0.7rem;">\begin{tikzpicture}</span>
+            </div>
+
+            <div style="display: flex; gap: 0.4rem;">
+              <button class="btn-modern btn-modern-secondary" style="font-size: 0.775rem; padding: 0.3rem 0.65rem;" onclick="copyTikZCode();">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                Copy
+              </button>
+              <button class="btn-modern btn-modern-secondary" style="font-size: 0.775rem; padding: 0.3rem 0.65rem;" onclick="downloadTexFile();">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Download .tex
+              </button>
+              <button class="btn-modern btn-modern-primary" style="font-size: 0.775rem; padding: 0.3rem 0.65rem;" onclick="openInOverleaf();">
+                Open in Overleaf &rarr;
+              </button>
+            </div>
+          </div>
+
+          <div style="position: relative; max-height: 280px; overflow-y: auto; background: #0f172a; padding: 1rem;">
+            <pre id="tikz-output-code" style="margin: 0; font-family: 'JetBrains Mono', 'Fira Code', var(--font-mono); font-size: 0.8rem; color: #f8fafc; line-height: 1.5; white-space: pre-wrap;"></pre>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Modern Footer -->
+  <footer class="app-footer">
+    <div class="footer-inner">
+      <div>
+        <strong>TikZ Diagram Generator</strong> &mdash; Interactive visual tools for LaTeX figures.
+      </div>
+      <div class="footer-nav">
+        <a href="Coordinate.html">Coordinate Axis</a>
+        <a href="GameTree.html">Game Tree Studio</a>
+        <a href="Timeline.html">Timeline</a>
+        <a href="Help-GameTree.html">Game Tree Docs</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Hidden Form for Direct Overleaf Launch -->
+  <form id="overleaf-form" action="https://www.overleaf.com/docs" method="POST" target="_blank" style="display:none;">
+    <input type="hidden" name="snip" id="overleaf-snip-input">
+  </form>
+
+  <script>
+    let activeTreeModel = null;
+    let canvasRenderer = null;
+    let activeSelectedNode = null;
+
+    $(document).ready(function () {
+      initStudio();
+    });
+
+    function initStudio() {
+      const canvas = document.getElementById('treeCanvas');
+      
+      const syncCanvasSize = () => {
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
+        if (rect.width > 0 && rect.height > 0) {
+          const targetW = Math.round(rect.width * dpr);
+          const targetH = Math.round(rect.height * dpr);
+          if (canvas.width !== targetW || canvas.height !== targetH) {
+            canvas.width = targetW;
+            canvas.height = targetH;
+            if (canvasRenderer) canvasRenderer.render();
+          }
+        }
+      };
+      syncCanvasSize();
+      window.addEventListener('resize', syncCanvasSize);
+
+      // Load initial preset
+      activeTreeModel = window.GameTreePresets['market-entry']();
+      canvasRenderer = new window.GameTreeCanvasRenderer(canvas, activeTreeModel);
+
+      // Listen for selection changes from canvas
+      window.onGameTreeNodeSelected = function (node) {
+        selectNode(node);
+      };
+
+      // Select root initially
+      if (activeTreeModel.rootId && activeTreeModel.nodes[activeTreeModel.rootId]) {
+        selectNode(activeTreeModel.nodes[activeTreeModel.rootId]);
+      }
+
+      updateUI();
+    }
+
+    function updateNodeDropdown() {
+      const $select = $('#select-tree-node');
+      if (!$select.length || !activeTreeModel || !activeTreeModel.nodes) return;
+
+      const currentVal = activeSelectedNode ? activeSelectedNode.id : '';
+      $select.empty();
+
+      // Collect nodes in breadth-first or depth-sorted order
+      const nodes = Object.values(activeTreeModel.nodes);
+      nodes.sort((a, b) => {
+        if (a.id === activeTreeModel.rootId) return -1;
+        if (b.id === activeTreeModel.rootId) return 1;
+        if ((a.depth || 0) !== (b.depth || 0)) return (a.depth || 0) - (b.depth || 0);
+        return (a.treeX || 0) - (b.treeX || 0);
+      });
+
+      nodes.forEach(n => {
+        let label = n.id;
+        const indent = '　'.repeat(Math.min(3, n.depth || 0));
+        const prefix = (n.id === activeTreeModel.rootId) ? '● [Root] ' : (indent + '↳ ');
+
+        if (n.type === 'decision') {
+          const act = n.action ? `"${n.action}" ➔ ` : '';
+          label = `${prefix}${act}Player ${n.player || 'P'} (${n.id})`;
+        } else if (n.type === 'chance') {
+          const act = n.action ? `"${n.action}" ➔ ` : '';
+          label = `${prefix}${act}Nature ${n.player || 'N'} (${n.id})`;
+        } else if (n.type === 'terminal') {
+          const act = n.action ? `"${n.action}" ➔ ` : '';
+          label = `${prefix}${act}Payoff ${n.payoff || '(0, 0)'} (${n.id})`;
+        }
+
+        const $opt = $('<option></option>').val(n.id).text(label);
+        $select.append($opt);
+      });
+
+      if (currentVal) {
+        $select.val(currentVal);
+      }
+    }
+
+    function onSelectNodeDropdown(nodeId) {
+      if (!nodeId || !activeTreeModel || !activeTreeModel.nodes[nodeId]) return;
+      selectNode(activeTreeModel.nodes[nodeId]);
+    }
+
+    function selectNode(node) {
+      if (!node) return;
+      activeSelectedNode = node;
+      canvasRenderer.selectedNodeId = node.id;
+
+      $('#selected-node-badge').text(node.id);
+      $('#select-tree-node').val(node.id);
+      $('#input-node-player').val(node.player || '');
+      $('#input-node-payoff').val(node.payoff || '');
+      $('#input-branch-action').val(node.action || '');
+      $('#input-branch-prob').val(node.prob || '');
+      const eqEl = document.getElementById('check-equilibrium');
+      if (eqEl) eqEl.checked = !!node.isEquilibrium;
+      if (typeof $.fn.prop === 'function') $('#check-equilibrium').prop('checked', !!node.isEquilibrium);
+
+      // Update Node Archetype button states
+      $('.node-type-btn').removeClass('active');
+      if (node.type === 'decision') {
+        $('#type-btn-decision').addClass('active');
+        $('#field-player-group').show();
+        $('#field-payoff-group').hide();
+      } else if (node.type === 'chance') {
+        $('#type-btn-chance').addClass('active');
+        $('#field-player-group').show();
+        $('#field-payoff-group').hide();
+      } else if (node.type === 'terminal') {
+        $('#type-btn-terminal').addClass('active');
+        $('#field-player-group').hide();
+        $('#field-payoff-group').show();
+      }
+
+      // Root doesn't have a parent branch
+      if (node.id === activeTreeModel.rootId) {
+        $('#field-branch-section').hide();
+      } else {
+        $('#field-branch-section').show();
+      }
+
+      canvasRenderer.render();
+    }
+
+    function setNodeType(type) {
+      if (!activeSelectedNode) return;
+      activeSelectedNode.type = type;
+      if (type === 'terminal') {
+        if (!activeSelectedNode.payoff) activeSelectedNode.payoff = '(0, 0)';
+      }
+      selectNode(activeSelectedNode);
+      updateUI();
+    }
+
+    function onNodeFieldChanged() {
+      if (!activeSelectedNode) return;
+      activeSelectedNode.player = $('#input-node-player').val().trim();
+      activeSelectedNode.payoff = $('#input-node-payoff').val().trim();
+      activeSelectedNode.action = $('#input-branch-action').val().trim();
+      activeSelectedNode.prob = $('#input-branch-prob').val().trim();
+      activeSelectedNode.isEquilibrium = $('#check-equilibrium').is(':checked');
+
+      updateUI();
+    }
+
+    function addChildBranch() {
+      if (!activeSelectedNode) return;
+      const child = activeTreeModel.addBranch(activeSelectedNode.id, {
+        type: 'terminal',
+        action: activeSelectedNode.children.length === 0 ? 'L' : (activeSelectedNode.children.length === 1 ? 'R' : 'A_' + (activeSelectedNode.children.length + 1)),
+        payoff: '(0, 0)'
+      });
+      activeTreeModel.computeLayout();
+      selectNode(child);
+      updateUI();
+    }
+
+    function deleteActiveNode() {
+      if (!activeSelectedNode) return;
+      if (activeSelectedNode.id === activeTreeModel.rootId) {
+        alert("Cannot delete the root node. You can modify its properties or click 'New Tree'.");
+        return;
+      }
+      const parentId = activeSelectedNode.parentId;
+      activeTreeModel.deleteNode(activeSelectedNode.id);
+      activeTreeModel.computeLayout();
+
+      if (parentId && activeTreeModel.nodes[parentId]) {
+        selectNode(activeTreeModel.nodes[parentId]);
+      } else {
+        selectNode(activeTreeModel.nodes[activeTreeModel.rootId]);
+      }
+      updateUI();
+    }
+
+    function setOrientation(orient) {
+      activeTreeModel.orientation = orient;
+      if (orient === 'vertical') {
+        $('#btn-orient-vert').addClass('active');
+        $('#btn-orient-horiz').removeClass('active');
+      } else {
+        $('#btn-orient-vert').removeClass('active');
+        $('#btn-orient-horiz').addClass('active');
+      }
+      activeTreeModel.computeLayout();
+      canvasRenderer.fitToScreen();
+      updateUI();
+    }
+
+    function updateSpacing() {
+      const lDist = parseInt($('#slider-level-dist').val(), 10);
+      const sDist = parseInt($('#slider-sibling-dist').val(), 10);
+      activeTreeModel.levelDistance = lDist;
+      activeTreeModel.siblingDistance = sDist;
+      $('#val-level-dist').text(lDist + 'px');
+      $('#val-sibling-dist').text(sDist + 'px');
+
+      activeTreeModel.computeLayout();
+      canvasRenderer.render();
+      updateTikZDisplay();
+    }
+
+    function loadPreset(key) {
+      if (!window.GameTreePresets[key]) return;
+      activeTreeModel = window.GameTreePresets[key]();
+      canvasRenderer.model = activeTreeModel;
+
+      $('#slider-level-dist').val(activeTreeModel.levelDistance);
+      $('#slider-sibling-dist').val(activeTreeModel.siblingDistance);
+      $('#val-level-dist').text(activeTreeModel.levelDistance + 'px');
+      $('#val-sibling-dist').text(activeTreeModel.siblingDistance + 'px');
+
+      if (activeTreeModel.orientation === 'vertical') {
+        $('#btn-orient-vert').addClass('active');
+        $('#btn-orient-horiz').removeClass('active');
+      } else {
+        $('#btn-orient-vert').removeClass('active');
+        $('#btn-orient-horiz').addClass('active');
+      }
+
+      if (activeTreeModel.rootId && activeTreeModel.nodes[activeTreeModel.rootId]) {
+        selectNode(activeTreeModel.nodes[activeTreeModel.rootId]);
+      }
+
+      canvasRenderer.fitToScreen();
+      updateUI();
+    }
+
+    function createNewTree() {
+      const tree = new window.GameTreeModel();
+      tree.title = 'New Game Tree';
+      const root = tree.createNode({ type: 'decision', player: 'P_1' });
+      tree.rootId = root.id;
+
+      tree.addBranch(root.id, { action: 'L', type: 'terminal', payoff: '(1, 0)' });
+      tree.addBranch(root.id, { action: 'R', type: 'terminal', payoff: '(0, 1)' });
+
+      activeTreeModel = tree;
+      canvasRenderer.model = activeTreeModel;
+      selectNode(root);
+      canvasRenderer.fitToScreen();
+      updateUI();
+    }
+
+    function addInfoSetFromSelection() {
+      const label = $('#new-infoset-label').val().trim() || 'I_1';
+      // Find nodes at same depth
+      if (!activeSelectedNode) return;
+      const depth = activeSelectedNode.depth;
+      const siblings = Object.values(activeTreeModel.nodes).filter(n => n.depth === depth && n.type === 'decision' && n.id !== activeSelectedNode.id);
+
+      if (siblings.length === 0) {
+        alert("To create an information set, there must be at least two decision nodes at the same tree level.");
+        return;
+      }
+
+      activeTreeModel.addInfoSet([activeSelectedNode.id, siblings[0].id], label);
+      $('#new-infoset-label').val('');
+      updateUI();
+    }
+
+    function removeInfoSet(id) {
+      activeTreeModel.removeInfoSet(id);
+      updateUI();
+    }
+
+    function renderInfoSetsUI() {
+      const $list = $('#info-sets-list');
+      $list.empty();
+
+      if (!activeTreeModel.infoSets || activeTreeModel.infoSets.length === 0) {
+        $list.html('<div style="font-size: 0.75rem; color: #94a3b8; font-style: italic;">No active information sets</div>');
+        return;
+      }
+
+      activeTreeModel.infoSets.forEach(is => {
+        const item = $(`
+          <div class="info-set-item">
+            <div>
+              <strong>${is.label || 'Set'}</strong>: <span style="color: #64748b;">${is.nodeIds.join(', ')}</span>
+            </div>
+            <button class="btn-modern btn-modern-secondary" style="color: #dc2626; padding: 0.15rem 0.4rem; font-size: 0.7rem;" onclick="removeInfoSet('${is.id}');">
+              &times;
+            </button>
+          </div>
+        `);
+        $list.append(item);
+      });
+    }
+
+    function updateTikZDisplay() {
+      const code = activeTreeModel.generateTikZ();
+      $('#tikz-output-code').text(code);
+    }
+
+    function updateUI() {
+      activeTreeModel.computeLayout();
+      canvasRenderer.render();
+      updateTikZDisplay();
+      renderInfoSetsUI();
+      updateNodeDropdown();
+    }
+
+    function zoomCanvas(factor) {
+      canvasRenderer.scale = Math.min(Math.max(0.3, canvasRenderer.scale * factor), 3.0);
+      canvasRenderer.render();
+    }
+
+    function fitCanvasView() {
+      canvasRenderer.fitToScreen();
+    }
+
+    function copyTikZCode() {
+      const code = activeTreeModel.generateTikZ();
+      navigator.clipboard.writeText(code).then(() => {
+        alert("TikZ LaTeX code successfully copied to clipboard!");
+      }).catch(err => {
+        const ta = document.createElement('textarea');
+        ta.value = code;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        alert("TikZ LaTeX code copied to clipboard!");
+      });
+    }
+
+    function getStandaloneTex() {
+      const tikzCode = activeTreeModel.generateTikZ();
+      return `% Game Tree Diagram generated by TikZ Studio
+\\documentclass[tikz,border=10pt]{standalone}
+\\usepackage{amsmath,amssymb}
+\\usepackage{tikz}
+\\usetikzlibrary{calc,positioning}
+
+\\begin{document}
+
+${tikzCode}
+
+\\end{document}
+`;
+    }
+
+    function downloadTexFile() {
+      const tex = getStandaloneTex();
+      const blob = new Blob([tex], { type: 'text/plain;charset=utf-8' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'game-tree.tex';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    function openInOverleaf() {
+      const tex = getStandaloneTex();
+      $('#overleaf-snip-input').val(tex);
+      $('#overleaf-form').submit();
+    }
+
+    function downloadPNG() {
+      const canvas = document.getElementById('treeCanvas');
+      const a = document.createElement('a');
+      a.href = canvas.toDataURL('image/png');
+      a.download = 'game-tree.png';
+      a.click();
+    }
+
+    function downloadSVG() {
+      const svg = canvasRenderer.exportSVG();
+      const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'game-tree.svg';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+  </script>
+
+</body>
+</html>

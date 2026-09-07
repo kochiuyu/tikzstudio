@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Venn &amp; Euler Diagrams Guide - TikZ Studio</title>
+  <meta name="description" content="Step-by-step guide for designing 2-set and 3-set Venn diagrams, set operations, probabilities, and compiling LaTeX TikZ code." />
+
+  <link rel="stylesheet" href="css/modern.css">
+  <link rel="stylesheet" href="css/scroll.css">
+
+  <script type="text/javascript" src="js/jquery-1.11.0.min.js"></script>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="app-header">
+    <div class="header-container">
+      <a href="index.html" class="brand-logo" id="brand-link">
+        <div class="brand-icon">T</div>
+        <div class="brand-text">
+          <span class="brand-title">TikZ Studio</span>
+          <span class="brand-subtitle">Documentation &amp; Guide</span>
+        </div>
+      </a>
+      <ul class="nav-links">
+        <li class="nav-item"><a href="index.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Homepage
+        </a></li>
+        <li class="nav-item"><a href="Coordinate.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+          Coordinate Axis
+        </a></li>
+        <li class="nav-item"><a href="GameTree.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="3"/><circle cx="6" cy="19" r="3"/><circle cx="18" cy="19" r="3"/><line x1="12" y1="8" x2="6" y2="16"/><line x1="12" y1="8" x2="18" y2="16"/></svg>
+          Game Tree
+        </a></li>
+        <li class="nav-item"><a href="Venn.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="12" r="6"/><circle cx="15" cy="12" r="6"/></svg>
+          Venn Diagrams
+        </a></li>
+        <li class="nav-item"><a href="Timeline.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Timeline
+        </a></li>
+        <li class="nav-item active"><a href="Help-Venn.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Docs &amp; Help
+        </a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main class="main-wrapper">
+
+    <!-- Header Banner -->
+    <div style="text-align: center; max-width: 800px; margin: 1.5rem auto 2.5rem;">
+      <span class="nav-badge" style="margin-bottom: 0.75rem;">Venn Studio User Guide</span>
+      <h1 style="font-size: 2rem; font-weight: 800; color: var(--color-text-main); margin-bottom: 0.5rem; letter-spacing: -0.02em;">
+        Venn &amp; Euler Diagrams Guide
+      </h1>
+      <p style="color: var(--color-text-muted); font-size: 1rem; line-height: 1.6;">
+        Master set theory notation, boolean algebra regions, probability unions, and compilable LaTeX TikZ code generation.
+      </p>
+    </div>
+
+    <!-- Guide Grid -->
+    <div style="display: flex; flex-direction: column; gap: 1.5rem; max-width: 900px; margin: 0 auto 3rem;">
+
+      <!-- Section 1: Set Operations & Atomic Partitions -->
+      <div class="control-card" style="background: #ffffff; padding: 1.75rem;">
+        <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 0.75rem;">
+          1. Fundamental Set Operations
+        </h2>
+        <p style="font-size: 0.9rem; color: var(--color-text-muted); line-height: 1.55; margin-bottom: 1rem;">
+          In a 2-set or 3-set Venn diagram, the plane is partitioned into mutually disjoint atomic regions. Any mathematical event or expression corresponds to a union of these atoms:
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem;">
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+            <strong style="color: #2563eb; display: block; margin-bottom: 0.35rem;">Intersection ($A \cap B$)</strong>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45;">
+              Elements belonging to both set $A$ and set $B$. Represents logical <code>AND</code> and joint probability $P(A \cap B)$.
+            </p>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+            <strong style="color: #dc2626; display: block; margin-bottom: 0.35rem;">Union ($A \cup B$)</strong>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45;">
+              Elements belonging to $A$, $B$, or both. Cardinality satisfies $|A \cup B| = |A| + |B| - |A \cap B|$.
+            </p>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+            <strong style="color: #059669; display: block; margin-bottom: 0.35rem;">Relative Difference ($A \setminus B$)</strong>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45;">
+              Elements belonging to $A$ but NOT in $B$. Equivalent to $A \cap B^c$.
+            </p>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+            <strong style="color: #7c3aed; display: block; margin-bottom: 0.35rem;">Symmetric Difference ($A \Delta B$)</strong>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45;">
+              Elements in either $A$ or $B$, but not both: $(A \setminus B) \cup (B \setminus A)$. Corresponds to logical <code>XOR</code>.
+            </p>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+            <strong style="color: #475569; display: block; margin-bottom: 0.35rem;">Complement ($(A \cup B)^c$)</strong>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45;">
+              Elements inside the universal set $U$ (or sample space $\Omega$) outside both circles. By De Morgan's Laws: $(A \cup B)^c = A^c \cap B^c$.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Interactive Shading, Locations & Cardinalities -->
+      <div class="control-card" style="background: #ffffff; padding: 1.75rem;">
+        <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 0.75rem;">
+          2. Interactive Placement, Locations &amp; Cardinalities
+        </h2>
+        <ul style="font-size: 0.875rem; color: var(--color-text-main); line-height: 1.6; margin-left: 1.5rem; margin-bottom: 1rem;">
+          <li><strong>Drag &amp; Reposition Circles:</strong> Switch to the <strong>✋ Move &amp; Resize Sets</strong> tool on the canvas toolbar or drag any circle's center anchor directly on the canvas to freely relocate sets anywhere.</li>
+          <li><strong>Interactive Resizing:</strong> Drag the border handle of any selected circle to resize its radius dynamically on screen, or type exact dimensions into the inspector.</li>
+          <li><strong>Exact Coordinate Inspector:</strong> Use the <strong>Set Locations &amp; Circle Inspector</strong> to fine-tune exact $(X, Y)$ coordinates, radii, stroke styles, and border colors per set.</li>
+          <li><strong>Reposition Labels:</strong> Drag a set's name label to any custom offset angle or distance relative to the circle.</li>
+          <li><strong>Click Any Region:</strong> In <strong>👆 Shade Regions</strong> mode, click any region (e.g. $A \cap B$) to instantly toggle its shading on or off.</li>
+          <li><strong>Arbitrary Euler Subsets:</strong> In Euler mode, freely move subsets inside or outside one another, or click <strong>+ Add Set</strong> to introduce additional custom circles.</li>
+        </ul>
+      </div>
+
+      <!-- Section 3: TikZ Code Implementation -->
+      <div class="control-card" style="background: #ffffff; padding: 1.75rem;">
+        <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 0.75rem;">
+          3. How TikZ Shading Works
+        </h2>
+        <p style="font-size: 0.9rem; color: var(--color-text-muted); line-height: 1.55; margin-bottom: 0.75rem;">
+          The generator uses TikZ's powerful <code style="font-family: monospace;">\begin{scope} ... \clip ... \end{scope}</code> architecture. This ensures clean, portable compilation without requiring external PostScript packages or special engine flags:
+        </p>
+        <pre style="background: #0f172a; color: #f8fafc; padding: 1rem; border-radius: 6px; font-family: monospace; font-size: 0.825rem; overflow-x: auto; line-height: 1.5;">
+% Shading the intersection A \cap B in pure TikZ:
+\begin{scope}
+  \clip (-1.75, 0) circle (2.75cm); % Clip to Circle A
+  \fill[purple!50, opacity=0.55] (1.75, 0) circle (2.75cm); % Fill Circle B inside clip
+\end{scope}
+
+% Draw outlines cleanly over the fills:
+\draw[draw=blue!80!black, line width=2.5pt] (-1.75, 0) circle (2.75cm);
+\draw[draw=red!80!black, line width=2.5pt] (1.75, 0) circle (2.75cm);
+        </pre>
+      </div>
+
+      <!-- Section 4: Exporting to Overleaf -->
+      <div class="control-card" style="background: #ffffff; padding: 1.75rem;">
+        <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 0.75rem;">
+          4. Exporting to Overleaf &amp; LaTeX Documents
+        </h2>
+        <p style="font-size: 0.9rem; color: var(--color-text-muted); line-height: 1.55; margin-bottom: 0.75rem;">
+          You can copy the code snippet directly into an existing document's <code style="font-family: monospace;">\begin{figure}</code> environment, or click <strong>Overleaf &rarr;</strong> in the toolbar to instantly generate and compile a full standalone document with all required preambles.
+        </p>
+      </div>
+
+    </div>
+
+  </main>
+
+</body>
+</html>

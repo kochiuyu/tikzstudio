@@ -1,6 +1,6 @@
 {
   "name": "TikZ Diagram Generator",
-  "description": "A web-based tool for sketching 2D coordinate graphs and timelines to generate TikZ/LaTeX diagrams.",
+  "description": "A web-based tool for sketching 2D coordinate graphs, extensive-form game trees, Venn & Euler diagrams, and timelines to generate TikZ/LaTeX diagrams.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

@@ -147,7 +147,11 @@ function DrawGraph(isEample, customCanvas, scaleMultiplier) {
         ctx.scale(1, -1);
         ctx.fillStyle = axHex;
         ctx.font = "20px Arial";
-        ctx.fillText(myxname, 0, 0);
+        if (window.drawMathText) {
+            window.drawMathText(ctx, myxname, 0, 0, { fontSize: 20, color: axHex, align: "left", baseline: "middle" });
+        } else {
+            ctx.fillText(myxname, 0, 0);
+        }
         ctx.restore();
 
         // y-axis name
@@ -156,7 +160,11 @@ function DrawGraph(isEample, customCanvas, scaleMultiplier) {
         ctx.scale(1, -1);
         ctx.fillStyle = axHex;
         ctx.font = "20px Arial";
-        ctx.fillText(myyname, 0, 0);
+        if (window.drawMathText) {
+            window.drawMathText(ctx, myyname, 0, 0, { fontSize: 20, color: axHex, align: "right", baseline: "middle" });
+        } else {
+            ctx.fillText(myyname, 0, 0);
+        }
         ctx.restore();
 
         // Origin label
@@ -168,7 +176,11 @@ function DrawGraph(isEample, customCanvas, scaleMultiplier) {
             ctx.scale(1, -1);
             ctx.fillStyle = axHex;
             ctx.font = "20px Arial";
-            ctx.fillText(origVal, 0, 0);
+            if (window.drawMathText) {
+                window.drawMathText(ctx, origVal, 0, 0, { fontSize: 18, color: axHex, align: "center", baseline: "middle" });
+            } else {
+                ctx.fillText(origVal, 0, 0);
+            }
             ctx.restore();
         }
 
@@ -188,7 +200,11 @@ function DrawGraph(isEample, customCanvas, scaleMultiplier) {
                 ctx.scale(1, -1);
                 ctx.font = "20px Arial";
                 ctx.fillStyle = "black";
-                ctx.fillText(lx1n.value, 0, 0);
+                if (window.drawMathText) {
+                    window.drawMathText(ctx, lx1n.value, 0, 0, { fontSize: 18, color: "black", align: "center", baseline: "middle" });
+                } else {
+                    ctx.fillText(lx1n.value, 0, 0);
+                }
             }
             ctx.restore();
         }
@@ -209,7 +225,11 @@ function DrawGraph(isEample, customCanvas, scaleMultiplier) {
                 ctx.scale(1, -1);
                 ctx.font = "20px Arial";
                 ctx.fillStyle = "black";
-                ctx.fillText(lx2n.value, 0, 0);
+                if (window.drawMathText) {
+                    window.drawMathText(ctx, lx2n.value, 0, 0, { fontSize: 18, color: "black", align: "center", baseline: "middle" });
+                } else {
+                    ctx.fillText(lx2n.value, 0, 0);
+                }
             }
             ctx.restore();
         }
@@ -230,7 +250,11 @@ function DrawGraph(isEample, customCanvas, scaleMultiplier) {
                 ctx.scale(1, -1);
                 ctx.font = "20px Arial";
                 ctx.fillStyle = "black";
-                ctx.fillText(ly1n.value, 0, 0);
+                if (window.drawMathText) {
+                    window.drawMathText(ctx, ly1n.value, 0, 0, { fontSize: 18, color: "black", align: "right", baseline: "middle" });
+                } else {
+                    ctx.fillText(ly1n.value, 0, 0);
+                }
             }
             ctx.restore();
         }
@@ -251,7 +275,11 @@ function DrawGraph(isEample, customCanvas, scaleMultiplier) {
                 ctx.scale(1, -1);
                 ctx.font = "20px Arial";
                 ctx.fillStyle = "black";
-                ctx.fillText(ly2n.value, 0, 0);
+                if (window.drawMathText) {
+                    window.drawMathText(ctx, ly2n.value, 0, 0, { fontSize: 18, color: "black", align: "right", baseline: "middle" });
+                } else {
+                    ctx.fillText(ly2n.value, 0, 0);
+                }
             }
             ctx.restore();
         }
@@ -450,7 +478,11 @@ function DrawGraph(isEample, customCanvas, scaleMultiplier) {
 
             ctx.textAlign = align;
             ctx.textBaseline = baseline;
-            ctx.fillText(pName, textX, textY);
+            if (window.drawMathText) {
+                window.drawMathText(ctx, pName, textX, textY, { fontSize: 13, color: pColHex, align: align, baseline: baseline });
+            } else {
+                ctx.fillText(pName, textX, textY);
+            }
         }
         ctx.restore();
 

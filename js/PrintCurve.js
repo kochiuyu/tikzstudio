@@ -1,4 +1,4 @@
-﻿//function to draw curve on browser
+//function to draw curve on browser
 
 function PrintCurve(ctx, e, f, g, h, i, j, k, l, name, dash, guide, curveColor) {
 
@@ -56,8 +56,14 @@ function PrintCurve(ctx, e, f, g, h, i, j, k, l, name, dash, guide, curveColor) 
 
     ctx.scale(1, -1);
 
-    ctx.fillText(name.value, 0, 0);
-
+    var cCol = (curveColor && curveColor.value) ? curveColor.value : "#000000";
+    ctx.fillStyle = cCol;
+    ctx.font = "14px Arial, sans-serif";
+    if (window.drawMathText) {
+        window.drawMathText(ctx, name.value, 0, 0, { fontSize: 14, color: cCol, align: "left", baseline: "middle" });
+    } else {
+        ctx.fillText(name.value, 0, 0);
+    }
 
     ctx.restore();
 

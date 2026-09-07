@@ -1981,7 +1981,11 @@
 
       if (labelText) {
         ctx.fillStyle = tcol;
-        ctx.fillText(labelText, p.screenX + ox, p.screenY + oy);
+        if (window.drawMathText) {
+          window.drawMathText(ctx, labelText, p.screenX + ox, p.screenY + oy, { fontSize: 13, color: tcol, align: align, baseline: baseline });
+        } else {
+          ctx.fillText(labelText, p.screenX + ox, p.screenY + oy);
+        }
       } else {
         ctx.fillStyle = "rgba(100, 116, 139, 0.8)";
         ctx.font = "italic 11px system-ui, sans-serif";

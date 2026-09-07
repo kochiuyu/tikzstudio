@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game Tree &amp; Decision Studio Guide - TikZ Studio</title>
+  <meta name="description" content="Step-by-step guide for designing extensive form game trees, decision trees, and compiling LaTeX TikZ diagrams." />
+
+  <link rel="stylesheet" href="css/modern.css">
+  <link rel="stylesheet" href="css/scroll.css">
+
+  <script type="text/javascript" src="js/jquery-1.11.0.min.js"></script>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="app-header">
+    <div class="header-container">
+      <a href="index.html" class="brand-logo" id="brand-link">
+        <div class="brand-icon">T</div>
+        <div class="brand-text">
+          <span class="brand-title">TikZ Studio</span>
+          <span class="brand-subtitle">Documentation &amp; Guide</span>
+        </div>
+      </a>
+      <ul class="nav-links">
+        <li class="nav-item"><a href="index.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Homepage
+        </a></li>
+        <li class="nav-item"><a href="Coordinate.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+          Coordinate Axis
+        </a></li>
+        <li class="nav-item"><a href="GameTree.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="3"/><circle cx="6" cy="19" r="3"/><circle cx="18" cy="19" r="3"/><line x1="12" y1="8" x2="6" y2="16"/><line x1="12" y1="8" x2="18" y2="16"/></svg>
+          Game Tree
+        </a></li>
+        <li class="nav-item"><a href="Venn.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="12" r="6"/><circle cx="15" cy="12" r="6"/></svg>
+          Venn Diagrams
+        </a></li>
+        <li class="nav-item"><a href="Timeline.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Timeline
+        </a></li>
+        <li class="nav-item active"><a href="Help-GameTree.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Docs &amp; Help
+        </a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main class="main-wrapper">
+
+    <!-- Header Banner -->
+    <div style="text-align: center; max-width: 800px; margin: 1.5rem auto 2.5rem;">
+      <span class="nav-badge" style="margin-bottom: 0.75rem;">Game Tree Studio User Guide</span>
+      <h1 style="font-size: 2rem; font-weight: 800; color: var(--color-text-main); margin-bottom: 0.5rem; letter-spacing: -0.02em;">
+        Extensive Form Game &amp; Decision Tree Guide
+      </h1>
+      <p style="color: var(--color-text-muted); font-size: 1rem; line-height: 1.6;">
+        Build game theory models, sequential moves, imperfect information sets, and decision analysis trees. Export directly into compilable LaTeX TikZ code or open in Overleaf.
+      </p>
+    </div>
+
+    <!-- Guide Grid -->
+    <div style="display: flex; flex-direction: column; gap: 1.5rem; max-width: 900px; margin: 0 auto 3rem;">
+
+      <!-- Section 1: Core Node Archetypes -->
+      <div class="control-card" style="background: #ffffff; padding: 1.75rem;">
+        <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 0.75rem;">
+          1. Node Archetypes
+        </h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+              <span style="width: 14px; height: 14px; border-radius: 50%; background: #eff6ff; border: 2px solid #2563eb; display: inline-block;"></span>
+              <strong style="color: #1e3a8a;">Decision Node ($P_i$)</strong>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45;">
+              Represents a strategic decision point where a specific player (e.g., $P_1, P_2, \text{Firm}, \text{Buyer}$) chooses among multiple actions.
+            </p>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+              <span style="width: 10px; height: 10px; border-radius: 50%; background: #d97706; display: inline-block;"></span>
+              <strong style="color: #b45309;">Nature / Chance ($\mathcal{N}$)</strong>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45;">
+              Represents exogenous random events (e.g. Spence signaling worker types $\theta_H, \theta_L$, weather, market states) with associated branch probabilities ($p, 1-p$).
+            </p>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+              <span style="width: 8px; height: 8px; border-radius: 50%; background: #475569; display: inline-block;"></span>
+              <strong style="color: #334155;">Terminal Node (Payoffs)</strong>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45;">
+              The game ends here. Displays the payoff vector $(u_1, u_2, \dots)$ or terminal outcomes (e.g. $(3, 1)$ or $(-c, \pi)$).
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Equilibrium Highlighting & Backward Induction -->
+      <div class="control-card" style="background: #ffffff; padding: 1.75rem;">
+        <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 0.75rem;">
+          2. Highlighting Subgame Perfect Equilibrium (SPE)
+        </h2>
+        <p style="font-size: 0.9rem; color: var(--color-text-muted); line-height: 1.55; margin-bottom: 0.75rem;">
+          To illustrate backward induction or equilibrium strategies:
+        </p>
+        <ul style="font-size: 0.875rem; color: var(--color-text-main); line-height: 1.6; margin-left: 1.5rem; margin-bottom: 1rem;">
+          <li>Click on the node whose incoming branch is part of the equilibrium path.</li>
+          <li>Check the <strong>Equilibrium / Subgame Perfect Path</strong> checkbox in the inspector.</li>
+          <li>The canvas highlights the branch in bold red (<code style="font-family: monospace; color: #dc2626;">eq_branch</code>), and the generated TikZ code applies <code style="font-family: monospace;">very thick, draw=red!80!black</code>.</li>
+        </ul>
+      </div>
+
+      <!-- Section 3: Information Sets -->
+      <div class="control-card" style="background: #ffffff; padding: 1.75rem;">
+        <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 0.75rem;">
+          3. Imperfect Information &amp; Information Sets
+        </h2>
+        <p style="font-size: 0.9rem; color: var(--color-text-muted); line-height: 1.55; margin-bottom: 0.75rem;">
+          When a player cannot observe earlier moves made by an opponent or Nature (such as simultaneous moves in Matching Pennies or the Spence Job Market Signaling model):
+        </p>
+        <ul style="font-size: 0.875rem; color: var(--color-text-main); line-height: 1.6; margin-left: 1.5rem;">
+          <li>Decision nodes at the same tree depth can be grouped into an <strong>Information Set</strong>.</li>
+          <li>In the canvas, they are connected by a curved dashed line.</li>
+          <li>In TikZ, they render as:
+            <pre style="background: #f1f5f9; padding: 0.5rem 0.75rem; border-radius: 6px; font-family: monospace; font-size: 0.8rem; margin: 0.5rem 0;">\draw[info_set] (n_1) to[bend right=15] node[midway, fill=white]{$I_1$} (n_2);</pre>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Section 4: Standalone LaTeX Compilation -->
+      <div class="control-card" style="background: #ffffff; padding: 1.75rem;">
+        <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 0.75rem;">
+          4. Compiling in LaTeX or Overleaf
+        </h2>
+        <p style="font-size: 0.9rem; color: var(--color-text-muted); line-height: 1.55; margin-bottom: 0.75rem;">
+          To compile your diagram in a document:
+        </p>
+        <pre style="background: #0f172a; color: #f8fafc; padding: 1rem; border-radius: 8px; font-family: monospace; font-size: 0.8rem; line-height: 1.5; overflow-x: auto;">
+\documentclass{article}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+
+\begin{document}
+
+\begin{figure}[htbp]
+  \centering
+  % Paste your generated TikZ code here:
+  \begin{tikzpicture}[...]
+    ...
+  \end{tikzpicture}
+  \caption{Extensive-form game model}
+\end{figure}
+
+\end{document}
+        </pre>
+        <div style="margin-top: 1rem;">
+          <a href="GameTree.html" class="btn-modern btn-modern-primary" style="display: inline-flex; align-items: center; gap: 0.4rem;">
+            Open Game Tree Studio &rarr;
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Modern Footer -->
+  <footer class="app-footer">
+    <div class="footer-inner">
+      <div>
+        <strong>TikZ Diagram Generator</strong> &mdash; Interactive visual tools for LaTeX figures.
+      </div>
+      <div class="footer-nav">
+        <a href="Coordinate.html">Coordinate Axis</a>
+        <a href="GameTree.html">Game Tree Studio</a>
+        <a href="Timeline.html">Timeline</a>
+        <a href="Help-Coordinate.html">Coordinate Docs</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

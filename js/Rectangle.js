@@ -39,7 +39,12 @@ function PrintRectangle(ctx, a, b, c, d, name, dash, lineColor, fill) {
         ctx.font = "12px sans-serif";
         ctx.fillStyle = colHex;
         ctx.textAlign = "center";
-        ctx.fillText(name.value, 0, 4);
+        ctx.textBaseline = "middle";
+        if (window.drawMathText) {
+            window.drawMathText(ctx, name.value, 0, 4, { fontSize: 13, color: colHex, align: "center", baseline: "middle" });
+        } else {
+            ctx.fillText(name.value, 0, 4);
+        }
         ctx.restore();
     }
     

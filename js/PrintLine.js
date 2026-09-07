@@ -113,7 +113,11 @@ function PrintLine(ctx, a, b, c, d, name, dash, lineColor, arrowEl, widthEl, sty
             ctx.rotate(screenAngle);
             ctx.textAlign = "center";
             ctx.textBaseline = "bottom";
-            ctx.fillText(labelText, 0, -5);
+            if (window.drawMathText) {
+                window.drawMathText(ctx, labelText, 0, -5, { fontSize: 13, color: col, align: "center", baseline: "bottom" });
+            } else {
+                ctx.fillText(labelText, 0, -5);
+            }
         } else {
             var ox = 0, oy = 0;
             var align = "left", baseline = "middle";
@@ -129,7 +133,11 @@ function PrintLine(ctx, a, b, c, d, name, dash, lineColor, arrowEl, widthEl, sty
 
             ctx.textAlign = align;
             ctx.textBaseline = baseline;
-            ctx.fillText(labelText, ox, oy);
+            if (window.drawMathText) {
+                window.drawMathText(ctx, labelText, ox, oy, { fontSize: 13, color: col, align: align, baseline: baseline });
+            } else {
+                ctx.fillText(labelText, ox, oy);
+            }
         }
 
         ctx.restore();

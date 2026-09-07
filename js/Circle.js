@@ -44,7 +44,11 @@ function PrintCircle(ctx, cxEl, cyEl, rEl, name, dash, lineColor, fill) {
         ctx.fillStyle = strokeCol;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.fillText(name.value, 0, 0);
+        if (window.drawMathText) {
+            window.drawMathText(ctx, name.value, 0, 0, { fontSize: 13, color: strokeCol, align: "center", baseline: "middle" });
+        } else {
+            ctx.fillText(name.value, 0, 0);
+        }
         ctx.restore();
     }
 
