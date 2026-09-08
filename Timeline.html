@@ -74,11 +74,26 @@
       </div>
 
       <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-        <span style="font-size: 0.8rem; font-weight: 600; color: var(--color-text-muted);">Presets:</span>
-        <button type="button" class="btn-modern btn-modern-secondary btn-modern-sm" onclick="loadSampleEvents(); draw();">
-          Load 20th Century Events
-        </button>
-        <button type="button" class="btn-modern btn-modern-secondary btn-modern-sm" onclick="clearAllEvents(); draw();">
+        <span style="font-size: 0.8rem; font-weight: 600; color: var(--color-text-muted);">Template:</span>
+        <select id="timeline-preset-select" class="select-modern" onchange="loadTimelinePreset(this.value);" style="font-size: 0.8rem; font-weight: 500; padding: 0.3rem 0.6rem; min-width: 220px;">
+          <option value="" disabled>Select Timeline Template...</option>
+          <optgroup label="History &amp; Civilization">
+            <option value="20th-century" selected>20th Century Global Milestones (1910–2000)</option>
+            <option value="space-race">Space Exploration &amp; Astronomy (1955–2025)</option>
+          </optgroup>
+          <optgroup label="Economics &amp; Finance">
+            <option value="monetary-econ">Global Monetary &amp; Financial History (1940–2025)</option>
+          </optgroup>
+          <optgroup label="Computer Science &amp; AI">
+            <option value="ai-history">History of Artificial Intelligence (1950–2025)</option>
+            <option value="computing-evolution">Computing &amp; Internet Revolution (1965–2015)</option>
+          </optgroup>
+          <optgroup label="Academic &amp; Project Management">
+            <option value="phd-roadmap">PhD Research &amp; Dissertation Roadmap (2021–2025)</option>
+            <option value="product-lifecycle">Agile Software Product Release (2019–2025)</option>
+          </optgroup>
+        </select>
+        <button type="button" class="btn-modern btn-modern-secondary btn-modern-sm" onclick="clearAllEvents(); draw();" title="Remove all events">
           Clear Events
         </button>
       </div>
@@ -774,21 +789,169 @@
       if (window.timelineHistory) window.timelineHistory.push('Clear All Events');
     }
 
-    function loadSampleEvents() {
+    var TIMELINE_PRESETS = {
+      '20th-century': {
+        name: '20th Century Global Milestones',
+        beginTime: 1910,
+        endTime: 2000,
+        scale: 11,
+        orientation: 'x',
+        lineColor: 'black',
+        pointColor: 'blue',
+        events: [
+          { year: 1914, desc: 'WWI Outbreak', color: 'red' },
+          { year: 1919, desc: 'Treaty of Versailles', color: 'blue' },
+          { year: 1929, desc: 'Wall Street Crash', color: 'red' },
+          { year: 1939, desc: 'WWII Outbreak', color: 'red' },
+          { year: 1945, desc: 'United Nations Founded', color: 'teal' },
+          { year: 1953, desc: 'DNA Double Helix Discovered', color: 'purple' },
+          { year: 1969, desc: 'Apollo 11 Moon Landing', color: 'blue' },
+          { year: 1973, desc: 'Global Oil Shock', color: 'orange' },
+          { year: 1989, desc: 'Fall of Berlin Wall', color: 'teal' },
+          { year: 1991, desc: 'World Wide Web Launch', color: 'green' }
+        ]
+      },
+      'space-race': {
+        name: 'Space Exploration & Astronomy',
+        beginTime: 1955,
+        endTime: 2025,
+        scale: 14,
+        orientation: 'x',
+        lineColor: 'blue',
+        pointColor: 'teal',
+        events: [
+          { year: 1957, desc: 'Sputnik 1 First Satellite', color: 'red' },
+          { year: 1961, desc: 'Gagarin Human Orbital Flight', color: 'orange' },
+          { year: 1969, desc: 'Apollo 11 Lunar Landing', color: 'blue' },
+          { year: 1971, desc: 'Salyut 1 First Space Station', color: 'purple' },
+          { year: 1977, desc: 'Voyager 1 & 2 Interstellar Launch', color: 'teal' },
+          { year: 1981, desc: 'Space Shuttle Columbia First Flight', color: 'blue' },
+          { year: 1990, desc: 'Hubble Space Telescope Deployed', color: 'purple' },
+          { year: 1998, desc: 'ISS Zarya First Module in Orbit', color: 'teal' },
+          { year: 2012, desc: 'Curiosity Rover Lands on Mars', color: 'orange' },
+          { year: 2021, desc: 'James Webb Space Telescope Launch', color: 'green' }
+        ]
+      },
+      'monetary-econ': {
+        name: 'Global Monetary & Financial History',
+        beginTime: 1940,
+        endTime: 2025,
+        scale: 12,
+        orientation: 'x',
+        lineColor: 'teal',
+        pointColor: 'orange',
+        events: [
+          { year: 1944, desc: 'Bretton Woods Agreement (IMF & World Bank)', color: 'blue' },
+          { year: 1971, desc: 'Nixon Shock (End of Gold Convertibility)', color: 'red' },
+          { year: 1979, desc: 'Volcker Disinflation Interest Rate Hike', color: 'orange' },
+          { year: 1987, desc: 'Black Monday Stock Market Crash', color: 'red' },
+          { year: 1997, desc: 'Asian Financial Crisis & Currency Contagion', color: 'purple' },
+          { year: 1999, desc: 'Euro Currency Formal Launch', color: 'teal' },
+          { year: 2008, desc: 'Lehman Collapse & Global Financial Crisis', color: 'red' },
+          { year: 2010, desc: 'European Sovereign Debt Crisis (PIGS)', color: 'orange' },
+          { year: 2020, desc: 'Pandemic Liquidity Shock & Emergency Easing', color: 'teal' },
+          { year: 2022, desc: 'Central Bank Global Rate Tightening Cycle', color: 'purple' }
+        ]
+      },
+      'ai-history': {
+        name: 'History of Artificial Intelligence',
+        beginTime: 1950,
+        endTime: 2025,
+        scale: 14,
+        orientation: 'x',
+        lineColor: 'purple',
+        pointColor: 'blue',
+        events: [
+          { year: 1950, desc: 'Turing Test (Computing Machinery & Intelligence)', color: 'purple' },
+          { year: 1956, desc: 'Dartmouth Artificial Intelligence Conference', color: 'blue' },
+          { year: 1966, desc: 'ELIZA Natural Language Conversation System', color: 'teal' },
+          { year: 1986, desc: 'Backpropagation Gradient Learning Popularized', color: 'orange' },
+          { year: 1997, desc: 'Deep Blue Defeats World Champion Kasparov', color: 'blue' },
+          { year: 2012, desc: 'AlexNet GPU Deep Convolutional Breakthrough', color: 'green' },
+          { year: 2016, desc: 'AlphaGo Defeats Lee Sedol in Go', color: 'purple' },
+          { year: 2017, desc: 'Transformer Architecture (Attention Is All You Need)', color: 'teal' },
+          { year: 2020, desc: 'GPT-3 Large Language Few-Shot Learning', color: 'orange' },
+          { year: 2023, desc: 'Multimodal Generative AI & Frontier Models', color: 'green' }
+        ]
+      },
+      'computing-evolution': {
+        name: 'Computing & Internet Revolution',
+        beginTime: 1965,
+        endTime: 2015,
+        scale: 20,
+        orientation: 'x',
+        lineColor: 'black',
+        pointColor: 'teal',
+        events: [
+          { year: 1969, desc: 'ARPANET First Node Packet Transmission', color: 'blue' },
+          { year: 1971, desc: 'Intel 4004 Commercial Microprocessor', color: 'red' },
+          { year: 1976, desc: 'Apple I & Personal Computer Revolution', color: 'teal' },
+          { year: 1983, desc: 'TCP/IP Standardized as Internet Protocol', color: 'purple' },
+          { year: 1991, desc: 'Linux Kernel & World Wide Web Public Release', color: 'green' },
+          { year: 1998, desc: 'Google Search Engine Founded', color: 'orange' },
+          { year: 2007, desc: 'First iPhone & Mobile Internet Transformation', color: 'blue' }
+        ]
+      },
+      'phd-roadmap': {
+        name: 'PhD Research & Dissertation Roadmap',
+        beginTime: 2021,
+        endTime: 2025,
+        scale: 220,
+        orientation: 'x',
+        lineColor: 'blue',
+        pointColor: 'green',
+        events: [
+          { year: 2021, desc: 'Literature Synthesis & Comprehensive Qualifiers', color: 'blue' },
+          { year: 2022, desc: 'Formal Thesis Proposal & Committee Approval', color: 'orange' },
+          { year: 2023, desc: 'Empirical Data Collection & Pilot Experimentation', color: 'teal' },
+          { year: 2024, desc: 'Primary Theoretical Manuscript Submission', color: 'purple' },
+          { year: 2025, desc: 'Final Dissertation Defense & Graduation', color: 'green' }
+        ]
+      },
+      'product-lifecycle': {
+        name: 'Agile Software Product Release Cycle',
+        beginTime: 2019,
+        endTime: 2025,
+        scale: 170,
+        orientation: 'x',
+        lineColor: 'teal',
+        pointColor: 'purple',
+        events: [
+          { year: 2019, desc: 'Architecture RFC & Core Engine Specifications', color: 'blue' },
+          { year: 2020, desc: 'Alpha MVP Internal Staging Validation', color: 'orange' },
+          { year: 2021, desc: 'Closed Beta Enterprise Cohort Onboarding', color: 'purple' },
+          { year: 2022, desc: 'General Availability (v1.0 Public Production)', color: 'green' },
+          { year: 2023, desc: 'Microservices & Distributed Cloud Scale', color: 'teal' },
+          { year: 2024, desc: 'Enterprise SSO, SOC-2 & Zero-Trust Security', color: 'blue' },
+          { year: 2025, desc: 'v2.0 Autonomous AI Workflow Integration', color: 'green' }
+        ]
+      }
+    };
+
+    function loadTimelinePreset(presetKey) {
+      var preset = TIMELINE_PRESETS[presetKey];
+      if (!preset) return;
+
+      var bInput = document.getElementById('beginTime');
+      var eInput = document.getElementById('endTime');
+      var sInput = document.getElementById('scale');
+      var cInput = document.getElementById('coordinate');
+      var lcInput = document.getElementById('linecolor');
+      var pcInput = document.getElementById('pointcolor');
+
+      if (bInput) bInput.value = preset.beginTime;
+      if (eInput) eInput.value = preset.endTime;
+      if (sInput) sInput.value = preset.scale;
+      if (cInput) cInput.value = preset.orientation || 'x';
+      if (lcInput && preset.lineColor) setSelectValue(lcInput, preset.lineColor);
+      if (pcInput && preset.pointColor) setSelectValue(pcInput, preset.pointColor);
+
       var container = document.getElementById('result');
       container.innerHTML = '';
-      var samples = [
-        { year: 1914, desc: 'WWI Begins' },
-        { year: 1929, desc: 'Wall Street Crash' },
-        { year: 1939, desc: 'WWII Begins' },
-        { year: 1945, desc: 'United Nations Founded' },
-        { year: 1969, desc: 'Apollo 11 Moon Landing' },
-        { year: 1989, desc: 'Fall of Berlin Wall' },
-        { year: 1991, desc: 'World Wide Web Public Launch' }
-      ];
-      samples.forEach(function(s) {
+      preset.events.forEach(function(s) {
         var tempdiv = document.createElement('div');
         tempdiv.className = 'event-chip';
+        if (s.color) tempdiv.setAttribute('data-color', s.color);
         tempdiv.innerHTML = '<div class="event-chip-info">' +
           '<span class="event-year-badge myyear">' + s.year + '</span>' +
           '<span class="mydesc" style="font-weight: 500; color: var(--color-text-main);">' + s.desc + '</span>' +
@@ -796,9 +959,14 @@
           '<button type="button" class="btn-delete-chip" onclick="deleteEvent(this)" title="Delete">&times;</button>';
         container.appendChild(tempdiv);
       });
+
       draw();
-      showToast('Loaded 20th Century historical milestones');
-      if (window.timelineHistory) window.timelineHistory.push('Load 20th Century Milestones');
+      showToast('Loaded template: ' + preset.name);
+      if (window.timelineHistory) window.timelineHistory.push('Load Template: ' + preset.name);
+    }
+
+    function loadSampleEvents() {
+      loadTimelinePreset('20th-century');
     }
 
     // Support pressing Enter key to quickly add events
@@ -823,7 +991,14 @@
         window.initAllColorControls();
       }
       // Render initial sample timeline
-      setTimeout(draw, 100);
+      setTimeout(function() {
+        var container = document.getElementById('result');
+        if (!container.children || container.children.length === 0) {
+          loadTimelinePreset('20th-century');
+        } else {
+          draw();
+        }
+      }, 100);
     });
   </script>
 

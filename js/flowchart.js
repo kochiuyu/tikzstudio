@@ -605,6 +605,90 @@
       model.createEdge({ from: 'pay_ok', to: 'cancel', label: 'Declined', routing: 'orthogonal-vert', fromAnchor: 'south', toAnchor: 'east' });
 
       return model;
+    },
+
+    // 8. Even/Odd Parity Bit Checker DFA
+    'fsm-parity': () => {
+      const model = new FlowchartModel();
+      model.title = 'Even Parity Bit Checker (DFA)';
+      model.diagramType = 'fsm';
+
+      const sEven = model.createNode({ id: 's_even', text: 'Even\nParity', shape: 'accepting', isInitial: true, isAccepting: true, x: -120, y: 0, width: 72, height: 72, fillColor: '#eff6ff', borderColor: '#2563eb' });
+      const sOdd = model.createNode({ id: 's_odd', text: 'Odd\nParity', shape: 'state', x: 120, y: 0, width: 72, height: 72, fillColor: '#f8fafc', borderColor: '#475569' });
+
+      // Transitions
+      model.createEdge({ from: 's_even', to: 's_even', label: '0', routing: 'loop-above' });
+      model.createEdge({ from: 's_even', to: 's_odd', label: '1', routing: 'bend-left' });
+      model.createEdge({ from: 's_odd', to: 's_even', label: '1', routing: 'bend-left' });
+      model.createEdge({ from: 's_odd', to: 's_odd', label: '0', routing: 'loop-above' });
+
+      return model;
+    },
+
+    // 9. Regex Pattern Matcher (a|b)*abb NFA
+    'fsm-regex-nfa': () => {
+      const model = new FlowchartModel();
+      model.title = 'Pattern Matcher NFA for (a|b)*abb';
+      model.diagramType = 'fsm';
+
+      model.createNode({ id: 'q0', text: 'q_0', shape: 'initial', isInitial: true, x: -180, y: 0, width: 56, height: 56, fillColor: '#eff6ff', borderColor: '#2563eb' });
+      model.createNode({ id: 'q1', text: 'q_1', shape: 'state', x: -60, y: 0, width: 56, height: 56, fillColor: '#f8fafc', borderColor: '#475569' });
+      model.createNode({ id: 'q2', text: 'q_2', shape: 'state', x: 60, y: 0, width: 56, height: 56, fillColor: '#f8fafc', borderColor: '#475569' });
+      model.createNode({ id: 'q3', text: 'q_3', shape: 'accepting', isAccepting: true, x: 180, y: 0, width: 62, height: 62, fillColor: '#dcfce7', borderColor: '#16a34a' });
+
+      model.createEdge({ from: 'q0', to: 'q0', label: 'a, b', routing: 'loop-above' });
+      model.createEdge({ from: 'q0', to: 'q1', label: 'a', routing: 'straight' });
+      model.createEdge({ from: 'q1', to: 'q2', label: 'b', routing: 'straight' });
+      model.createEdge({ from: 'q2', to: 'q3', label: 'b', routing: 'straight' });
+
+      return model;
+    },
+
+    // 10. Git Feature Branch & CI/CD Pipeline
+    'flow-git-release': () => {
+      const model = new FlowchartModel();
+      model.title = 'Git Branching & CI/CD Deployment Flow';
+      model.diagramType = 'flowchart';
+
+      model.createNode({ id: 'branch', text: 'Git Checkout -b\nFeature', shape: 'terminal', x: -200, y: -80, width: 110, height: 48, fillColor: '#e0e7ff', borderColor: '#4f46e5' });
+      model.createNode({ id: 'commit', text: 'Commit & Push\nChanges', shape: 'process', x: -60, y: -80, width: 110, height: 48, fillColor: '#ffffff', borderColor: '#334155' });
+      model.createNode({ id: 'pr', text: 'Open Pull\nRequest', shape: 'io', x: 80, y: -80, width: 105, height: 46, fillColor: '#ecfdf5', borderColor: '#059669' });
+      model.createNode({ id: 'ci_tests', text: 'CI Tests\nPass?', shape: 'decision', x: 210, y: -80, width: 100, height: 65, fillColor: '#fef3c7', borderColor: '#d97706' });
+      model.createNode({ id: 'review', text: 'Peer Review\nApproved?', shape: 'decision', x: 210, y: 70, width: 105, height: 65, fillColor: '#fef3c7', borderColor: '#d97706' });
+      model.createNode({ id: 'fix', text: 'Fix Lint/Tests', shape: 'process', x: 60, y: 0, width: 100, height: 44, fillColor: '#fee2e2', borderColor: '#ef4444' });
+      model.createNode({ id: 'deploy', text: 'Merge to Main &\nDeploy Release', shape: 'terminal', x: -60, y: 70, width: 125, height: 48, fillColor: '#dcfce7', borderColor: '#16a34a' });
+
+      model.createEdge({ from: 'branch', to: 'commit', label: '', routing: 'straight', fromAnchor: 'east', toAnchor: 'west' });
+      model.createEdge({ from: 'commit', to: 'pr', label: '', routing: 'straight', fromAnchor: 'east', toAnchor: 'west' });
+      model.createEdge({ from: 'pr', to: 'ci_tests', label: '', routing: 'straight', fromAnchor: 'east', toAnchor: 'west' });
+      model.createEdge({ from: 'ci_tests', to: 'review', label: 'Yes', routing: 'straight', fromAnchor: 'south', toAnchor: 'north' });
+      model.createEdge({ from: 'ci_tests', to: 'fix', label: 'No', routing: 'orthogonal-vert', fromAnchor: 'west', toAnchor: 'east' });
+      model.createEdge({ from: 'fix', to: 'commit', label: '', routing: 'orthogonal-horiz', fromAnchor: 'west', toAnchor: 'south' });
+      model.createEdge({ from: 'review', to: 'deploy', label: 'Yes', routing: 'straight', fromAnchor: 'west', toAnchor: 'east' });
+      model.createEdge({ from: 'review', to: 'fix', label: 'Changes Req', routing: 'straight', fromAnchor: 'north', toAnchor: 'south' });
+
+      return model;
+    },
+
+    // 11. Producer-Consumer with Mutex & Bounded Buffer
+    'flow-producer-consumer': () => {
+      const model = new FlowchartModel();
+      model.title = 'Producer-Consumer Synchronization Flow';
+      model.diagramType = 'flowchart';
+
+      model.createNode({ id: 'produce', text: 'Produce Data Item', shape: 'process', x: -180, y: -70, width: 115, height: 46, fillColor: '#eff6ff', borderColor: '#2563eb' });
+      model.createNode({ id: 'check_full', text: 'Buffer\nFull?', shape: 'decision', x: -50, y: -70, width: 95, height: 60, fillColor: '#fef3c7', borderColor: '#d97706' });
+      model.createNode({ id: 'wait', text: 'Wait on Empty Slot', shape: 'process', x: -50, y: -160, width: 120, height: 42, fillColor: '#fee2e2', borderColor: '#ef4444' });
+      model.createNode({ id: 'lock', text: 'Acquire Mutex &\nEnqueue Item', shape: 'process', x: 90, y: -70, width: 120, height: 50, fillColor: '#f8fafc', borderColor: '#334155' });
+      model.createNode({ id: 'signal', text: 'Signal Consumer\n(Item Ready)', shape: 'terminal', x: 230, y: -70, width: 115, height: 46, fillColor: '#dcfce7', borderColor: '#16a34a' });
+
+      model.createEdge({ from: 'produce', to: 'check_full', label: '', routing: 'straight', fromAnchor: 'east', toAnchor: 'west' });
+      model.createEdge({ from: 'check_full', to: 'wait', label: 'Yes', routing: 'straight', fromAnchor: 'north', toAnchor: 'south' });
+      model.createEdge({ from: 'wait', to: 'check_full', label: 'Retry', routing: 'bend-left', fromAnchor: 'south', toAnchor: 'north' });
+      model.createEdge({ from: 'check_full', to: 'lock', label: 'No', routing: 'straight', fromAnchor: 'east', toAnchor: 'west' });
+      model.createEdge({ from: 'lock', to: 'signal', label: 'Release Mutex', routing: 'straight', fromAnchor: 'east', toAnchor: 'west' });
+
+      return model;
     }
   };
 

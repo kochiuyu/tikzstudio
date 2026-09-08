@@ -110,14 +110,27 @@
       <!-- Quick Preset & Main Actions -->
       <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
         <span style="font-size: 0.8rem; font-weight: 600; color: var(--color-text-muted);">Model:</span>
-        <select id="preset-select" class="select-modern" onchange="loadPreset(this.value);" style="font-size: 0.8rem; font-weight: 500; padding: 0.3rem 0.6rem; min-width: 200px;">
+        <select id="preset-select" class="select-modern" onchange="loadPreset(this.value);" style="font-size: 0.8rem; font-weight: 500; padding: 0.3rem 0.6rem; min-width: 220px;">
           <option value="" disabled>Select Game Model Preset...</option>
-          <option value="market-entry" selected>Market Entry (Subgame Perfect)</option>
-          <option value="spence-signaling">Spence Signaling (Info Sets)</option>
-          <option value="centipede">4-Stage Centipede Game</option>
-          <option value="sequential-dilemma">Sequential Prisoner's Dilemma</option>
-          <option value="ultimatum">Ultimatum Bargaining Game</option>
-          <option value="matching-pennies-imperfect">Matching Pennies (Imperfect Info)</option>
+          <optgroup label="Industrial Organization &amp; Competition">
+            <option value="market-entry" selected>Market Entry Deterrence (Subgame Perfect)</option>
+            <option value="stackelberg-duopoly">Stackelberg Sequential Duopoly</option>
+          </optgroup>
+          <optgroup label="Information Economics &amp; Signaling">
+            <option value="spence-signaling">Spence Job Market Signaling (Info Sets)</option>
+            <option value="beer-quiche">Beer-Quiche Signaling Game (Cho-Kreps)</option>
+            <option value="principal-agent">Principal-Agent Contracting (Moral Hazard)</option>
+          </optgroup>
+          <optgroup label="Bargaining &amp; Multistage Games">
+            <option value="rubinstein-bargaining">Rubinstein Alternating-Offers (3 Stages)</option>
+            <option value="ultimatum">Ultimatum Bargaining Game</option>
+            <option value="centipede">4-Stage Centipede Game</option>
+          </optgroup>
+          <optgroup label="Classic Dilemmas &amp; Experiments">
+            <option value="sequential-dilemma">Sequential Prisoner's Dilemma</option>
+            <option value="matching-pennies-imperfect">Matching Pennies (Imperfect Info)</option>
+            <option value="trust-game">Trust / Investment Game (Berg et al.)</option>
+          </optgroup>
         </select>
 
         <div style="height: 20px; width: 1px; background: var(--color-border); margin: 0 0.2rem;"></div>

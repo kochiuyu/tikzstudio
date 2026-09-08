@@ -1066,6 +1066,77 @@
       model.regions['A_only'].label = 'P(A)';
       model.regions['B_only'].label = 'P(B)';
       return model;
+    },
+
+    '2set-bayes-diagnostic': () => {
+      const model = new VennDiagramModel('2-set');
+      model.title = "Diagnostic Testing & Bayes' Rule";
+      model.circles[0].label = 'D'; // Disease
+      model.circles[1].label = 'T'; // Test Positive
+      model.regions['AB'].shaded = true;
+      model.regions['AB'].label = 'TP'; // True Positive
+      model.regions['A_only'].label = 'FN'; // False Negative
+      model.regions['B_only'].label = 'FP'; // False Positive
+      model.regions['U_only'].label = 'TN'; // True Negative
+      return model;
+    },
+
+    '2set-cond-prob': () => {
+      const model = new VennDiagramModel('2-set');
+      model.title = 'Conditional Probability: P(A | B)';
+      model.regions['AB'].shaded = true;
+      model.regions['AB'].label = 'P(A \\cap B)';
+      model.regions['B_only'].shaded = false;
+      model.regions['B_only'].label = 'B \\setminus A';
+      model.regions['A_only'].label = 'A \\setminus B';
+      return model;
+    },
+
+    '3set-boolean-query': () => {
+      const model = new VennDiagramModel('3-set');
+      model.title = 'Boolean Search Filter: (A ∪ B) ∩ C';
+      model.regions['AC_only'].shaded = true;
+      model.regions['BC_only'].shaded = true;
+      model.regions['ABC'].shaded = true;
+      model.regions['ABC'].label = 'A \\cap B \\cap C';
+      return model;
+    },
+
+    '3set-symmetric-diff': () => {
+      const model = new VennDiagramModel('3-set');
+      model.title = '3-Set Symmetric Difference (Exclusive OR)';
+      model.regions['A_only'].shaded = true;
+      model.regions['B_only'].shaded = true;
+      model.regions['C_only'].shaded = true;
+      model.regions['ABC'].shaded = true;
+      return model;
+    },
+
+    '3set-syllogism': () => {
+      const model = new VennDiagramModel('3-set');
+      model.title = 'Categorical Syllogism Validity (Venn Method)';
+      model.circles[0].label = 'S'; // Minor term (Subject)
+      model.circles[1].label = 'M'; // Middle term
+      model.circles[2].label = 'P'; // Major term (Predicate)
+      model.regions['A_only'].shaded = true;
+      model.regions['AC_only'].shaded = true;
+      model.regions['ABC'].shaded = true;
+      model.regions['ABC'].label = 'S \\cap P';
+      return model;
+    },
+
+    'euler-partial': () => {
+      const model = new VennDiagramModel('euler');
+      model.title = 'Particular Affirmative (Some A are B)';
+      model.circles[0].x = -65;
+      model.circles[0].y = 0;
+      model.circles[0].r = 95;
+      model.circles[1].x = 65;
+      model.circles[1].y = 0;
+      model.circles[1].r = 95;
+      model.regions['AB'].shaded = true;
+      model.regions['AB'].label = '\\exists x (x \\in A \\cap B)';
+      return model;
     }
   };
 

@@ -518,6 +518,69 @@ function Example_Projectile() {
   setPoint(2, 8, 0, "Landing R", { color: "#16a34a", pos: "above" });
 }
 
+/** 15. Microeconomics: Cournot Duopoly Best-Response Reaction Functions */
+function Example_CournotDuopoly() {
+  resetAllCanvasElements();
+  setAxes({
+    xsize: 10, ysize: 10, xname: "Firm 1 Output q_1", yname: "Firm 2 Output q_2", origin: "0",
+    ticks: { x1: 3, x1_name: "q_1^*", x2: 6, x2_name: "\\frac{a-c}{b}", y1: 3, y1_name: "q_2^*", y2: 6, y2_name: "\\frac{a-c}{b}" }
+  });
+  // Firm 1 Reaction Function R_1(q_2)
+  setLine(1, 0, 6, 6, 0, "R_1(q_2)", { color: "#2563eb", width: "thick", labelPos: "start", labelAnchor: "right" });
+  // Firm 2 Reaction Function R_2(q_1)
+  setLine(2, 0, 3, 6, 0, "", { color: "#64748b", style: "dashed" });
+  setLine(3, 0, 6, 3, 0, "", { color: "#64748b", style: "dashed" });
+  setLine(4, 0, 6, 3, 3, "", { color: "#64748b", style: "dashed" });
+  // R_2 line: q_2 = (a-c)/(2b) - 0.5 q_1
+  setLine(2, 0, 4.5, 9, 0, "R_2(q_1)", { color: "#dc2626", width: "thick", labelPos: "end", labelAnchor: "above" });
+  // Projections to Nash equilibrium (3, 3)
+  setLine(3, 3, 0, 3, 3, "", { color: "#64748b", style: "dashed" });
+  setLine(4, 0, 3, 3, 3, "", { color: "#64748b", style: "dashed" });
+  setPoint(1, 3, 3, "Cournot-Nash E", { color: "#0f172a", pos: "above" });
+  setPoint(2, 0, 3, "q_2^*", { color: "#dc2626", pos: "left" });
+  setPoint(3, 3, 0, "q_1^*", { color: "#2563eb", pos: "below" });
+}
+
+/** 16. Microeconomics: Edgeworth Box & Contract Curve */
+function Example_EdgeworthBox() {
+  resetAllCanvasElements();
+  setAxes({
+    xsize: 10, ysize: 10, xname: "Good X (Consumer A \\rightarrow)", yname: "Good Y (Consumer A \\uparrow)", origin: "O_A",
+    ticks: { x1: 4, x1_name: "x_A^*", x2: 8, x2_name: "X_{total}", y1: 3, y1_name: "y_A^*", y2: 6, y2_name: "Y_{total}" }
+  });
+  // Edgeworth Box Frame (Top and Right boundaries)
+  setLine(1, 0, 6, 8, 6, "Top O_B", { color: "#334155", width: "thick", labelPos: "end", labelAnchor: "above" });
+  setLine(2, 8, 0, 8, 6, "Right O_B", { color: "#334155", width: "thick", labelPos: "end", labelAnchor: "right" });
+  // Consumer A Indifference Curve (Convex to O_A)
+  setCurve(1, 1.2, 5.5, 2.5, 2.6, 4.0, 3.0, 7.0, 1.8, "I_A", { color: "#2563eb", width: "thick" });
+  // Consumer B Indifference Curve (Convex to O_B at 8, 6)
+  setCurve(2, 1.5, 3.8, 4.0, 3.0, 5.5, 3.4, 6.8, 0.5, "I_B", { color: "#dc2626", width: "thick" });
+  // Contract Curve connecting tangency points from O_A (0,0) to O_B (8,6)
+  setCurve(3, 0, 0, 2.5, 1.5, 5.5, 4.5, 8, 6, "Contract Curve", { color: "#16a34a", width: "thick", style: "dashed" });
+  // Tangency point
+  setPoint(1, 4, 3, "Pareto Opt E", { color: "#0f172a", pos: "above" });
+  setPoint(2, 8, 6, "O_B", { color: "#dc2626", pos: "above" });
+}
+
+/** 17. Math & Biology: Logistic Growth Sigmoid Curve */
+function Example_LogisticGrowth() {
+  resetAllCanvasElements();
+  setAxes({
+    xsize: 10, ysize: 10, xname: "Time t", yname: "Population N(t)", origin: "0",
+    ticks: { x1: 4.5, x1_name: "t_{inflect}", x2: 9, x2_name: "t_{max}", y1: 4, y1_name: "K/2", y2: 8, y2_name: "Carrying Capacity K" }
+  });
+  // Carrying Capacity Asymptote N = K
+  setLine(1, 0, 8, 9.5, 8, "N = K", { color: "#dc2626", style: "dashed", width: "thick", labelPos: "end", labelAnchor: "above" });
+  // Logistic S-Curve N(t)
+  setCurve(1, 0, 0.8, 2.8, 1.2, 3.2, 3.2, 4.5, 4.0, "Logistic N(t)", { color: "#2563eb", width: "thick" });
+  setCurve(2, 4.5, 4.0, 5.8, 4.8, 6.2, 7.5, 9.5, 7.9, "", { color: "#2563eb", width: "thick" });
+  // Inflection Point Guideline
+  setLine(2, 4.5, 0, 4.5, 4.0, "", { color: "#64748b", style: "dashed" });
+  setLine(3, 0, 4.0, 4.5, 4.0, "", { color: "#64748b", style: "dashed" });
+  setPoint(1, 4.5, 4.0, "Inflection (Max Growth Rate)", { color: "#0f172a", pos: "above" });
+  setPoint(2, 0, 0.8, "N_0 Initial", { color: "#16a34a", pos: "left" });
+}
+
 // ----------------------------------------------------
 // Model Registry & Loader
 // ----------------------------------------------------
@@ -648,6 +711,33 @@ window.EXAMPLE_MODELS = [
     badgeColor: "#f59e0b",
     desc: "Kinematics trajectory showing launch velocity vector v0, parabolic flight path, apex maximum height, and horizontal range.",
     fn: Example_Projectile
+  },
+  {
+    id: "cournot-duopoly",
+    name: "Cournot Reaction Functions",
+    category: "micro",
+    badge: "Microeconomics",
+    badgeColor: "#3b82f6",
+    desc: "Duopoly best-response curves R1(q2) and R2(q1) intersecting at Cournot-Nash equilibrium output.",
+    fn: Example_CournotDuopoly
+  },
+  {
+    id: "edgeworth-box",
+    name: "Edgeworth Box Contract Curve",
+    category: "micro",
+    badge: "Microeconomics",
+    badgeColor: "#3b82f6",
+    desc: "Exchange economy box with origins OA and OB, tangencies of convex indifference curves, and the Pareto contract curve.",
+    fn: Example_EdgeworthBox
+  },
+  {
+    id: "logistic-growth",
+    name: "Logistic Growth S-Curve",
+    category: "math",
+    badge: "Math & Biology",
+    badgeColor: "#8b5cf6",
+    desc: "Population dynamics sigmoid showing carrying capacity asymptote K, inflection point K/2, and initial exponential growth.",
+    fn: Example_LogisticGrowth
   }
 ];
 

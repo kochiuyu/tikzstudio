@@ -570,6 +570,156 @@
 
       tree.computeLayout();
       return tree;
+    },
+
+    'rubinstein-bargaining': () => {
+      const tree = new GameTreeModel();
+      tree.title = 'Rubinstein Alternating-Offer Bargaining (3 Stages)';
+      tree.orientation = 'horizontal';
+      tree.levelDistance = 110;
+      tree.siblingDistance = 65;
+
+      // t=0: Player 1 offers s_1
+      const p1_0 = tree.createNode({ type: 'decision', player: 'P_1' });
+      tree.rootId = p1_0.id;
+
+      // P2 either Accepts offer or Rejects
+      const p2_0 = tree.addBranch(p1_0.id, { action: 's_1', type: 'decision', player: 'P_2' });
+      tree.addBranch(p2_0.id, { action: '\\text{Accept}', type: 'terminal', payoff: '(1 - s_1, s_1)' });
+
+      // If Reject, at t=1 discount factor delta applies; P2 makes counter-offer s_2
+      const p1_1 = tree.addBranch(p2_0.id, { action: '\\text{Reject}', type: 'decision', player: 'P_1' });
+      const p2_counter = tree.addBranch(p1_1.id, { action: 's_2', type: 'decision', player: 'P_1' });
+      tree.addBranch(p2_counter.id, { action: '\\text{Accept}', type: 'terminal', payoff: '(\\delta s_2, \\delta (1 - s_2))' });
+
+      // If Reject again, t=2 final round
+      const p1_final = tree.addBranch(p2_counter.id, { action: '\\text{Reject}', type: 'decision', player: 'P_2' });
+      tree.addBranch(p1_final.id, { action: '\\text{Accept}', type: 'terminal', payoff: '(\\delta^2 (1 - s_3), \\delta^2 s_3)' });
+      tree.addBranch(p1_final.id, { action: '\\text{Breakdown}', type: 'terminal', payoff: '(0, 0)' });
+
+      tree.computeLayout();
+      return tree;
+    },
+
+    'principal-agent': () => {
+      const tree = new GameTreeModel();
+      tree.title = 'Principal-Agent Contracting (Moral Hazard)';
+      tree.orientation = 'vertical';
+      tree.levelDistance = 90;
+      tree.siblingDistance = 80;
+
+      // Principal chooses contract
+      const principal = tree.createNode({ type: 'decision', player: '\\text{Prin}' });
+      tree.rootId = principal.id;
+
+      // Offer Contract
+      const agent = tree.addBranch(principal.id, { action: 'w(y)', type: 'decision', player: '\\text{Agent}', isEquilibrium: true });
+      tree.addBranch(principal.id, { action: '\\text{No Deal}', type: 'terminal', payoff: '(0, \\bar{u})' });
+
+      // Agent chooses High or Low effort
+      const natHigh = tree.addBranch(agent.id, { action: 'e_H', type: 'chance', player: '\\mathcal{N}', isEquilibrium: true });
+      const natLow = tree.addBranch(agent.id, { action: 'e_L', type: 'chance', player: '\\mathcal{N}' });
+
+      // Nature outcome for High Effort (Good vs Bad output)
+      tree.addBranch(natHigh.id, { action: 'y_G', prob: 'p_H', type: 'terminal', payoff: '(y_G - w_H, u(w_H) - c_H)', isEquilibrium: true });
+      tree.addBranch(natHigh.id, { action: 'y_B', prob: '1 - p_H', type: 'terminal', payoff: '(y_B - w_L, u(w_L) - c_H)' });
+
+      // Nature outcome for Low Effort
+      tree.addBranch(natLow.id, { action: 'y_G', prob: 'p_L', type: 'terminal', payoff: '(y_G - w_H, u(w_H) - c_L)' });
+      tree.addBranch(natLow.id, { action: 'y_B', prob: '1 - p_L', type: 'terminal', payoff: '(y_B - w_L, u(w_L) - c_L)' });
+
+      tree.computeLayout();
+      return tree;
+    },
+
+    'stackelberg-duopoly': () => {
+      const tree = new GameTreeModel();
+      tree.title = 'Stackelberg Sequential Duopoly';
+      tree.orientation = 'vertical';
+      tree.levelDistance = 95;
+      tree.siblingDistance = 90;
+
+      // Leader firm commits to output first
+      const leader = tree.createNode({ type: 'decision', player: 'L' });
+      tree.rootId = leader.id;
+
+      const foll_high = tree.addBranch(leader.id, { action: 'q_L^H', type: 'decision', player: 'F', isEquilibrium: true });
+      const foll_low = tree.addBranch(leader.id, { action: 'q_L^L', type: 'decision', player: 'F' });
+
+      // If Leader produced High quantity
+      tree.addBranch(foll_high.id, { action: 'q_F^H', type: 'terminal', payoff: '(2, 2)' });
+      tree.addBranch(foll_high.id, { action: 'q_F^L', type: 'terminal', payoff: '(4, 1)', isEquilibrium: true });
+
+      // If Leader produced Low quantity
+      tree.addBranch(foll_low.id, { action: 'q_F^H', type: 'terminal', payoff: '(1, 4)' });
+      tree.addBranch(foll_low.id, { action: 'q_F^L', type: 'terminal', payoff: '(3, 3)' });
+
+      tree.computeLayout();
+      return tree;
+    },
+
+    'beer-quiche': () => {
+      const tree = new GameTreeModel();
+      tree.title = 'Beer-Quiche Signaling Game (Cho-Kreps)';
+      tree.orientation = 'vertical';
+      tree.levelDistance = 85;
+      tree.siblingDistance = 75;
+
+      // Nature picks Player 1 type: Surly (0.9) vs Wimp (0.1)
+      const nature = tree.createNode({ type: 'chance', player: '\\mathcal{N}' });
+      tree.rootId = nature.id;
+
+      const surly = tree.addBranch(nature.id, { action: '\\text{Surly}', prob: '0.9', type: 'decision', player: 'P_1' });
+      const wimp = tree.addBranch(nature.id, { action: '\\text{Wimp}', prob: '0.1', type: 'decision', player: 'P_1' });
+
+      // Surly can eat Beer (preferred +1) or Quiche (0)
+      const b_s = tree.addBranch(surly.id, { action: '\\text{Beer}', type: 'decision', player: 'P_2', isEquilibrium: true });
+      const q_s = tree.addBranch(surly.id, { action: '\\text{Quiche}', type: 'decision', player: 'P_2' });
+
+      // Wimp can eat Beer (0) or Quiche (preferred +1)
+      const b_w = tree.addBranch(wimp.id, { action: '\\text{Beer}', type: 'decision', player: 'P_2', isEquilibrium: true });
+      const q_w = tree.addBranch(wimp.id, { action: '\\text{Quiche}', type: 'decision', player: 'P_2' });
+
+      // P2 decisions after observing Beer
+      tree.addBranch(b_s.id, { action: '\\text{Duel}', type: 'terminal', payoff: '(1, 0)' });
+      tree.addBranch(b_s.id, { action: '\\text{No Duel}', type: 'terminal', payoff: '(3, 1)', isEquilibrium: true });
+      tree.addBranch(b_w.id, { action: '\\text{Duel}', type: 'terminal', payoff: '(0, 0)' });
+      tree.addBranch(b_w.id, { action: '\\text{No Duel}', type: 'terminal', payoff: '(2, 1)', isEquilibrium: true });
+
+      // P2 decisions after observing Quiche
+      tree.addBranch(q_s.id, { action: '\\text{Duel}', type: 'terminal', payoff: '(0, 0)' });
+      tree.addBranch(q_s.id, { action: '\\text{No Duel}', type: 'terminal', payoff: '(2, 1)' });
+      tree.addBranch(q_w.id, { action: '\\text{Duel}', type: 'terminal', payoff: '(1, 0)' });
+      tree.addBranch(q_w.id, { action: '\\text{No Duel}', type: 'terminal', payoff: '(3, 1)' });
+
+      // Info sets: P2 only knows if breakfast was Beer or Quiche, not true type
+      tree.addInfoSet([b_s.id, b_w.id], 'I_{\\text{Beer}}');
+      tree.addInfoSet([q_s.id, q_w.id], 'I_{\\text{Quiche}}');
+
+      tree.computeLayout();
+      return tree;
+    },
+
+    'trust-game': () => {
+      const tree = new GameTreeModel();
+      tree.title = 'Trust / Investment Game (Berg et al.)';
+      tree.orientation = 'vertical';
+      tree.levelDistance = 90;
+      tree.siblingDistance = 90;
+
+      const investor = tree.createNode({ type: 'decision', player: 'P_1' });
+      tree.rootId = investor.id;
+
+      // Investor either keeps endowment (10, 10) or transfers 10 (tripled to 30)
+      tree.addBranch(investor.id, { action: '\\text{Keep}', type: 'terminal', payoff: '(10, 10)' });
+      const trustee = tree.addBranch(investor.id, { action: '\\text{Invest}', type: 'decision', player: 'P_2' });
+
+      // Trustee either Keeps all 40 or Shares 15 back
+      tree.addBranch(trustee.id, { action: '\\text{Keep All}', type: 'terminal', payoff: '(0, 40)' });
+      tree.addBranch(trustee.id, { action: '\\text{Share Fairly}', type: 'terminal', payoff: '(15, 25)', isEquilibrium: true });
+
+      tree.computeLayout();
+      return tree;
     }
   };
 

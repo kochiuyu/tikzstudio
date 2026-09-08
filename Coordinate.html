@@ -161,6 +161,8 @@
           <optgroup label="Microeconomics">
             <option value="supply-demand">Supply &amp; Demand</option>
             <option value="monopoly">Monopoly &amp; DWL</option>
+            <option value="cournot-duopoly">Cournot Reaction Functions</option>
+            <option value="edgeworth-box">Edgeworth Box &amp; Contract Curve</option>
             <option value="utility-max">Utility Maximization</option>
             <option value="cost-curves">Firm Cost Curves (MC, ATC, AVC)</option>
             <option value="ppf">Production Possibility (PPF)</option>
@@ -174,6 +176,7 @@
           </optgroup>
           <optgroup label="Math &amp; Stats">
             <option value="normal-dist">Normal Distribution</option>
+            <option value="logistic-growth">Logistic Growth S-Curve</option>
             <option value="unit-circle">Trigonometric Unit Circle</option>
             <option value="lorenz-gini">Lorenz Curve &amp; Gini</option>
           </optgroup>
@@ -1162,10 +1165,10 @@
 
                 <!-- Category Filters -->
                 <div class="preset-filter-bar" id="preset-filter-bar">
-                  <button type="button" class="preset-filter-btn active" onclick="filterExampleModels('all', this)">All (14)</button>
-                  <button type="button" class="preset-filter-btn" onclick="filterExampleModels('micro', this)">Micro (6)</button>
+                  <button type="button" class="preset-filter-btn active" onclick="filterExampleModels('all', this)">All (17)</button>
+                  <button type="button" class="preset-filter-btn" onclick="filterExampleModels('micro', this)">Micro (8)</button>
                   <button type="button" class="preset-filter-btn" onclick="filterExampleModels('macro', this)">Macro (4)</button>
-                  <button type="button" class="preset-filter-btn" onclick="filterExampleModels('math', this)">Math &amp; Stats (3)</button>
+                  <button type="button" class="preset-filter-btn" onclick="filterExampleModels('math', this)">Math &amp; Stats (4)</button>
                   <button type="button" class="preset-filter-btn" onclick="filterExampleModels('physics', this)">Physics (1)</button>
                 </div>
 
@@ -1185,6 +1188,22 @@
                       <span class="preset-badge" style="background: rgba(37, 99, 235, 0.1); color: #2563eb;">Micro</span>
                     </div>
                     <span>Demand, MR, MC, monopoly price markup, shaded economic profit box, and competitive comparison</span>
+                  </button>
+
+                  <button type="button" class="preset-card-btn" data-category="micro" onclick="loadExampleModel('cournot-duopoly')">
+                    <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+                      <strong>Cournot Reaction Functions</strong>
+                      <span class="preset-badge" style="background: rgba(37, 99, 235, 0.1); color: #2563eb;">Micro</span>
+                    </div>
+                    <span>Duopoly best-response curves R1(q2) and R2(q1) intersecting at Cournot-Nash equilibrium output</span>
+                  </button>
+
+                  <button type="button" class="preset-card-btn" data-category="micro" onclick="loadExampleModel('edgeworth-box')">
+                    <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+                      <strong>Edgeworth Box &amp; Contract Curve</strong>
+                      <span class="preset-badge" style="background: rgba(37, 99, 235, 0.1); color: #2563eb;">Micro</span>
+                    </div>
+                    <span>Exchange economy box with origins OA and OB, tangencies of convex indifference curves, and Pareto contract curve</span>
                   </button>
 
                   <button type="button" class="preset-card-btn" data-category="micro" onclick="loadExampleModel('utility-max')">
@@ -1259,6 +1278,14 @@
                       <span class="preset-badge" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">Math</span>
                     </div>
                     <span>Symmetric bell curve with centerline mean μ, standard deviation bounds μ±σ, and 68.2% interval</span>
+                  </button>
+
+                  <button type="button" class="preset-card-btn" data-category="math" onclick="loadExampleModel('logistic-growth')">
+                    <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+                      <strong>Logistic Growth S-Curve</strong>
+                      <span class="preset-badge" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">Math</span>
+                    </div>
+                    <span>Population dynamics sigmoid with carrying capacity asymptote K, inflection point K/2, and exponential start</span>
                   </button>
 
                   <button type="button" class="preset-card-btn" data-category="math" onclick="loadExampleModel('unit-circle')">
