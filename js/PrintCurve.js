@@ -1,6 +1,10 @@
 //function to draw curve on browser
 
 function PrintCurve(ctx, e, f, g, h, i, j, k, l, name, dash, guide, curveColor) {
+    if (!ctx || !e || !f || !g || !h || !i || !j || !k || !l) return;
+    if (parseFloat(e.value) === 0 && parseFloat(f.value) === 0 && parseFloat(g.value) === 0 && parseFloat(h.value) === 0 && parseFloat(i.value) === 0 && parseFloat(j.value) === 0 && parseFloat(k.value) === 0 && parseFloat(l.value) === 0 && (!name || !name.value)) {
+        return;
+    }
 
     ctx.save();
 

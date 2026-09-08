@@ -14,6 +14,7 @@
   function UndoRedoManager(options) {
     this.name = options.name || 'Studio';
     this.maxHistory = options.maxHistory || 50;
+    this.storageKey = options.storageKey || null;
     this.capture = options.capture;
     this.restore = options.restore;
     this.onUpdate = options.onUpdate || function () {};
@@ -24,11 +25,45 @@
     this.isRestoring = false;
   }
 
+  UndoRedoManager.prototype.saveToStorage = function (state) {
+    if (!this.storageKey || !state) return;
+    try {
+      localStorage.setItem(this.storageKey, JSON.stringify(state));
+    } catch (e) {}
+  };
+
+  UndoRedoManager.prototype.restoreFromStorage = function () {
+    if (!this.storageKey || typeof this.restore !== 'function') return false;
+    try {
+      var raw = localStorage.getItem(this.storageKey);
+      if (!raw) return false;
+      var parsed = JSON.parse(raw);
+      if (!parsed) return false;
+      this.isRestoring = true;
+      this.restore(parsed);
+      this.currentState = parsed;
+      this.isRestoring = false;
+      this.triggerUpdate();
+      return true;
+    } catch (e) {
+      this.isRestoring = false;
+      return false;
+    }
+  };
+
+  UndoRedoManager.prototype.clearStorage = function () {
+    if (!this.storageKey) return;
+    try {
+      localStorage.removeItem(this.storageKey);
+    } catch (e) {}
+  };
+
   UndoRedoManager.prototype.init = function () {
     if (typeof this.capture !== 'function') return;
     this.currentState = this.capture();
     this.undoStack = [];
     this.redoStack = [];
+    this.saveToStorage(this.currentState);
     this.triggerUpdate();
   };
 
@@ -59,6 +94,7 @@
     // Advance current state and clear redo stack
     this.currentState = newState;
     this.redoStack = [];
+    this.saveToStorage(this.currentState);
     this.triggerUpdate();
   };
 
@@ -113,6 +149,7 @@
       this.isRestoring = false;
     }
 
+    this.saveToStorage(this.currentState);
     this.triggerUpdate();
     if (window.showToast) {
       window.showToast('↶ Undone: ' + entry.action);
@@ -142,6 +179,7 @@
       this.isRestoring = false;
     }
 
+    this.saveToStorage(this.currentState);
     this.triggerUpdate();
     if (window.showToast) {
       window.showToast('↷ Redone: ' + entry.action);
@@ -321,6 +359,10 @@
     if (typeof window.updateAxisCardUI === 'function') {
       window.updateAxisCardUI();
     }
+    var axShow = document.getElementById("axisshow");
+    if (axShow && typeof window.toggleAxisState === 'function') {
+      window.toggleAxisState(axShow.checked);
+    }
 
     // Refresh all color picker triggers
     var colorControls = document.querySelectorAll('select, input');
@@ -389,6 +431,7 @@
 
   var coordinateHistory = new UndoRedoManager({
     name: 'Coordinate',
+    storageKey: 'tikz_autosave_coordinate',
     maxHistory: 50,
     capture: captureCoordinateState,
     restore: restoreCoordinateState,
@@ -518,6 +561,7 @@
 
   var timelineHistory = new UndoRedoManager({
     name: 'Timeline',
+    storageKey: 'tikz_autosave_timeline',
     maxHistory: 50,
     capture: captureTimelineState,
     restore: restoreTimelineState,
@@ -534,6 +578,199 @@
 
 
   /* ==========================================================================
+     VENN & EULER STUDIO STATE SERIALIZER & RESTORER
+     ========================================================================== */
+
+  function captureVennState() {
+    if (window.activeVennModel && typeof window.activeVennModel.toJSON === 'function') {
+      return window.activeVennModel.toJSON();
+    }
+    return null;
+  }
+
+  function restoreVennState(state) {
+    if (!state || !window.activeVennModel) return;
+    window.activeVennModel.fromJSON(state);
+    if (window.canvasRenderer) window.canvasRenderer.render();
+    if (typeof window.syncSetInspectorValues === 'function') window.syncSetInspectorValues();
+    if (typeof window.updateTikZDisplay === 'function') window.updateTikZDisplay();
+  }
+
+  function updateVennButtonsUI(canUndo, canRedo, undoLabel, redoLabel) {
+    var undoBtns = [document.getElementById('btn-venn-undo')];
+    var redoBtns = [document.getElementById('btn-venn-redo')];
+
+    var undoTitle = canUndo ? ('Undo ' + (undoLabel || 'action') + ' (Ctrl+Z)') : 'Nothing to undo (Ctrl+Z)';
+    var redoTitle = canRedo ? ('Redo ' + (redoLabel || 'action') + ' (Ctrl+Y)') : 'Nothing to redo (Ctrl+Y)';
+
+    undoBtns.forEach(function (btn) {
+      if (!btn) return;
+      btn.disabled = !canUndo;
+      btn.title = undoTitle;
+      if (canUndo) btn.removeAttribute('disabled');
+      else btn.setAttribute('disabled', 'disabled');
+    });
+
+    redoBtns.forEach(function (btn) {
+      if (!btn) return;
+      btn.disabled = !canRedo;
+      btn.title = redoTitle;
+      if (canRedo) btn.removeAttribute('disabled');
+      else btn.setAttribute('disabled', 'disabled');
+    });
+  }
+
+  var vennHistory = new UndoRedoManager({
+    name: 'Venn',
+    storageKey: 'tikz_autosave_venn',
+    maxHistory: 50,
+    capture: captureVennState,
+    restore: restoreVennState,
+    onUpdate: updateVennButtonsUI
+  });
+
+  window.vennHistory = vennHistory;
+  window.vennUndo = function () {
+    return vennHistory.undo();
+  };
+  window.vennRedo = function () {
+    return vennHistory.redo();
+  };
+
+
+  /* ==========================================================================
+     FLOWCHART & STATE AUTOMATA STATE SERIALIZER & RESTORER
+     ========================================================================== */
+
+  function captureFlowchartState() {
+    var m = window.flowchartModel || window.model;
+    if (m && typeof m.toJSON === 'function') {
+      return m.toJSON();
+    }
+    return null;
+  }
+
+  function restoreFlowchartState(state) {
+    if (!state) return;
+    var m = window.flowchartModel || window.model;
+    if (m && typeof m.fromJSON === 'function') {
+      m.fromJSON(state);
+      var r = window.flowchartRenderer || window.renderer;
+      if (r) r.render();
+      if (typeof window.updateCodeDisplay === 'function') window.updateCodeDisplay();
+      if (typeof window.updateInspector === 'function') window.updateInspector();
+    }
+  }
+
+  function updateFlowchartButtonsUI(canUndo, canRedo, undoLabel, redoLabel) {
+    var undoBtns = [document.getElementById('btn-flowchart-undo')];
+    var redoBtns = [document.getElementById('btn-flowchart-redo')];
+
+    var undoTitle = canUndo ? ('Undo ' + (undoLabel || 'action') + ' (Ctrl+Z)') : 'Nothing to undo (Ctrl+Z)';
+    var redoTitle = canRedo ? ('Redo ' + (redoLabel || 'action') + ' (Ctrl+Y)') : 'Nothing to redo (Ctrl+Y)';
+
+    undoBtns.forEach(function (btn) {
+      if (!btn) return;
+      btn.disabled = !canUndo;
+      btn.title = undoTitle;
+      if (canUndo) btn.removeAttribute('disabled');
+      else btn.setAttribute('disabled', 'disabled');
+    });
+
+    redoBtns.forEach(function (btn) {
+      if (!btn) return;
+      btn.disabled = !canRedo;
+      btn.title = redoTitle;
+      if (canRedo) btn.removeAttribute('disabled');
+      else btn.setAttribute('disabled', 'disabled');
+    });
+  }
+
+  var flowchartHistory = new UndoRedoManager({
+    name: 'Flowchart',
+    storageKey: 'tikz_autosave_flowchart',
+    maxHistory: 50,
+    capture: captureFlowchartState,
+    restore: restoreFlowchartState,
+    onUpdate: updateFlowchartButtonsUI
+  });
+
+  window.flowchartHistory = flowchartHistory;
+  window.flowchartUndo = function () {
+    return flowchartHistory.undo();
+  };
+  window.flowchartRedo = function () {
+    return flowchartHistory.redo();
+  };
+
+
+  /* ==========================================================================
+     GAME TREE STUDIO STATE SERIALIZER & RESTORER
+     ========================================================================== */
+
+  function captureGameTreeState() {
+    var m = window.gameTreeModel || window.model;
+    if (m && typeof m.toJSON === 'function') {
+      return m.toJSON();
+    }
+    return null;
+  }
+
+  function restoreGameTreeState(state) {
+    if (!state) return;
+    var m = window.gameTreeModel || window.model;
+    if (m && typeof m.fromJSON === 'function') {
+      m.fromJSON(state);
+      var r = window.gameTreeRenderer || window.renderer;
+      if (r) r.render();
+      if (typeof window.updateCodeDisplay === 'function') window.updateCodeDisplay();
+      if (typeof window.updateInspector === 'function') window.updateInspector();
+    }
+  }
+
+  function updateGameTreeButtonsUI(canUndo, canRedo, undoLabel, redoLabel) {
+    var undoBtns = [document.getElementById('btn-gametree-undo')];
+    var redoBtns = [document.getElementById('btn-gametree-redo')];
+
+    var undoTitle = canUndo ? ('Undo ' + (undoLabel || 'action') + ' (Ctrl+Z)') : 'Nothing to undo (Ctrl+Z)';
+    var redoTitle = canRedo ? ('Redo ' + (redoLabel || 'action') + ' (Ctrl+Y)') : 'Nothing to redo (Ctrl+Y)';
+
+    undoBtns.forEach(function (btn) {
+      if (!btn) return;
+      btn.disabled = !canUndo;
+      btn.title = undoTitle;
+      if (canUndo) btn.removeAttribute('disabled');
+      else btn.setAttribute('disabled', 'disabled');
+    });
+
+    redoBtns.forEach(function (btn) {
+      if (!btn) return;
+      btn.disabled = !canRedo;
+      btn.title = redoTitle;
+      if (canRedo) btn.removeAttribute('disabled');
+      else btn.setAttribute('disabled', 'disabled');
+    });
+  }
+
+  var gameTreeHistory = new UndoRedoManager({
+    name: 'GameTree',
+    storageKey: 'tikz_autosave_gametree',
+    maxHistory: 50,
+    capture: captureGameTreeState,
+    restore: restoreGameTreeState,
+    onUpdate: updateGameTreeButtonsUI
+  });
+
+  window.gameTreeHistory = gameTreeHistory;
+  window.gameTreeUndo = function () {
+    return gameTreeHistory.undo();
+  };
+  window.gameTreeRedo = function () {
+    return gameTreeHistory.redo();
+  };
+
+
+  /* ==========================================================================
      GLOBAL SHORTCUT LISTENER (Ctrl+Z, Ctrl+Y, Cmd+Z, Cmd+Shift+Z)
      ========================================================================== */
 
@@ -545,18 +782,19 @@
     var isY = e.key === 'y' || e.key === 'Y';
     if (!isZ && !isY) return;
 
-    // Check if in Coordinate Studio or Timeline Studio
+    // Check which studio is active
     var isCoordinatePage = !!document.getElementById('bgcanvas') || !!document.getElementById('axisform');
     var isTimelinePage = !!document.getElementById('btn-timeline-undo') || !!document.getElementById('beginTime');
+    var isVennPage = !!document.getElementById('btn-venn-undo') || !!document.getElementById('vennCanvas');
+    var isFlowchartPage = !!document.getElementById('btn-flowchart-undo') || !!document.getElementById('flowchartCanvas');
+    var isGameTreePage = !!document.getElementById('btn-gametree-undo') || !!document.getElementById('gameTreeCanvas');
 
     // If focused on an input element, only intercept if target isn't currently in native text editing
     var activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
     var isTextInput = activeTag === 'input' || activeTag === 'textarea';
 
-    // If inside a text input and just standard typing undo, we can let native input handle it UNLESS
-    // it's an explicit redo (Ctrl+Y / Ctrl+Shift+Z) or user is not typing or canvas is target
+    // If inside a text input and just standard typing undo, let native text undo proceed
     if (isTextInput && !e.shiftKey && isZ && activeTag === 'input') {
-      // Let native text undo proceed for active input field if user is editing text
       return;
     }
 
@@ -572,6 +810,21 @@
           e.preventDefault();
           window.timelineUndo();
         }
+      } else if (isVennPage && window.vennHistory) {
+        if (window.vennHistory.canUndo()) {
+          e.preventDefault();
+          window.vennUndo();
+        }
+      } else if (isFlowchartPage && window.flowchartHistory) {
+        if (window.flowchartHistory.canUndo()) {
+          e.preventDefault();
+          window.flowchartUndo();
+        }
+      } else if (isGameTreePage && window.gameTreeHistory) {
+        if (window.gameTreeHistory.canUndo()) {
+          e.preventDefault();
+          window.gameTreeUndo();
+        }
       }
     } else if (isY || (isZ && e.shiftKey)) {
       // Redo
@@ -584,6 +837,21 @@
         if (window.timelineHistory.canRedo()) {
           e.preventDefault();
           window.timelineRedo();
+        }
+      } else if (isVennPage && window.vennHistory) {
+        if (window.vennHistory.canRedo()) {
+          e.preventDefault();
+          window.vennRedo();
+        }
+      } else if (isFlowchartPage && window.flowchartHistory) {
+        if (window.flowchartHistory.canRedo()) {
+          e.preventDefault();
+          window.flowchartRedo();
+        }
+      } else if (isGameTreePage && window.gameTreeHistory) {
+        if (window.gameTreeHistory.canRedo()) {
+          e.preventDefault();
+          window.gameTreeRedo();
         }
       }
     }
@@ -599,7 +867,11 @@
     if (document.getElementById('axisform') || document.getElementById('bgcanvas')) {
       // Initialize initial state snapshot after initial draw completes
       setTimeout(function () {
+        var restored = coordinateHistory.restoreFromStorage();
         coordinateHistory.init();
+        if (restored && window.showToast) {
+          window.showToast('Restored previous coordinate session');
+        }
       }, 350);
 
       // Track focus & blur on form inputs to push undo states on changes
@@ -633,7 +905,11 @@
     // 2. If Timeline Studio is present
     if (document.getElementById('beginTime') || document.getElementById('result')) {
       setTimeout(function () {
+        var restored = timelineHistory.restoreFromStorage();
         timelineHistory.init();
+        if (restored && window.showToast) {
+          window.showToast('Restored previous timeline session');
+        }
       }, 200);
 
       var timelineInputs = ['beginTime', 'endTime', 'scale', 'fontsize', 'coordinate', 'linecolor', 'pointcolor'];
@@ -652,6 +928,27 @@
           }
         });
       });
+    }
+
+    // 3. If Venn Studio is present
+    if (document.getElementById('vennCanvas') || document.getElementById('btn-venn-undo')) {
+      setTimeout(function () {
+        vennHistory.init();
+      }, 250);
+    }
+
+    // 4. If Flowchart Studio is present
+    if (document.getElementById('flowchartCanvas') || document.getElementById('btn-flowchart-undo')) {
+      setTimeout(function () {
+        flowchartHistory.init();
+      }, 250);
+    }
+
+    // 5. If Game Tree Studio is present
+    if (document.getElementById('gameTreeCanvas') || document.getElementById('btn-gametree-undo')) {
+      setTimeout(function () {
+        gameTreeHistory.init();
+      }, 250);
     }
   }
 

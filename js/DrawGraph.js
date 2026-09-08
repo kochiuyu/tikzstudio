@@ -14,6 +14,14 @@ if (typeof window !== 'undefined') {
     if (typeof window.nowColor === 'undefined') window.nowColor = "#FFFFFF";
 }
 
+window.isAxisActive = function () {
+    var axShow = document.getElementById("axisshow");
+    if (axShow) return !!axShow.checked;
+    var xSizeVal = parseFloat(document.getElementById("xsize")?.value) || 0;
+    var ySizeVal = parseFloat(document.getElementById("ysize")?.value) || 0;
+    return (xSizeVal > 0 || ySizeVal > 0);
+};
+
 // main function to draw canvas and produce tikz code
 function DrawGraph(isEample, customCanvas, scaleMultiplier) {
 	var isExport = !!customCanvas;
@@ -25,7 +33,6 @@ function DrawGraph(isEample, customCanvas, scaleMultiplier) {
 	var axOpts = ['thick', '<->'];
 	if (axTikzCol) axOpts.push(axTikzCol);
 	var nodeColOpt = axTikzCol ? (', ' + axTikzCol) : '';
-	var axis = "\\draw[" + axOpts.join(', ') + "] (0,"+ document.getElementById("ysize").value+") node[above" + nodeColOpt + "]{$"+document.getElementById("yname").value+"$}--(0,0)--("+document.getElementById("xsize").value+",0) node[right" + nodeColOpt + "]{$"+document.getElementById("xname").value+"$}; % Axis and Label<br>";
 	var lines="";
 	var curves="";
 	var rects="";
@@ -37,6 +44,16 @@ function DrawGraph(isEample, customCanvas, scaleMultiplier) {
 		var xnameEl = document.getElementById("xname");
 		var ynameEl = document.getElementById("yname");
 		var originEl = document.getElementById("label_origin_name");
+		var axShow = document.getElementById("axisshow");
+		if (axShow) {
+			axShow.checked = true;
+			var pill = document.getElementById("axis-status-pill");
+			if (pill) {
+				pill.textContent = "Active";
+				pill.style.background = "rgba(16, 185, 129, 0.12)";
+				pill.style.color = "#059669";
+			}
+		}
 
 		if (xsizeEl && (!xsizeEl.value || xsizeEl.value == 0)) xsizeEl.value = 10;
 		if (ysizeEl && (!ysizeEl.value || ysizeEl.value == 0)) ysizeEl.value = 10;
@@ -44,15 +61,15 @@ function DrawGraph(isEample, customCanvas, scaleMultiplier) {
 		if (ynameEl && !ynameEl.value) ynameEl.value = 'P';
 		if (originEl && !originEl.value) originEl.value = '0';
 
-		var myxsize = xsizeEl ? xsizeEl.value : 10;
-		var myysize = ysizeEl ? ysizeEl.value : 10;
+		var myxsize = xsizeEl ? parseFloat(xsizeEl.value) || 10 : 10;
+		var myysize = ysizeEl ? parseFloat(ysizeEl.value) || 10 : 10;
 		var myxname = xnameEl ? xnameEl.value : 'Q';
 		var myyname = ynameEl ? ynameEl.value : 'P';
 	} else {
-		var myxsize = document.getElementById("xsize") ? document.getElementById("xsize").value : 10;
-		var myysize = document.getElementById("ysize") ? document.getElementById("ysize").value : 10;
-		var myxname = document.getElementById("xname") ? document.getElementById("xname").value : 'x';
-		var myyname = document.getElementById("yname") ? document.getElementById("yname").value : 'y';
+		var myxsize = document.getElementById("xsize") ? (parseFloat(document.getElementById("xsize").value) || 0) : 0;
+		var myysize = document.getElementById("ysize") ? (parseFloat(document.getElementById("ysize").value) || 0) : 0;
+		var myxname = document.getElementById("xname") ? document.getElementById("xname").value : '';
+		var myyname = document.getElementById("yname") ? document.getElementById("yname").value : '';
 	}
 
     //drawing canvas below
@@ -103,7 +120,16 @@ function DrawGraph(isEample, customCanvas, scaleMultiplier) {
 
     // Modular shape rendering functions
     function renderAxisElement() {
+        if (!window.isAxisActive || !window.isAxisActive()) return "";
         if (window.isLayerVisible && !window.isLayerVisible('axis', 1)) return "";
+        var xSizeVal = parseFloat(document.getElementById("xsize")?.value) || 0;
+        var ySizeVal = parseFloat(document.getElementById("ysize")?.value) || 0;
+        if (xSizeVal <= 0 && ySizeVal <= 0 && myxsize <= 0 && myysize <= 0) return "";
+
+        var effX = xSizeVal > 0 ? xSizeVal : (myxsize > 0 ? myxsize : 10);
+        var effY = ySizeVal > 0 ? ySizeVal : (myysize > 0 ? myysize : 10);
+        var effXName = (myxname && myxname.trim()) ? myxname : 'x';
+        var effYName = (myyname && myyname.trim()) ? myyname : 'y';
 
         ctx.save();
         ctx.strokeStyle = axHex;
@@ -111,15 +137,13 @@ function DrawGraph(isEample, customCanvas, scaleMultiplier) {
 
         // Draw axis lines
         ctx.beginPath();
-        ctx.moveTo(0, scale * myysize);
+        ctx.moveTo(0, scale * effY);
         ctx.lineTo(0, 0);
-        ctx.lineTo(scale * myxsize, 0);
+        ctx.lineTo(scale * effX, 0);
         ctx.lineWidth = 2;
         ctx.stroke();
 
         // y-arrow
-        var ySizeVal = parseFloat(document.getElementById("ysize")?.value) || 0;
-        var effY = (ySizeVal !== 0) ? ySizeVal : myysize;
         ctx.beginPath();
         ctx.moveTo(0, scale * effY);
         ctx.lineTo(-5.5, scale * effY - 11);
@@ -130,8 +154,6 @@ function DrawGraph(isEample, customCanvas, scaleMultiplier) {
         ctx.stroke();
 
         // x-arrow
-        var xSizeVal = parseFloat(document.getElementById("xsize")?.value) || 0;
-        var effX = (xSizeVal !== 0) ? xSizeVal : myxsize;
         ctx.beginPath();
         ctx.moveTo(scale * effX, 0);
         ctx.lineTo(scale * effX - 11, 5.5);
@@ -143,27 +165,27 @@ function DrawGraph(isEample, customCanvas, scaleMultiplier) {
 
         // x-axis name
         ctx.save();
-        ctx.translate(scale * myxsize + 10, -10);
+        ctx.translate(scale * effX + 10, -10);
         ctx.scale(1, -1);
         ctx.fillStyle = axHex;
         ctx.font = "20px Arial";
         if (window.drawMathText) {
-            window.drawMathText(ctx, myxname, 0, 0, { fontSize: 20, color: axHex, align: "left", baseline: "middle" });
+            window.drawMathText(ctx, effXName, 0, 0, { fontSize: 20, color: axHex, align: "left", baseline: "middle" });
         } else {
-            ctx.fillText(myxname, 0, 0);
+            ctx.fillText(effXName, 0, 0);
         }
         ctx.restore();
 
         // y-axis name
         ctx.save();
-        ctx.translate(-10, scale * myysize + 10);
+        ctx.translate(-10, scale * effY + 10);
         ctx.scale(1, -1);
         ctx.fillStyle = axHex;
         ctx.font = "20px Arial";
         if (window.drawMathText) {
-            window.drawMathText(ctx, myyname, 0, 0, { fontSize: 20, color: axHex, align: "right", baseline: "middle" });
+            window.drawMathText(ctx, effYName, 0, 0, { fontSize: 20, color: axHex, align: "right", baseline: "middle" });
         } else {
-            ctx.fillText(myyname, 0, 0);
+            ctx.fillText(effYName, 0, 0);
         }
         ctx.restore();
 
@@ -287,7 +309,7 @@ function DrawGraph(isEample, customCanvas, scaleMultiplier) {
         ctx.restore();
 
         // TikZ string
-        var axTikz = "\\draw[" + axOpts.join(', ') + "] (0," + myysize + ") node[above" + nodeColOpt + "]{$" + myyname + "$}--(0,0)--(" + myxsize + ",0) node[right" + nodeColOpt + "]{$" + myxname + "$}; % Axis and Label<br>";
+        var axTikz = "\\draw[" + axOpts.join(', ') + "] (0," + effY + ") node[above" + nodeColOpt + "]{$" + effYName + "$}--(0,0)--(" + effX + ",0) node[right" + nodeColOpt + "]{$" + effXName + "$}; % Axis and Label<br>";
         axTikz += "\\node [below left] at (0,0) {$" + origVal + "$};%Origin<br>";
         if (lx1n && lx1n.value !== "") {
             axTikz += "\\node [below] at (" + (lx1 ? lx1.value : 0) + ",0) {$" + lx1n.value + "$}; % X-Label 1<br>";
@@ -576,7 +598,9 @@ function DrawGraph(isEample, customCanvas, scaleMultiplier) {
     ctx.restore();
 
     var ansEl = document.getElementById("answer");
-    if (ansEl) ansEl.innerHTML = finalTikz;
+    if (ansEl) {
+        ansEl.innerHTML = finalTikz.trim() ? finalTikz : "% (Empty canvas - use toolbar to add shapes or enable axes)<br>";
+    }
 
     if (window.layerManager) {
         window.layerManager.updateLayerLabels();

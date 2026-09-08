@@ -18,6 +18,8 @@ function PrintLine(ctx, a, b, c, d, name, dash, lineColor, arrowEl, widthEl, sty
     var col = (lineColor && lineColor.value) ? lineColor.value : 'black';
     var labelText = (name && name.value) ? name.value : '';
 
+    if (x1 === x2 && y1 === y2 && !labelText) return;
+
     // Line thickness (pt to px equivalent on canvas)
     var strokeW = 1.4;
     if (widthVal === 'ultra thin') strokeW = 0.8;

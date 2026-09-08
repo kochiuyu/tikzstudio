@@ -197,6 +197,29 @@
         try { localStorage.setItem('tikz_png_grid', PNG_CONFIG.includeGrid); } catch (e) {}
     }
 
+    /**
+     * Download the current canvas drawing as an SVG vector-wrapper document
+     */
+    function downloadCanvasAsSVG(options) {
+        options = options || {};
+        var srcCanvas = document.getElementById('myCanvas');
+        if (!srcCanvas) return;
+        var w = srcCanvas.width || 600;
+        var h = srcCanvas.height || 580;
+        var dataUrl = srcCanvas.toDataURL('image/png');
+        var svg = '<?xml version="1.0" encoding="UTF-8"?>\n' +
+            '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '">\n' +
+            '  <image width="' + w + '" height="' + h + '" xlink:href="' + dataUrl + '" />\n' +
+            '</svg>\n';
+        var blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = (options.filename || 'coordinate-graph') + '.svg';
+        a.click();
+        URL.revokeObjectURL(a.href);
+        if (typeof showToast === 'function') showToast('Downloaded coordinate-graph.svg');
+    }
+
     // Close options menu when clicking outside
     document.addEventListener('click', function(e) {
         var menu = document.getElementById('png-options-menu');
@@ -211,6 +234,7 @@
     // Global exports
     window.downloadCanvasAsPNG = downloadCanvasAsPNG;
     window.downloadTimelineAsPNG = downloadCanvasAsPNG;
+    window.downloadCanvasAsSVG = downloadCanvasAsSVG;
     window.togglePngExportOptions = togglePngExportOptions;
     window.updatePngScalePreference = updatePngScalePreference;
     window.updatePngBgPreference = updatePngBgPreference;

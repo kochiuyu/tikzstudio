@@ -49,15 +49,17 @@
       var xname = document.getElementById('xname');
       var yname = document.getElementById('yname');
       var axCol = document.getElementById('axisColor');
+      var axShow = document.getElementById('axisshow');
       var xval = xsize ? parseFloat(xsize.value) || 0 : 0;
       var yval = ysize ? parseFloat(ysize.value) || 0 : 0;
+      var isAct = window.isAxisActive ? window.isAxisActive() : (axShow ? axShow.checked : (xval > 0 || yval > 0));
       details.name = 'Axes & Ticks (' + (xname ? xname.value || 'x' : 'x') + ', ' + (yname ? yname.value || 'y' : 'y') + ')';
       details.color = axCol ? (axCol.value === 'black' ? '#0f172a' : axCol.value) : '#0f172a';
-      details.desc = 'X: 0 → ' + xval + ' | Y: 0 → ' + yval;
+      details.desc = isAct ? ('X: 0 → ' + xval + ' | Y: 0 → ' + yval) : 'Inactive';
       details.badge = 'Axes';
-      details.visible = this.axisVisible;
+      details.visible = this.axisVisible && isAct;
       details.locked = this.axisLocked;
-      details.hasData = true; // Always present
+      details.hasData = isAct;
       return details;
     }
 
@@ -256,7 +258,9 @@
 
     // 6. Coordinate Axis (Base background layer, rendered first)
     var axisDet = this.getElementDetails('axis', 1);
-    detected.push(axisDet);
+    if (axisDet && axisDet.hasData) {
+      detected.push(axisDet);
+    }
 
     var newLayerOrder = [];
     if (resetOrder) {

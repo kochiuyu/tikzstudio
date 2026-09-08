@@ -375,11 +375,19 @@
     if (toolType === 'axis') {
       state.active = true;
       deactivateAllDrawCheckboxes();
+      if (typeof window.toggleAxisState === 'function') {
+        window.toggleAxisState(true);
+      } else {
+        var axShow = document.getElementById("axisshow");
+        if (axShow) axShow.checked = true;
+      }
       var xVal = parseFloat(document.getElementById("xsize") ? document.getElementById("xsize").value : 0) || 0;
       var yVal = parseFloat(document.getElementById("ysize") ? document.getElementById("ysize").value : 0) || 0;
       if (xVal === 0 && yVal === 0) {
         if (document.getElementById("xsize")) document.getElementById("xsize").value = "10";
         if (document.getElementById("ysize")) document.getElementById("ysize").value = "10";
+        if (document.getElementById("xname") && !document.getElementById("xname").value) document.getElementById("xname").value = "x";
+        if (document.getElementById("yname") && !document.getElementById("yname").value) document.getElementById("yname").value = "y";
         if (typeof DrawGraph === 'function') DrawGraph();
       }
       if (typeof openAxisCard === 'function') openAxisCard();
@@ -1239,10 +1247,12 @@
 
     var rawX = parseFloat(xsizeEl ? xsizeEl.value : 0) || 0;
     var rawY = parseFloat(ysizeEl ? ysizeEl.value : 0) || 0;
-    var effX = rawX > 0 ? rawX : 10;
-    var effY = rawY > 0 ? rawY : 10;
+    var isActive = window.isAxisActive ? window.isAxisActive() : (rawX > 0 || rawY > 0);
+    var effX = isActive ? (rawX > 0 ? rawX : 10) : 0;
+    var effY = isActive ? (rawY > 0 ? rawY : 10) : 0;
 
     return {
+      isActive: isActive,
       rawXSize: rawX,
       rawYSize: rawY,
       effectiveXSize: effX,
@@ -1266,6 +1276,7 @@
    */
   function hitTestAxisHandles(pos) {
     var axis = getAxisData();
+    if (!axis.isActive || axis.effectiveXSize <= 0 || axis.effectiveYSize <= 0) return null;
     var pXArrow = window.mathToScreen(axis.effectiveXSize, 0);
     var pYArrow = window.mathToScreen(0, axis.effectiveYSize);
     var pCorner = window.mathToScreen(axis.effectiveXSize, axis.effectiveYSize);
@@ -1397,6 +1408,7 @@
    */
   function renderAxisHandles(ctx, activeHandle) {
     var axis = getAxisData();
+    if (!axis.isActive || axis.effectiveXSize <= 0 || axis.effectiveYSize <= 0) return;
     var pOrigin = window.mathToScreen(0, 0);
     var pXArrow = window.mathToScreen(axis.effectiveXSize, 0);
     var pYArrow = window.mathToScreen(0, axis.effectiveYSize);
@@ -2456,15 +2468,17 @@
     if (!(window.layerManager && window.layerManager.isLocked('axis', 1)) &&
         !(window.isLayerVisible && !window.isLayerVisible('axis', 1))) {
       var axis = getAxisData();
-      var axHandle = hitTestAxisHandles(pos);
-      if (axHandle) {
-        return { type: 'axis', index: 1 };
-      }
-      if (pos.x >= -tolerance && pos.x <= axis.effectiveXSize + tolerance && Math.abs(pos.y) <= tolerance + 0.15) {
-        return { type: 'axis', index: 1 };
-      }
-      if (pos.y >= -tolerance && pos.y <= axis.effectiveYSize + tolerance && Math.abs(pos.x) <= tolerance + 0.15) {
-        return { type: 'axis', index: 1 };
+      if (axis.isActive && axis.effectiveXSize > 0 && axis.effectiveYSize > 0) {
+        var axHandle = hitTestAxisHandles(pos);
+        if (axHandle) {
+          return { type: 'axis', index: 1 };
+        }
+        if (pos.x >= -tolerance && pos.x <= axis.effectiveXSize + tolerance && Math.abs(pos.y) <= tolerance + 0.15) {
+          return { type: 'axis', index: 1 };
+        }
+        if (pos.y >= -tolerance && pos.y <= axis.effectiveYSize + tolerance && Math.abs(pos.x) <= tolerance + 0.15) {
+          return { type: 'axis', index: 1 };
+        }
       }
     }
 
@@ -3302,10 +3316,16 @@
     }
 
     if (sel.type === 'axis') {
-      var xsizeEl = document.getElementById("xsize");
-      var ysizeEl = document.getElementById("ysize");
-      if (xsizeEl) xsizeEl.value = 10;
-      if (ysizeEl) ysizeEl.value = 10;
+      if (typeof window.toggleAxisState === 'function') {
+        window.toggleAxisState(false);
+      } else {
+        var axShow = document.getElementById("axisshow");
+        if (axShow) axShow.checked = false;
+        var xsizeEl = document.getElementById("xsize");
+        var ysizeEl = document.getElementById("ysize");
+        if (xsizeEl) xsizeEl.value = 0;
+        if (ysizeEl) ysizeEl.value = 0;
+      }
       var x1 = document.getElementById("label_x_1"); if (x1) x1.value = 0;
       var x1n = document.getElementById("label_x_1_name"); if (x1n) x1n.value = "";
       var x2 = document.getElementById("label_x_2"); if (x2) x2.value = 0;
@@ -3314,6 +3334,7 @@
       var y1n = document.getElementById("label_y_1_name"); if (y1n) y1n.value = "";
       var y2 = document.getElementById("label_y_2"); if (y2) y2.value = 0;
       var y2n = document.getElementById("label_y_2_name"); if (y2n) y2n.value = "";
+      if (typeof closeAxisCard === 'function') closeAxisCard();
       if (typeof updateAxisCardUI === 'function') updateAxisCardUI();
     } else if (sel.type === 'rectangle') {
       if (typeof delR === 'function') delR(sel.index);

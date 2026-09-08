@@ -19,25 +19,80 @@ function showToast(message) {
   }, 2500);
 }
 
-function copyLatexCode() {
-  var answerEl = document.getElementById('answer');
-  var codeContent = '';
+window.tikzSnippetOnly = false;
+
+function setTikzExportMode(snippetOnly) {
+  window.tikzSnippetOnly = !!snippetOnly;
   
-  var pre = document.querySelector('.code-viewport pre') || document.querySelector('pre.line-numbers');
-  if (pre) {
-    codeContent = pre.innerText || pre.textContent;
-  } else if (answerEl) {
-    codeContent = "\\documentclass{minimal}\n\\usepackage{tikz}\n\\begin{document}\n\\begin{tikzpicture}\n" + 
-      (answerEl.innerText || answerEl.textContent) + 
-      "\n\\end{tikzpicture}\n\\end{document}";
+  var btnStandalone = document.getElementById('btn-tikz-standalone');
+  var btnSnippet = document.getElementById('btn-tikz-snippet');
+  if (btnStandalone && btnSnippet) {
+    if (window.tikzSnippetOnly) {
+      btnStandalone.classList.remove('active');
+      btnSnippet.classList.add('active');
+    } else {
+      btnStandalone.classList.add('active');
+      btnSnippet.classList.remove('active');
+    }
   }
-  
-  // Strip HTML entities or clean line breaks
+
+  // Toggle visible preamble and postamble in viewport
+  var preambles = document.querySelectorAll('.tikz-preamble-wrapper');
+  var postambles = document.querySelectorAll('.tikz-postamble-wrapper');
+  preambles.forEach(function(el) {
+    el.style.display = window.tikzSnippetOnly ? 'none' : 'inline';
+  });
+  postambles.forEach(function(el) {
+    el.style.display = window.tikzSnippetOnly ? 'none' : 'inline';
+  });
+}
+
+function getLatexCode(snippetOnly) {
+  var useSnippet = typeof snippetOnly === 'boolean' ? snippetOnly : window.tikzSnippetOnly;
+  var answerEl = document.getElementById('answer');
+  var innerTikz = answerEl ? (answerEl.innerText || answerEl.textContent || '').trim() : '';
+
+  if (useSnippet) {
+    return "\\begin{tikzpicture}\n" + innerTikz + "\n\\end{tikzpicture}";
+  }
+
+  return "% TikZ Diagram generated with TikZ Studio\n" +
+    "\\documentclass[border=8pt,tikz]{standalone}\n" +
+    "\\usepackage{tikz}\n" +
+    "\\usetikzlibrary{arrows.meta, positioning, calc}\n" +
+    "\\usepackage{amsmath,amssymb}\n" +
+    "\\usepackage{xcolor}\n\n" +
+    "\\begin{document}\n" +
+    "\\begin{tikzpicture}\n" +
+    innerTikz + "\n" +
+    "\\end{tikzpicture}\n" +
+    "\\end{document}\n";
+}
+
+function openInOverleaf() {
+  var fullDoc = getLatexCode(false); // Overleaf requires compilable standalone document
+  var form = document.createElement('form');
+  form.method = 'POST';
+  form.action = 'https://www.overleaf.com/docs';
+  form.target = '_blank';
+  var input = document.createElement('input');
+  input.type = 'hidden';
+  input.name = 'snip';
+  input.value = fullDoc;
+  form.appendChild(input);
+  document.body.appendChild(form);
+  form.submit();
+  document.body.removeChild(form);
+  showToast('Opening project in Overleaf...');
+}
+
+function copyLatexCode() {
+  var codeContent = getLatexCode(window.tikzSnippetOnly);
   codeContent = codeContent.replace(/\r\n/g, '\n');
 
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(codeContent).then(function() {
-      showToast('LaTeX TikZ code copied to clipboard!');
+      showToast(window.tikzSnippetOnly ? 'tikzpicture snippet copied!' : 'Standalone LaTeX document copied!');
       updateCopyButtonFeedback();
     }).catch(function() {
       legacyCopy(codeContent);
@@ -56,7 +111,7 @@ function legacyCopy(text) {
   textarea.select();
   try {
     document.execCommand('copy');
-    showToast('LaTeX TikZ code copied to clipboard!');
+    showToast(window.tikzSnippetOnly ? 'tikzpicture snippet copied!' : 'Standalone LaTeX document copied!');
     updateCopyButtonFeedback();
   } catch (err) {
     alert('Please copy manually:\n' + text);
@@ -84,14 +139,7 @@ function updateCopyButtonFeedback() {
 }
 
 function downloadTexFile(filename) {
-  var pre = document.querySelector('.code-viewport pre') || document.querySelector('pre.line-numbers');
-  var codeContent = pre ? (pre.innerText || pre.textContent) : '';
-  if (!codeContent) {
-    var answerEl = document.getElementById('answer');
-    codeContent = "\\documentclass{minimal}\n\\usepackage{tikz}\n\\begin{document}\n\\begin{tikzpicture}\n" + 
-      (answerEl ? (answerEl.innerText || answerEl.textContent) : '') + 
-      "\n\\end{tikzpicture}\n\\end{document}";
-  }
+  var codeContent = getLatexCode(window.tikzSnippetOnly);
   var blob = new Blob([codeContent], { type: 'text/plain;charset=utf-8' });
   var url = URL.createObjectURL(blob);
   var link = document.createElement('a');

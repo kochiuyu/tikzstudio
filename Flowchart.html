@@ -192,6 +192,22 @@
           🧲 Snap Grid: ON
         </button>
 
+        <div style="height: 20px; width: 1px; background: var(--color-border); margin: 0 0.2rem;"></div>
+
+        <!-- Undo / Redo Actions -->
+        <div class="undo-redo-group" style="display: inline-flex; align-items: center; gap: 0.35rem;">
+          <button type="button" id="btn-flowchart-undo" class="btn-modern btn-modern-secondary" onclick="flowchartUndo();" title="Undo action (Ctrl+Z)" disabled>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
+            Undo
+          </button>
+          <button type="button" id="btn-flowchart-redo" class="btn-modern btn-modern-secondary" onclick="flowchartRedo();" title="Redo action (Ctrl+Y / Ctrl+Shift+Z)" disabled>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"/></svg>
+            Redo
+          </button>
+        </div>
+
+        <div style="height: 20px; width: 1px; background: var(--color-border); margin: 0 0.2rem;"></div>
+
         <!-- Actions -->
         <button class="btn-modern btn-modern-secondary" onclick="fitCanvas();" title="Fit diagram to screen">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -571,6 +587,18 @@
       renderer = new window.FlowchartCanvasRenderer(canvas, model);
       renderer.fitToScreen();
 
+      window.flowchartModel = model;
+      window.flowchartRenderer = renderer;
+
+      // Check auto-saved session
+      if (window.flowchartHistory) {
+        if (window.flowchartHistory.restoreFromStorage()) {
+          renderer.model = model;
+          renderer.fitToScreen();
+          if (window.showToast) window.showToast('Restored previous flowchart session');
+        }
+      }
+
       updateCodeDisplay();
       updateElementsList();
 
@@ -610,6 +638,7 @@
       }
 
       renderer.model = model;
+      window.flowchartModel = model;
       renderer.selectedNodeId = null;
       renderer.selectedEdgeId = null;
       renderer.fitToScreen();
@@ -946,6 +975,9 @@
       const pre = document.getElementById('tikz-output-code');
       if (!pre || !model) return;
       pre.textContent = model.generateTikZ({ standalone: !isSnippetOnly });
+      if (window.flowchartHistory && !window.flowchartHistory.isRestoring) {
+        window.flowchartHistory.push();
+      }
     }
 
     // Export & Overleaf Actions

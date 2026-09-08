@@ -1925,7 +1925,11 @@
           ctx.fillStyle = c.strokeColor || '#1e293b';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
-          ctx.fillText(c.label, lx, ly);
+          if (window.drawMathText) {
+            window.drawMathText(ctx, c.label, lx, ly, { fontSize: 16, color: c.strokeColor || '#1e293b', align: 'center', baseline: 'middle' });
+          } else {
+            ctx.fillText(c.label, lx, ly);
+          }
         }
 
         // Selection Handles and Transform Gizmo
@@ -2029,7 +2033,11 @@
 
         ctx.setLineDash([]);
         ctx.fillStyle = '#0f172a';
-        ctx.fillText(text, r.labelPos.x, r.labelPos.y);
+        if (window.drawMathText) {
+          window.drawMathText(ctx, r.label, r.labelPos.x, r.labelPos.y, { fontSize: 13, color: '#0f172a', align: 'center', baseline: 'middle' });
+        } else {
+          ctx.fillText(text, r.labelPos.x, r.labelPos.y);
+        }
         ctx.restore();
       });
     }
@@ -2094,7 +2102,16 @@
         }
 
         ctx.fillStyle = lbl.color || '#0f172a';
-        ctx.fillText(displayText, posX, posY);
+        if (window.drawMathText) {
+          window.drawMathText(ctx, lbl.text || displayText, posX, posY, {
+            fontSize: fontSize,
+            color: lbl.color || '#0f172a',
+            align: lbl.showPoint ? 'left' : 'center',
+            baseline: 'middle'
+          });
+        } else {
+          ctx.fillText(displayText, posX, posY);
+        }
 
         // If selected, draw active highlight box
         if (isSelected) {

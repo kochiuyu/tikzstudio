@@ -113,6 +113,18 @@
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
           Generate Timeline
         </button>
+        <button type="button" class="btn-modern btn-modern-secondary" onclick="downloadCanvasAsPNG()" title="Download High-Res PNG">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          PNG
+        </button>
+        <button type="button" class="btn-modern btn-modern-secondary" onclick="downloadTimelineSVG()" title="Download Vector SVG">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><polyline points="9 11 12 14 15 11"/></svg>
+          SVG
+        </button>
+        <button type="button" class="btn-modern btn-modern-primary" onclick="openInOverleaf()" title="Compile and edit timeline directly in Overleaf with full LaTeX preamble">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Overleaf &rarr;
+        </button>
         <button type="button" class="btn-modern btn-modern-danger" onclick="location.reload(true)" title="Reset entire page">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
           Reset
@@ -343,36 +355,56 @@
 
         <!-- LaTeX Code Card -->
         <div class="code-card" id="result-box">
-          <div class="code-card-header">
-            <div class="code-card-title">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-              TikZ / LaTeX Code Output
-              <span class="code-badge">LaTeX TikZ</span>
+          <div class="code-card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+            <div class="code-card-title" style="display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap;">
+              <div style="display: flex; align-items: center; gap: 0.35rem;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                <span>TikZ / LaTeX Code Output</span>
+              </div>
+              <div style="display: flex; gap: 0.25rem;">
+                <button type="button" id="btn-tikz-standalone" class="node-type-btn active" style="padding: 0.15rem 0.5rem; font-size: 0.725rem;" onclick="setTikzExportMode(false);" title="Full compilable standalone LaTeX document">
+                  Standalone Document
+                </button>
+                <button type="button" id="btn-tikz-snippet" class="node-type-btn" style="padding: 0.15rem 0.5rem; font-size: 0.725rem;" onclick="setTikzExportMode(true);" title="tikzpicture environment snippet only">
+                  tikzpicture Only
+                </button>
+              </div>
             </div>
             <div class="code-actions">
-              <button type="button" id="btn-copy-code" class="btn-copy" onclick="copyLatexCode()">
+              <button type="button" id="btn-copy-code" class="btn-copy" onclick="copyLatexCode()" title="Copy code to clipboard">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
                 Copy LaTeX
               </button>
-              <button type="button" id="btn-download-tex" class="btn-copy" onclick="downloadTexFile('timeline')">
+              <button type="button" id="btn-download-tex" class="btn-copy" onclick="downloadTexFile('timeline')" title="Download .tex source file">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                 Download .tex
               </button>
+              <button type="button" class="btn-copy" onclick="openInOverleaf()" title="Compile and edit directly in Overleaf" style="background: rgba(99, 102, 241, 0.12); color: #4f46e5; border-color: #c7d2fe;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                Overleaf &rarr;
+              </button>
               <button type="button" id="btn-download-png-timeline" class="btn-copy" onclick="downloadCanvasAsPNG()" title="Download timeline as high-resolution PNG">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                Download PNG
+                PNG
+              </button>
+              <button type="button" id="btn-download-svg-timeline" class="btn-copy" onclick="downloadTimelineSVG()" title="Download timeline as vector SVG">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><polyline points="9 11 12 14 15 11"/></svg>
+                SVG
               </button>
             </div>
           </div>
 
           <div class="code-viewport">
-            <pre class="line-numbers language-Tex"><code class="language-Tex"><span class="token-cmd">\documentclass</span><span class="token-brace">{</span><span class="token-pkg">minimal</span><span class="token-brace">}</span>
+            <pre class="line-numbers language-Tex"><code class="language-Tex"><span class="tikz-preamble-wrapper"><span class="token-cmd">\documentclass</span>[border=8pt,tikz]<span class="token-brace">{</span><span class="token-pkg">standalone</span><span class="token-brace">}</span>
 <span class="token-cmd">\usepackage</span><span class="token-brace">{</span><span class="token-pkg">tikz</span><span class="token-brace">}</span>
+<span class="token-cmd">\usetikzlibrary</span><span class="token-brace">{</span><span class="token-pkg">arrows.meta, positioning, calc</span><span class="token-brace">}</span>
+<span class="token-cmd">\usepackage</span><span class="token-brace">{</span><span class="token-pkg">xcolor</span><span class="token-brace">}</span>
+
 <span class="token-cmd">\begin</span><span class="token-brace">{</span><span class="token-pkg">document</span><span class="token-brace">}</span>
-<span class="token-cmd">\begin</span><span class="token-brace">{</span><span class="token-pkg">tikzpicture</span><span class="token-brace">}</span>
+</span><span class="token-cmd">\begin</span><span class="token-brace">{</span><span class="token-pkg">tikzpicture</span><span class="token-brace">}</span>
 <span id="answer"></span>
-<span class="token-cmd">\end</span><span class="token-brace">{</span><span class="token-pkg">tikzpicture</span><span class="token-brace">}</span>
-<span class="token-cmd">\end</span><span class="token-brace">{</span><span class="token-pkg">document</span><span class="token-brace">}</span>
+<span class="token-cmd">\end</span><span class="token-brace">{</span><span class="token-pkg">tikzpicture</span><span class="token-brace">}</span><span class="tikz-postamble-wrapper">
+<span class="token-cmd">\end</span><span class="token-brace">{</span><span class="token-pkg">document</span><span class="token-brace">}</span></span>
 </code></pre>
           </div>
         </div>
@@ -967,6 +999,88 @@
 
     function loadSampleEvents() {
       loadTimelinePreset('20th-century');
+    }
+
+    function downloadTimelineSVG() {
+      var sYear = parseInt(document.getElementById('beginTime').value, 10);
+      var eYear = parseInt(document.getElementById('endTime').value, 10);
+      var sc = parseFloat(document.getElementById('scale').value) || 1;
+      var coord = document.getElementById('coordinate').value;
+      var lCol = window.normalizeToHex ? window.normalizeToHex(document.getElementById('linecolor').value) : document.getElementById('linecolor').value;
+      var pCol = window.normalizeToHex ? window.normalizeToHex(document.getElementById('pointcolor').value) : document.getElementById('pointcolor').value;
+      var tCol = window.normalizeToHex ? window.normalizeToHex(document.getElementById('textcolor').value) : document.getElementById('textcolor').value;
+      var fSize = parseInt(document.getElementById('fontsize').value, 10) || 12;
+
+      var span = Math.abs(eYear - sYear);
+      var lw = sc * span;
+
+      var svgW = coord === 'x' ? Math.max(600, lw + 180) : 600;
+      var svgH = coord === 'x' ? 320 : Math.max(500, lw + 140);
+
+      var svg = '<?xml version="1.0" encoding="UTF-8"?>\n';
+      svg += '<svg xmlns="http://www.w3.org/2000/svg" width="' + svgW + '" height="' + svgH + '" viewBox="0 0 ' + svgW + ' ' + svgH + '">\n';
+      svg += '  <style>\n';
+      svg += '    text { font-family: Inter, system-ui, -apple-system, sans-serif; font-weight: 500; }\n';
+      svg += '  </style>\n';
+
+      var chips = document.querySelectorAll('.event-chip');
+
+      if (coord === 'x') {
+        var startX = 60;
+        var lineY = 130;
+        svg += '  <line x1="' + startX + '" y1="' + lineY + '" x2="' + (startX + lw) + '" y2="' + lineY + '" stroke="' + lCol + '" stroke-width="3" stroke-linecap="round" />\n';
+        svg += '  <text x="' + startX + '" y="' + (lineY + 24) + '" font-size="' + fSize + '" fill="' + tCol + '" text-anchor="middle">' + sYear + '</text>\n';
+        svg += '  <text x="' + (startX + lw) + '" y="' + (lineY + 24) + '" font-size="' + fSize + '" fill="' + tCol + '" text-anchor="middle">' + eYear + '</text>\n';
+
+        chips.forEach(function(chip) {
+          var yEl = chip.querySelector('.myyear');
+          var dEl = chip.querySelector('.mydesc');
+          if (!yEl || !dEl) return;
+          var y = parseInt(yEl.textContent.trim(), 10);
+          var d = dEl.textContent.trim();
+          var c = chip.getAttribute('data-color');
+          var ptCol = (c && c !== 'default') ? (window.normalizeToHex ? window.normalizeToHex(c) : c) : pCol;
+          if (y >= sYear && y <= eYear) {
+            var px = startX + sc * (y - sYear);
+            svg += '  <circle cx="' + px + '" cy="' + lineY + '" r="5" fill="' + ptCol + '" stroke="#ffffff" stroke-width="1.5" />\n';
+            svg += '  <g transform="translate(' + px + ', ' + lineY + ') rotate(-45)">\n';
+            svg += '    <text x="10" y="-4" font-size="' + fSize + '" fill="' + tCol + '">' + d + ' (' + y + ')</text>\n';
+            svg += '  </g>\n';
+          }
+        });
+      } else {
+        var lineX = 260;
+        var startY = 60;
+        svg += '  <line x1="' + lineX + '" y1="' + startY + '" x2="' + lineX + '" y2="' + (startY + lw) + '" stroke="' + lCol + '" stroke-width="3" stroke-linecap="round" />\n';
+        svg += '  <text x="' + (lineX + 16) + '" y="' + (startY + 4) + '" font-size="' + fSize + '" fill="' + tCol + '" text-anchor="start">' + sYear + '</text>\n';
+        svg += '  <text x="' + (lineX + 16) + '" y="' + (startY + lw + 4) + '" font-size="' + fSize + '" fill="' + tCol + '" text-anchor="start">' + eYear + '</text>\n';
+
+        chips.forEach(function(chip) {
+          var yEl = chip.querySelector('.myyear');
+          var dEl = chip.querySelector('.mydesc');
+          if (!yEl || !dEl) return;
+          var y = parseInt(yEl.textContent.trim(), 10);
+          var d = dEl.textContent.trim();
+          var c = chip.getAttribute('data-color');
+          var ptCol = (c && c !== 'default') ? (window.normalizeToHex ? window.normalizeToHex(c) : c) : pCol;
+          if (y >= sYear && y <= eYear) {
+            var py = startY + sc * (y - sYear);
+            svg += '  <circle cx="' + lineX + '" cy="' + py + '" r="5" fill="' + ptCol + '" stroke="#ffffff" stroke-width="1.5" />\n';
+            svg += '  <text x="' + (lineX + 16) + '" y="' + (py + 4) + '" font-size="' + fSize + '" fill="' + tCol + '" text-anchor="start">' + y + '</text>\n';
+            svg += '  <text x="' + (lineX - 16) + '" y="' + (py + 4) + '" font-size="' + fSize + '" fill="' + tCol + '" text-anchor="end">' + d + '</text>\n';
+          }
+        });
+      }
+
+      svg += '</svg>\n';
+
+      var blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'timeline.svg';
+      a.click();
+      URL.revokeObjectURL(a.href);
+      if (typeof showToast === 'function') showToast('Downloaded timeline.svg');
     }
 
     // Support pressing Enter key to quickly add events
