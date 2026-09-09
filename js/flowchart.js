@@ -689,6 +689,409 @@
       model.createEdge({ from: 'lock', to: 'signal', label: 'Release Mutex', routing: 'straight', fromAnchor: 'east', toAnchor: 'west' });
 
       return model;
+    },
+
+    // 12. Central Bank Monetary Policy Decision Engine (Taylor Rule & ZLB)
+    'flow-monetary-policy': () => {
+      const model = new FlowchartModel();
+      model.title = 'Central Bank Monetary Policy Decision Engine (Taylor Rule & ZLB)';
+      model.diagramType = 'flowchart';
+
+      model.createNode({ id: 'start', text: 'Quarterly Macro Data\nReceived (\\pi, y, u)', shape: 'terminal', x: 0, y: -200, width: 140, height: 48, fillColor: '#eff6ff', borderColor: '#2563eb' });
+      model.createNode({ id: 'inf_check', text: 'Inflation\n\\pi > \\pi^* + \\epsilon?', shape: 'decision', x: 0, y: -105, width: 120, height: 68, fillColor: '#fef3c7', borderColor: '#d97706' });
+      model.createNode({ id: 'gap_check', text: 'Output Gap\ny > y^*?', shape: 'decision', x: -170, y: -105, width: 110, height: 68, fillColor: '#fef3c7', borderColor: '#d97706' });
+      model.createNode({ id: 'hike', text: 'Hike Policy Rate\n(+25 to +50 bps)', shape: 'process', x: 0, y: 10, width: 130, height: 50, fillColor: '#fee2e2', borderColor: '#dc2626' });
+      model.createNode({ id: 'zlb_check', text: 'At Zero Lower\nBound (r \\le 0)?', shape: 'decision', x: -170, y: 10, width: 115, height: 68, fillColor: '#fef3c7', borderColor: '#d97706' });
+      model.createNode({ id: 'cut', text: 'Cut Policy Rate\n(-25 to -50 bps)', shape: 'process', x: -320, y: 10, width: 125, height: 50, fillColor: '#dcfce7', borderColor: '#16a34a' });
+      model.createNode({ id: 'qe', text: 'Launch Quantitative\nEasing (Asset Purchases)', shape: 'process', x: -170, y: 125, width: 155, height: 50, fillColor: '#ecfdf5', borderColor: '#059669' });
+      model.createNode({ id: 'hold', text: 'Maintain Stance\n(Rate on Hold)', shape: 'process', x: 175, y: -105, width: 125, height: 50, fillColor: '#f8fafc', borderColor: '#475569' });
+      model.createNode({ id: 'statement', text: 'Publish Policy Statement\n& Economic Projections', shape: 'terminal', x: 0, y: 125, width: 160, height: 48, fillColor: '#e0e7ff', borderColor: '#4f46e5' });
+
+      model.createEdge({ from: 'start', to: 'inf_check', label: '', routing: 'straight', fromAnchor: 'south', toAnchor: 'north' });
+      model.createEdge({ from: 'inf_check', to: 'hike', label: 'Yes', routing: 'straight', fromAnchor: 'south', toAnchor: 'north' });
+      model.createEdge({ from: 'inf_check', to: 'gap_check', label: 'No', routing: 'straight', fromAnchor: 'west', toAnchor: 'east' });
+      model.createEdge({ from: 'gap_check', to: 'hold', label: 'Stable', routing: 'straight', fromAnchor: 'north', toAnchor: 'north' });
+      model.createEdge({ from: 'gap_check', to: 'zlb_check', label: 'Slump', routing: 'straight', fromAnchor: 'south', toAnchor: 'north' });
+      model.createEdge({ from: 'zlb_check', to: 'cut', label: 'No (r > 0)', routing: 'straight', fromAnchor: 'west', toAnchor: 'east' });
+      model.createEdge({ from: 'zlb_check', to: 'qe', label: 'Yes (ZLB)', routing: 'straight', fromAnchor: 'south', toAnchor: 'north' });
+      model.createEdge({ from: 'hike', to: 'statement', label: '', routing: 'straight', fromAnchor: 'south', toAnchor: 'north' });
+      model.createEdge({ from: 'hold', to: 'statement', label: '', routing: 'orthogonal-vert', fromAnchor: 'south', toAnchor: 'east' });
+      model.createEdge({ from: 'cut', to: 'statement', label: '', routing: 'orthogonal-vert', fromAnchor: 'south', toAnchor: 'west' });
+      model.createEdge({ from: 'qe', to: 'statement', label: '', routing: 'straight', fromAnchor: 'east', toAnchor: 'west' });
+
+      return model;
+    },
+
+    // 13. Corporate Capital Budgeting & Investment Decision Rule (NPV & IRR)
+    'flow-capital-budgeting': () => {
+      const model = new FlowchartModel();
+      model.title = 'Capital Budgeting & Investment Decision Rule (NPV & IRR)';
+      model.diagramType = 'flowchart';
+
+      model.createNode({ id: 'proposal', text: 'CapEx Proposal &\nInitial Outlay (I_0)', shape: 'terminal', x: -210, y: -75, width: 130, height: 48, fillColor: '#eff6ff', borderColor: '#2563eb' });
+      model.createNode({ id: 'fcf_wacc', text: 'Forecast Free Cash Flows\n(FCF_t) & Estimate WACC', shape: 'process', x: -50, y: -75, width: 145, height: 50, fillColor: '#f8fafc', borderColor: '#334155' });
+      model.createNode({ id: 'npv_check', text: 'NPV > 0?\n(\\sum \\frac{CF_t}{(1+r)^t} > I_0)', shape: 'decision', x: 120, y: -75, width: 135, height: 72, fillColor: '#fef3c7', borderColor: '#d97706' });
+      model.createNode({ id: 'irr_check', text: 'IRR > WACC\n(Hurdle Rate)?', shape: 'decision', x: 120, y: 55, width: 120, height: 68, fillColor: '#fef3c7', borderColor: '#d97706' });
+      model.createNode({ id: 'qualitative', text: 'Strategic & ESG\nFeasibility OK?', shape: 'decision', x: -50, y: 55, width: 120, height: 68, fillColor: '#fef3c7', borderColor: '#d97706' });
+      model.createNode({ id: 'approve', text: 'Approve Funding &\nExecute CapEx', shape: 'terminal', x: -210, y: 55, width: 130, height: 48, fillColor: '#dcfce7', borderColor: '#16a34a' });
+      model.createNode({ id: 'reject', text: 'Reject Proposal\n(Value Destruction)', shape: 'terminal', x: 275, y: -75, width: 125, height: 48, fillColor: '#fee2e2', borderColor: '#dc2626' });
+
+      model.createEdge({ from: 'proposal', to: 'fcf_wacc', label: '', routing: 'straight', fromAnchor: 'east', toAnchor: 'west' });
+      model.createEdge({ from: 'fcf_wacc', to: 'npv_check', label: '', routing: 'straight', fromAnchor: 'east', toAnchor: 'west' });
+      model.createEdge({ from: 'npv_check', to: 'reject', label: 'No', routing: 'straight', fromAnchor: 'east', toAnchor: 'west' });
+      model.createEdge({ from: 'npv_check', to: 'irr_check', label: 'Yes', routing: 'straight', fromAnchor: 'south', toAnchor: 'north' });
+      model.createEdge({ from: 'irr_check', to: 'reject', label: 'No', routing: 'orthogonal-vert', fromAnchor: 'east', toAnchor: 'south' });
+      model.createEdge({ from: 'irr_check', to: 'qualitative', label: 'Yes', routing: 'straight', fromAnchor: 'west', toAnchor: 'east' });
+      model.createEdge({ from: 'qualitative', to: 'approve', label: 'Yes', routing: 'straight', fromAnchor: 'west', toAnchor: 'east' });
+      model.createEdge({ from: 'qualitative', to: 'reject', label: 'No', routing: 'orthogonal-horiz', fromAnchor: 'south', toAnchor: 'south' });
+
+      return model;
+    },
+
+    // 14. Porter's Five Forces Strategic Industry Assessment
+    'flow-porters-forces': () => {
+      const model = new FlowchartModel();
+      model.title = "Porter's Five Forces Strategic Industry Assessment";
+      model.diagramType = 'flowchart';
+
+      model.createNode({ id: 'thesis', text: 'Market Entry / M&A\nInvestment Thesis', shape: 'terminal', x: -220, y: 0, width: 130, height: 48, fillColor: '#eff6ff', borderColor: '#2563eb' });
+      model.createNode({ id: 'barriers', text: 'High Entry\nBarriers?', shape: 'decision', x: -80, y: -90, width: 110, height: 65, fillColor: '#fef3c7', borderColor: '#d97706' });
+      model.createNode({ id: 'substitutes', text: 'Low Threat of\nSubstitutes?', shape: 'decision', x: 80, y: -90, width: 115, height: 65, fillColor: '#fef3c7', borderColor: '#d97706' });
+      model.createNode({ id: 'power_buyers', text: 'Low Buyer\nPricing Power?', shape: 'decision', x: 80, y: 90, width: 115, height: 65, fillColor: '#fef3c7', borderColor: '#d97706' });
+      model.createNode({ id: 'power_suppliers', text: 'Low Supplier\nConcentration?', shape: 'decision', x: -80, y: 90, width: 115, height: 65, fillColor: '#fef3c7', borderColor: '#d97706' });
+      model.createNode({ id: 'attractive', text: 'Strong Economic Moat\n(Supernormal Profit)', shape: 'terminal', x: 235, y: 0, width: 140, height: 50, fillColor: '#dcfce7', borderColor: '#16a34a' });
+      model.createNode({ id: 'commodity', text: 'Intense Competition\n(Zero Economic Profit)', shape: 'terminal', x: 0, y: 0, width: 135, height: 48, fillColor: '#fee2e2', borderColor: '#dc2626' });
+
+      model.createEdge({ from: 'thesis', to: 'barriers', label: '', routing: 'straight', fromAnchor: 'north', toAnchor: 'west' });
+      model.createEdge({ from: 'barriers', to: 'substitutes', label: 'Yes', routing: 'straight', fromAnchor: 'east', toAnchor: 'west' });
+      model.createEdge({ from: 'barriers', to: 'commodity', label: 'No', routing: 'straight', fromAnchor: 'south', toAnchor: 'north' });
+      model.createEdge({ from: 'substitutes', to: 'power_buyers', label: 'Yes', routing: 'straight', fromAnchor: 'south', toAnchor: 'north' });
+      model.createEdge({ from: 'substitutes', to: 'commodity', label: 'No', routing: 'orthogonal-vert', fromAnchor: 'south', toAnchor: 'east' });
+      model.createEdge({ from: 'power_buyers', to: 'power_suppliers', label: 'Yes', routing: 'straight', fromAnchor: 'west', toAnchor: 'east' });
+      model.createEdge({ from: 'power_buyers', to: 'commodity', label: 'No', routing: 'orthogonal-vert', fromAnchor: 'north', toAnchor: 'east' });
+      model.createEdge({ from: 'power_suppliers', to: 'attractive', label: 'Favorable', routing: 'orthogonal-horiz', fromAnchor: 'east', toAnchor: 'south' });
+      model.createEdge({ from: 'power_suppliers', to: 'commodity', label: 'No', routing: 'straight', fromAnchor: 'north', toAnchor: 'south' });
+
+      return model;
+    },
+
+    // 15. Consumer Choice & Utility Maximization (Microeconomics)
+    'flow-consumer-choice': () => {
+      const model = new FlowchartModel();
+      model.title = 'Consumer Choice & Utility Maximization (Microeconomics)';
+      model.diagramType = 'flowchart';
+
+      model.createNode({ id: 'consumer', text: 'Consumer with Budget M\nand Prices (P_X, P_Y)', shape: 'terminal', x: 0, y: -190, width: 155, height: 46, fillColor: '#eff6ff', borderColor: '#2563eb' });
+      model.createNode({ id: 'budget', text: 'Formulate Budget Line:\nP_X \\cdot X + P_Y \\cdot Y \\le M', shape: 'process', x: 0, y: -110, width: 150, height: 48, fillColor: '#f8fafc', borderColor: '#334155' });
+      model.createNode({ id: 'tangency', text: 'Interior Tangency?\nMRS_{XY} = P_X / P_Y', shape: 'decision', x: 0, y: -20, width: 135, height: 70, fillColor: '#fef3c7', borderColor: '#d97706' });
+      model.createNode({ id: 'corner', text: 'Corner Solution:\nAll Spent on Good X or Y', shape: 'process', x: 175, y: -20, width: 140, height: 50, fillColor: '#fee2e2', borderColor: '#dc2626' });
+      model.createNode({ id: 'marshall', text: 'Derive Optimal Bundle\n(X^*, Y^*) (Marshallian Demand)', shape: 'process', x: 0, y: 75, width: 165, height: 50, fillColor: '#f8fafc', borderColor: '#334155' });
+      model.createNode({ id: 'elasticity', text: 'Income Elasticity\n\\varepsilon_I = \\frac{\\%\\Delta X}{\\%\\Delta M} > 0?', shape: 'decision', x: 0, y: 170, width: 130, height: 68, fillColor: '#fef3c7', borderColor: '#d97706' });
+      model.createNode({ id: 'normal', text: 'Normal Good\n(\\Delta M \\implies \\Delta X > 0)', shape: 'terminal', x: -150, y: 170, width: 130, height: 46, fillColor: '#dcfce7', borderColor: '#16a34a' });
+      model.createNode({ id: 'inferior', text: 'Inferior / Giffen Good\n(\\Delta M \\implies \\Delta X < 0)', shape: 'terminal', x: 150, y: 170, width: 130, height: 46, fillColor: '#fee2e2', borderColor: '#dc2626' });
+
+      model.createEdge({ from: 'consumer', to: 'budget', label: '', routing: 'straight', fromAnchor: 'south', toAnchor: 'north' });
+      model.createEdge({ from: 'budget', to: 'tangency', label: '', routing: 'straight', fromAnchor: 'south', toAnchor: 'north' });
+      model.createEdge({ from: 'tangency', to: 'marshall', label: 'Yes', routing: 'straight', fromAnchor: 'south', toAnchor: 'north' });
+      model.createEdge({ from: 'tangency', to: 'corner', label: 'No', routing: 'straight', fromAnchor: 'east', toAnchor: 'west' });
+      model.createEdge({ from: 'corner', to: 'marshall', label: '', routing: 'orthogonal-vert', fromAnchor: 'south', toAnchor: 'east' });
+      model.createEdge({ from: 'marshall', to: 'elasticity', label: '', routing: 'straight', fromAnchor: 'south', toAnchor: 'north' });
+      model.createEdge({ from: 'elasticity', to: 'normal', label: 'Yes (\\varepsilon_I > 0)', routing: 'straight', fromAnchor: 'west', toAnchor: 'east' });
+      model.createEdge({ from: 'elasticity', to: 'inferior', label: 'No (\\varepsilon_I < 0)', routing: 'straight', fromAnchor: 'east', toAnchor: 'west' });
+
+      return model;
+    },
+
+    // 16. Supply Chain Inventory Replenishment & EOQ Policy
+    'flow-inventory-eoq': () => {
+      const model = new FlowchartModel();
+      model.title = 'Supply Chain Inventory Replenishment & EOQ Policy';
+      model.diagramType = 'flowchart';
+
+      model.createNode({ id: 'monitor', text: 'Daily Stock Level\nMonitoring (I_t)', shape: 'terminal', x: -210, y: -70, width: 120, height: 46, fillColor: '#eff6ff', borderColor: '#2563eb' });
+      model.createNode({ id: 'rop_check', text: 'Inventory I_t \\le\nReorder Point (ROP)?', shape: 'decision', x: -70, y: -70, width: 130, height: 68, fillColor: '#fef3c7', borderColor: '#d97706' });
+      model.createNode({ id: 'wait', text: 'Continue Fulfilling\nCustomer Orders', shape: 'process', x: -70, y: -160, width: 130, height: 46, fillColor: '#f8fafc', borderColor: '#334155' });
+      model.createNode({ id: 'calc_eoq', text: 'Compute Order Batch:\nEOQ = \\sqrt{\\frac{2DS}{H}}', shape: 'process', x: 85, y: -70, width: 140, height: 50, fillColor: '#f8fafc', borderColor: '#334155' });
+      model.createNode({ id: 'po', text: 'Dispatch Purchase\nOrder to Supplier', shape: 'io', x: 235, y: -70, width: 125, height: 48, fillColor: '#ecfdf5', borderColor: '#059669' });
+      model.createNode({ id: 'receive', text: 'Receive Shipment &\nSafety Stock Check', shape: 'process', x: 235, y: 40, width: 135, height: 50, fillColor: '#f8fafc', borderColor: '#334155' });
+      model.createNode({ id: 'qa_check', text: 'Quality & Count\nVerified OK?', shape: 'decision', x: 85, y: 40, width: 115, height: 65, fillColor: '#fef3c7', borderColor: '#d97706' });
+      model.createNode({ id: 'restock', text: 'Restock Warehouse &\nUpdate ERP Inventory', shape: 'terminal', x: -70, y: 40, width: 135, height: 46, fillColor: '#dcfce7', borderColor: '#16a34a' });
+      model.createNode({ id: 'claim', text: 'File Vendor Claim &\nRequest Replacement', shape: 'process', x: 85, y: 130, width: 135, height: 46, fillColor: '#fee2e2', borderColor: '#dc2626' });
+
+      model.createEdge({ from: 'monitor', to: 'rop_check', label: '', routing: 'straight', fromAnchor: 'east', toAnchor: 'west' });
+      model.createEdge({ from: 'rop_check', to: 'wait', label: 'No', routing: 'straight', fromAnchor: 'north', toAnchor: 'south' });
+      model.createEdge({ from: 'wait', to: 'monitor', label: '', routing: 'feedback-left', fromAnchor: 'west', toAnchor: 'north' });
+      model.createEdge({ from: 'rop_check', to: 'calc_eoq', label: 'Yes', routing: 'straight', fromAnchor: 'east', toAnchor: 'west' });
+      model.createEdge({ from: 'calc_eoq', to: 'po', label: '', routing: 'straight', fromAnchor: 'east', toAnchor: 'west' });
+      model.createEdge({ from: 'po', to: 'receive', label: '', routing: 'straight', fromAnchor: 'south', toAnchor: 'north' });
+      model.createEdge({ from: 'receive', to: 'qa_check', label: '', routing: 'straight', fromAnchor: 'west', toAnchor: 'east' });
+      model.createEdge({ from: 'qa_check', to: 'restock', label: 'Yes', routing: 'straight', fromAnchor: 'west', toAnchor: 'east' });
+      model.createEdge({ from: 'qa_check', to: 'claim', label: 'Defects', routing: 'straight', fromAnchor: 'south', toAnchor: 'north' });
+      model.createEdge({ from: 'claim', to: 'receive', label: '', routing: 'feedback-right', fromAnchor: 'east', toAnchor: 'south' });
+      model.createEdge({ from: 'restock', to: 'monitor', label: '', routing: 'feedback-left', fromAnchor: 'west', toAnchor: 'south' });
+
+      return model;
+    },
+
+    // 17. Commercial Credit Underwriting & Risk Assessment
+    'flow-credit-risk': () => {
+      const model = new FlowchartModel();
+      model.title = 'Commercial Credit Underwriting & Risk Pipeline';
+      model.diagramType = 'flowchart';
+
+      model.createNode({ id: 'application', text: 'Commercial Loan\nApplication Submitted', shape: 'terminal', x: -220, y: -60, width: 130, height: 46, fillColor: '#eff6ff', borderColor: '#2563eb' });
+      model.createNode({ id: 'dscr', text: 'DSCR \\ge 1.25x\n(Cash Coverage)?', shape: 'decision', x: -70, y: -60, width: 130, height: 68, fillColor: '#fef3c7', borderColor: '#d97706' });
+      model.createNode({ id: 'leverage', text: 'Debt / EBITDA \\le 3.5x\n(Leverage Safe)?', shape: 'decision', x: 80, y: -60, width: 130, height: 68, fillColor: '#fef3c7', borderColor: '#d97706' });
+      model.createNode({ id: 'collateral', text: 'Collateral LTV \\le 70%\n(Asset Backed)?', shape: 'decision', x: 235, y: -60, width: 130, height: 68, fillColor: '#fef3c7', borderColor: '#d97706' });
+      model.createNode({ id: 'approve', text: 'Approve Loan at\nSenior Prime Rate', shape: 'terminal', x: 235, y: 65, width: 130, height: 46, fillColor: '#dcfce7', borderColor: '#16a34a' });
+      model.createNode({ id: 'covenant', text: 'Structure Protective\nDebt Covenants', shape: 'process', x: 80, y: 65, width: 130, height: 50, fillColor: '#fef3c7', borderColor: '#d97706' });
+      model.createNode({ id: 'decline', text: 'Decline Application\n(Credit Policy Breach)', shape: 'terminal', x: -70, y: 65, width: 130, height: 46, fillColor: '#fee2e2', borderColor: '#dc2626' });
+
+      model.createEdge({ from: 'application', to: 'dscr', label: '', routing: 'straight', fromAnchor: 'east', toAnchor: 'west' });
+      model.createEdge({ from: 'dscr', to: 'decline', label: 'No', routing: 'straight', fromAnchor: 'south', toAnchor: 'north' });
+      model.createEdge({ from: 'dscr', to: 'leverage', label: 'Yes', routing: 'straight', fromAnchor: 'east', toAnchor: 'west' });
+      model.createEdge({ from: 'leverage', to: 'covenant', label: 'Borderline', routing: 'straight', fromAnchor: 'south', toAnchor: 'north' });
+      model.createEdge({ from: 'leverage', to: 'collateral', label: 'Yes', routing: 'straight', fromAnchor: 'east', toAnchor: 'west' });
+      model.createEdge({ from: 'collateral', to: 'approve', label: 'Yes', routing: 'straight', fromAnchor: 'south', toAnchor: 'north' });
+      model.createEdge({ from: 'collateral', to: 'decline', label: 'No', routing: 'orthogonal-vert', fromAnchor: 'east', toAnchor: 'south' });
+      model.createEdge({ from: 'covenant', to: 'approve', label: 'Accepted', routing: 'straight', fromAnchor: 'east', toAnchor: 'west' });
+
+      return model;
+    },
+
+    // 18. Market Structure & Antitrust Merger Review (HHI)
+    'flow-market-structure': () => {
+      const model = new FlowchartModel();
+      model.title = 'Market Structure & Antitrust Merger Review (HHI)';
+      model.diagramType = 'flowchart';
+
+      model.createNode({ id: 'market_def', text: 'Define Relevant Market\n(SSNIP / 5% Price Test)', shape: 'terminal', x: 0, y: -190, width: 145, height: 46, fillColor: '#eff6ff', borderColor: '#2563eb' });
+      model.createNode({ id: 'calc_hhi', text: 'Calculate Post-Merger\nHHI = \\sum s_i^2 and \\Delta HHI', shape: 'process', x: 0, y: -110, width: 155, height: 50, fillColor: '#f8fafc', borderColor: '#334155' });
+      model.createNode({ id: 'hhi_level', text: 'HHI < 1,500?\n(Unconcentrated)', shape: 'decision', x: 0, y: -20, width: 130, height: 68, fillColor: '#fef3c7', borderColor: '#d97706' });
+      model.createNode({ id: 'safe_harbor', text: 'Safe Harbor\n(Merger Presumed Legal)', shape: 'terminal', x: 175, y: -20, width: 135, height: 48, fillColor: '#dcfce7', borderColor: '#16a34a' });
+      model.createNode({ id: 'hhi_high', text: 'HHI > 2,500 and\n\\Delta HHI > 200?', shape: 'decision', x: 0, y: 80, width: 135, height: 68, fillColor: '#fef3c7', borderColor: '#d97706' });
+      model.createNode({ id: 'moderate', text: 'Moderate Concentration:\nExamine Unilateral Effects', shape: 'process', x: 175, y: 80, width: 145, height: 50, fillColor: '#fef3c7', borderColor: '#d97706' });
+      model.createNode({ id: 'injunction', text: 'Antitrust Challenge / Enjoin\n(Clayton Act §7 Presumption)', shape: 'terminal', x: 0, y: 180, width: 160, height: 48, fillColor: '#fee2e2', borderColor: '#dc2626' });
+
+      model.createEdge({ from: 'market_def', to: 'calc_hhi', label: '', routing: 'straight', fromAnchor: 'south', toAnchor: 'north' });
+      model.createEdge({ from: 'calc_hhi', to: 'hhi_level', label: '', routing: 'straight', fromAnchor: 'south', toAnchor: 'north' });
+      model.createEdge({ from: 'hhi_level', to: 'safe_harbor', label: 'Yes', routing: 'straight', fromAnchor: 'east', toAnchor: 'west' });
+      model.createEdge({ from: 'hhi_level', to: 'hhi_high', label: 'No', routing: 'straight', fromAnchor: 'south', toAnchor: 'north' });
+      model.createEdge({ from: 'hhi_high', to: 'moderate', label: 'No (1500-2500)', routing: 'straight', fromAnchor: 'east', toAnchor: 'west' });
+      model.createEdge({ from: 'hhi_high', to: 'injunction', label: 'Yes (Presumed Anti-Comp)', routing: 'straight', fromAnchor: 'south', toAnchor: 'north' });
+      model.createEdge({ from: 'moderate', to: 'safe_harbor', label: 'Efficiencies', routing: 'orthogonal-vert', fromAnchor: 'north', toAnchor: 'south' });
+      model.createEdge({ from: 'moderate', to: 'injunction', label: 'Tacit Collusion', routing: 'orthogonal-vert', fromAnchor: 'south', toAnchor: 'east' });
+
+      return model;
+    },
+
+    // 19. Public Sector Cost-Benefit Analysis (CBA)
+    'flow-cba-infrastructure': () => {
+      const model = new FlowchartModel();
+      model.title = 'Public Sector Cost-Benefit Analysis (CBA)';
+      model.diagramType = 'flowchart';
+
+      model.createNode({ id: 'proposal', text: 'Public Infrastructure\nProposal (e.g. High-Speed Rail)', shape: 'terminal', x: -215, y: -70, width: 135, height: 48, fillColor: '#eff6ff', borderColor: '#2563eb' });
+      model.createNode({ id: 'monetize', text: 'Quantify Social Externalities\n& Set Discount Rate (r_s)', shape: 'process', x: -50, y: -70, width: 145, height: 50, fillColor: '#f8fafc', borderColor: '#334155' });
+      model.createNode({ id: 'bcr_calc', text: 'Compute Benefit-Cost Ratio:\nBCR = PV(Benefits) / PV(Costs)', shape: 'process', x: 115, y: -70, width: 150, height: 50, fillColor: '#f8fafc', borderColor: '#334155' });
+      model.createNode({ id: 'bcr_check', text: 'BCR > 1.0 and\nNet Social NPV > 0?', shape: 'decision', x: 270, y: -70, width: 130, height: 70, fillColor: '#fef3c7', borderColor: '#d97706' });
+      model.createNode({ id: 'equity_check', text: 'Equitable Regional\nDistribution OK?', shape: 'decision', x: 270, y: 50, width: 130, height: 70, fillColor: '#fef3c7', borderColor: '#d97706' });
+      model.createNode({ id: 'fund', text: 'Authorize Public Bond &\nBegin Procurement', shape: 'terminal', x: 115, y: 50, width: 135, height: 48, fillColor: '#dcfce7', borderColor: '#16a34a' });
+      model.createNode({ id: 'redesign', text: 'Value Engineering to\nLower Project Costs', shape: 'process', x: -50, y: 50, width: 140, height: 50, fillColor: '#fef3c7', borderColor: '#d97706' });
+      model.createNode({ id: 'reject', text: 'Shelve Project\n(Negative Welfare Impact)', shape: 'terminal', x: 270, y: 160, width: 135, height: 46, fillColor: '#fee2e2', borderColor: '#dc2626' });
+
+      model.createEdge({ from: 'proposal', to: 'monetize', label: '', routing: 'straight', fromAnchor: 'east', toAnchor: 'west' });
+      model.createEdge({ from: 'monetize', to: 'bcr_calc', label: '', routing: 'straight', fromAnchor: 'east', toAnchor: 'west' });
+      model.createEdge({ from: 'bcr_calc', to: 'bcr_check', label: '', routing: 'straight', fromAnchor: 'east', toAnchor: 'west' });
+      model.createEdge({ from: 'bcr_check', to: 'equity_check', label: 'Yes', routing: 'straight', fromAnchor: 'south', toAnchor: 'north' });
+      model.createEdge({ from: 'bcr_check', to: 'redesign', label: 'No (BCR < 1)', routing: 'orthogonal-vert', fromAnchor: 'west', toAnchor: 'east' });
+      model.createEdge({ from: 'redesign', to: 'monetize', label: 'Re-estimate', routing: 'straight', fromAnchor: 'north', toAnchor: 'south' });
+      model.createEdge({ from: 'equity_check', to: 'fund', label: 'Yes', routing: 'straight', fromAnchor: 'west', toAnchor: 'east' });
+      model.createEdge({ from: 'equity_check', to: 'reject', label: 'Severe Disparity', routing: 'straight', fromAnchor: 'south', toAnchor: 'north' });
+
+      return model;
+    }
+  };
+
+  // Comprehensive Preset Metadata Registry
+  const PresetMetadata = {
+    // Economics & Public Policy
+    'flow-monetary-policy': {
+      id: 'flow-monetary-policy',
+      name: 'Monetary Policy Decision Engine',
+      subtitle: 'Taylor Rule Reaction Function & Zero Lower Bound (ZLB)',
+      category: 'Economics & Public Policy',
+      type: 'Process Flowchart',
+      tags: ['Macroeconomics', 'Taylor Rule', 'Central Bank', 'Interest Rates'],
+      description: 'Systematic central bank policy reaction engine responding to inflation gaps, output gaps, and liquidity constraints via interest rate adjustments or quantitative easing.'
+    },
+    'flow-consumer-choice': {
+      id: 'flow-consumer-choice',
+      name: 'Consumer Choice & Utility Maximization',
+      subtitle: 'Microeconomics Demand & Elasticity Derivation',
+      category: 'Economics & Public Policy',
+      type: 'Process Flowchart',
+      tags: ['Microeconomics', 'Consumer Theory', 'Indifference Curves', 'Elasticity'],
+      description: 'Microeconomic optimization flow solving consumer utility under budget constraints, tangency condition (MRS = Px/Py), and income elasticity classification.'
+    },
+    'flow-market-structure': {
+      id: 'flow-market-structure',
+      name: 'Market Structure & Antitrust Review',
+      subtitle: 'Herfindahl-Hirschman Index (HHI) & Merger Guidelines',
+      category: 'Economics & Public Policy',
+      type: 'Process Flowchart',
+      tags: ['Industrial Organization', 'Antitrust', 'HHI', 'Mergers & Acquisitions'],
+      description: 'Regulatory antitrust analysis evaluating market definitions, post-merger concentration delta, safe harbor thresholds, and anticompetitive challenges.'
+    },
+    'flow-cba-infrastructure': {
+      id: 'flow-cba-infrastructure',
+      name: 'Cost-Benefit Analysis for Public Projects',
+      subtitle: 'Welfare Economics & Social Discounting Appraisal',
+      category: 'Economics & Public Policy',
+      type: 'Process Flowchart',
+      tags: ['Public Economics', 'Cost-Benefit Analysis', 'Infrastructure', 'Welfare'],
+      description: 'Public sector decision framework assessing economic feasibility, social discount rates, externality monetization, and regional distributional equity.'
+    },
+
+    // Business Strategy & Corporate Finance
+    'flow-capital-budgeting': {
+      id: 'flow-capital-budgeting',
+      name: 'Capital Budgeting Decision Rule',
+      subtitle: 'Corporate Investment Appraisal via NPV, IRR & Hurdle Rate',
+      category: 'Business Strategy & Corporate Finance',
+      type: 'Process Flowchart',
+      tags: ['Corporate Finance', 'NPV', 'IRR', 'CapEx', 'WACC'],
+      description: 'Corporate finance hurdle decision framework appraising capital expenditure proposals based on discounted cash flows, WACC, and ESG feasibility.'
+    },
+    'flow-porters-forces': {
+      id: 'flow-porters-forces',
+      name: "Porter's Five Forces Industry Assessment",
+      subtitle: 'Competitive Advantage & Structural Profitability Analysis',
+      category: 'Business Strategy & Corporate Finance',
+      type: 'Process Flowchart',
+      tags: ['Strategic Management', 'Five Forces', 'Competitive Moat', 'Profitability'],
+      description: 'Strategic management flow mapping industry rivalry, barriers to entry, buyer power, supplier concentration, and substitutes to determine long-run return on invested capital.'
+    },
+    'flow-credit-risk': {
+      id: 'flow-credit-risk',
+      name: 'Commercial Credit Risk & Loan Underwriting',
+      subtitle: 'Bank Debt Underwriting, DSCR & Collateral Covenants',
+      category: 'Business Strategy & Corporate Finance',
+      type: 'Process Flowchart',
+      tags: ['Banking', 'Credit Risk', 'DSCR', 'Underwriting', 'Debt Covenants'],
+      description: 'Commercial banking loan pipeline vetting borrower cash flow coverage, debt-to-EBITDA leverage, collateral haircuts, and protective covenants.'
+    },
+    'flow-inventory-eoq': {
+      id: 'flow-inventory-eoq',
+      name: 'Supply Chain Inventory & EOQ Policy',
+      subtitle: 'Reorder Point (ROP) & Economic Order Quantity Control',
+      category: 'Business Strategy & Corporate Finance',
+      type: 'Process Flowchart',
+      tags: ['Operations Management', 'Supply Chain', 'EOQ', 'Inventory Control'],
+      description: 'Managerial operations cycle monitoring stock depletion, automated reorder triggers, economic order quantity optimization, and vendor quality control.'
+    },
+
+    // Process & Software Pipelines
+    'flow-order': {
+      id: 'flow-order',
+      name: 'E-Commerce Order & Payment Pipeline',
+      subtitle: 'Inventory Allocation, Payment Gateway & Shipping',
+      category: 'Process & Software Engineering',
+      type: 'Process Flowchart',
+      tags: ['E-Commerce', 'Order Processing', 'Payment Gateway'],
+      description: 'Standard merchant processing transaction flow checking inventory availability, card authorization, settlement, and shipping dispatch.'
+    },
+    'flow-auth': {
+      id: 'flow-auth',
+      name: 'User Authentication & MFA Security Flow',
+      subtitle: 'Credential Verification, 2FA OTP & Rate Limiting',
+      category: 'Process & Software Engineering',
+      type: 'Process Flowchart',
+      tags: ['Security', 'Authentication', '2FA', 'Rate Limiting'],
+      description: 'Enterprise authentication sequence validating passwords, prompting for time-based one-time passwords, and enforcing account lockouts on repeated failures.'
+    },
+    'flow-git-release': {
+      id: 'flow-git-release',
+      name: 'Git Branching & CI/CD Deployment Flow',
+      subtitle: 'Pull Request Lifecycle, Automated Tests & Release',
+      category: 'Process & Software Engineering',
+      type: 'Process Flowchart',
+      tags: ['DevOps', 'Git', 'CI/CD', 'Automated Testing'],
+      description: 'Continuous integration pipeline governing feature branch commits, unit test execution, peer reviews, merge checks, and production deployment.'
+    },
+    'flow-gcd': {
+      id: 'flow-gcd',
+      name: 'Euclidean GCD Algorithm Flowchart',
+      subtitle: 'Classic Number Theory Iterative Computation',
+      category: 'Process & Software Engineering',
+      type: 'Algorithm Flowchart',
+      tags: ['Algorithms', 'Mathematics', 'Number Theory'],
+      description: 'Classical iterative Euclidean algorithm computing the greatest common divisor between two integers via modulo remainder division.'
+    },
+    'flow-producer-consumer': {
+      id: 'flow-producer-consumer',
+      name: 'Producer-Consumer Synchronization Flow',
+      subtitle: 'Concurrency Control with Mutex & Bounded Buffer',
+      category: 'Process & Software Engineering',
+      type: 'Process Flowchart',
+      tags: ['Operating Systems', 'Concurrency', 'Mutex', 'Synchronization'],
+      description: 'Concurrent computing design pattern managing producer thread generation, buffer capacity bounds, mutex locks, and consumer signal dispatch.'
+    },
+
+    // Finite State Machines & Automata
+    'fsm-modulo3': {
+      id: 'fsm-modulo3',
+      name: 'Modulo-3 Binary Counter (DFA)',
+      subtitle: '3-State Deterministic Finite Automaton',
+      category: 'Automata & State Machines',
+      type: 'State Machine (DFA)',
+      tags: ['Formal Languages', 'DFA', 'Automata', 'Binary'],
+      description: 'Canonical 3-state deterministic automaton recognizing binary strings whose decimal value is divisible by 3.'
+    },
+    'fsm-parity': {
+      id: 'fsm-parity',
+      name: 'Even/Odd Parity Checker (DFA)',
+      subtitle: 'Error Detection Automaton with Loop Transitions',
+      category: 'Automata & State Machines',
+      type: 'State Machine (DFA)',
+      tags: ['Information Theory', 'Parity', 'DFA'],
+      description: 'Fundamental bit-stream parity verification state machine tracking odd and even numbers of 1 bits with self-loops.'
+    },
+    'fsm-regex-nfa': {
+      id: 'fsm-regex-nfa',
+      name: 'Regex Pattern Matcher for (a|b)*abb',
+      subtitle: 'Thompson Non-Deterministic Finite Automaton (NFA)',
+      category: 'Automata & State Machines',
+      type: 'State Machine (NFA)',
+      tags: ['Regular Expressions', 'NFA', 'Compilers'],
+      description: 'Pattern matching automaton accepting strings ending with suffix "abb", illustrating non-deterministic branching.'
+    },
+    'fsm-turnstile': {
+      id: 'fsm-turnstile',
+      name: 'Turnstile Controller FSM',
+      subtitle: 'Two-State Transition Controller (Locked / Unlocked)',
+      category: 'Automata & State Machines',
+      type: 'State Machine (FSM)',
+      tags: ['Mealy Machine', 'State Transitions', 'Hardware'],
+      description: 'Classic physical system state machine tracking coin insertion, push events, and return transitions.'
+    },
+    'fsm-tcp': {
+      id: 'fsm-tcp',
+      name: 'TCP 3-Way Handshake Connection FSM',
+      subtitle: 'Network Transport Layer Protocol Handshake',
+      category: 'Automata & State Machines',
+      type: 'State Machine (FSM)',
+      tags: ['Networking', 'TCP/IP', 'Protocols', 'SYN-ACK'],
+      description: 'Transmission Control Protocol connection establishment states (CLOSED, LISTEN, SYN_SENT, SYN_RCVD, ESTABLISHED).'
+    },
+    'fsm-traffic': {
+      id: 'fsm-traffic',
+      name: 'Traffic Light State Controller',
+      subtitle: 'Timed State Cycling (Red -> Green -> Yellow)',
+      category: 'Automata & State Machines',
+      type: 'State Machine (FSM)',
+      tags: ['Embedded Systems', 'Controllers', 'Timers'],
+      description: 'Cyclic timer-controlled finite state machine transitioning sequentially between signal phases.'
     }
   };
 
@@ -2082,6 +2485,7 @@
   // Export to global window
   window.FlowchartModel = FlowchartModel;
   window.FlowchartPresets = Presets;
+  window.FlowchartPresetMeta = PresetMetadata;
   window.FlowchartCanvasRenderer = FlowchartCanvasRenderer;
 
 })(window);

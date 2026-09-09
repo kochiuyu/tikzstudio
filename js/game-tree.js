@@ -229,7 +229,7 @@
       out += '  font=\\small,\n';
       out += '  >=stealth,\n';
       out += '  decision/.style={circle, draw=blue!70!black, fill=blue!8, thick, inner sep=2pt, minimum size=20pt},\n';
-      out += '  chance/.style={circle, fill=amber!90!black, draw=amber!90!black, inner sep=2pt, minimum size=8pt},\n';
+      out += '  chance/.style={circle, fill=orange!90!black, draw=orange!90!black, inner sep=2pt, minimum size=8pt},\n';
       out += '  terminal/.style={inner sep=1.5pt},\n';
       out += '  branch/.style={thick, draw=gray!80!black},\n';
       out += '  eq_branch/.style={very thick, draw=red!80!black},\n';
@@ -720,6 +720,455 @@
 
       tree.computeLayout();
       return tree;
+    },
+
+    'seltens-horse': () => {
+      const tree = new GameTreeModel();
+      tree.title = "Selten's Horse (3-Player Imperfect Information)";
+      tree.orientation = 'vertical';
+      tree.levelDistance = 90;
+      tree.siblingDistance = 85;
+
+      // Player 1 at root
+      const p1 = tree.createNode({ type: 'decision', player: 'P_1' });
+      tree.rootId = p1.id;
+
+      // P1 choices: Across (C) or Down (D)
+      const p2 = tree.addBranch(p1.id, { action: 'C', type: 'decision', player: 'P_2', isEquilibrium: true });
+      const p3_from_d = tree.addBranch(p1.id, { action: 'D', type: 'decision', player: 'P_3' });
+
+      // P2 choices: Across (c) or Down (d)
+      tree.addBranch(p2.id, { action: 'c', type: 'terminal', payoff: '(1, 1, 1)', isEquilibrium: true });
+      const p3_from_d2 = tree.addBranch(p2.id, { action: 'd', type: 'decision', player: 'P_3' });
+
+      // P3 at node after P1's D: Left (L) or Right (R)
+      tree.addBranch(p3_from_d.id, { action: 'L', type: 'terminal', payoff: '(3, 2, 2)' });
+      tree.addBranch(p3_from_d.id, { action: 'R', type: 'terminal', payoff: '(0, 0, 0)' });
+
+      // P3 at node after P2's d: Left (L) or Right (R)
+      tree.addBranch(p3_from_d2.id, { action: 'L', type: 'terminal', payoff: '(0, 0, 0)' });
+      tree.addBranch(p3_from_d2.id, { action: 'R', type: 'terminal', payoff: '(2, 3, 2)' });
+
+      // P3's Information Set links both decision nodes
+      tree.addInfoSet([p3_from_d.id, p3_from_d2.id], 'P_3');
+
+      tree.computeLayout();
+      return tree;
+    },
+
+    'lemon-market': () => {
+      const tree = new GameTreeModel();
+      tree.title = "Akerlof's Market for Lemons (Adverse Selection)";
+      tree.orientation = 'vertical';
+      tree.levelDistance = 85;
+      tree.siblingDistance = 75;
+
+      // Nature chooses car quality
+      const nature = tree.createNode({ type: 'chance', player: '\\mathcal{N}' });
+      tree.rootId = nature.id;
+
+      const peach = tree.addBranch(nature.id, { action: '\\text{Peach } (\\theta_P)', prob: 'q', type: 'decision', player: 'S' });
+      const lemon = tree.addBranch(nature.id, { action: '\\text{Lemon } (\\theta_L)', prob: '1-q', type: 'decision', player: 'S' });
+
+      // Peach Seller offers High or Low price
+      const b_peach_high = tree.addBranch(peach.id, { action: 'P_H', type: 'decision', player: 'B' });
+      const b_peach_low = tree.addBranch(peach.id, { action: 'P_L', type: 'decision', player: 'B' });
+
+      // Lemon Seller offers High or Low price
+      const b_lemon_high = tree.addBranch(lemon.id, { action: 'P_H', type: 'decision', player: 'B', isEquilibrium: true });
+      const b_lemon_low = tree.addBranch(lemon.id, { action: 'P_L', type: 'decision', player: 'B' });
+
+      // Buyer decisions for Peach + P_H
+      tree.addBranch(b_peach_high.id, { action: '\\text{Buy}', type: 'terminal', payoff: '(P_H - c_P, v_P - P_H)' });
+      tree.addBranch(b_peach_high.id, { action: '\\text{Reject}', type: 'terminal', payoff: '(0, 0)' });
+
+      // Buyer decisions for Peach + P_L
+      tree.addBranch(b_peach_low.id, { action: '\\text{Buy}', type: 'terminal', payoff: '(P_L - c_P, v_P - P_L)' });
+      tree.addBranch(b_peach_low.id, { action: '\\text{Reject}', type: 'terminal', payoff: '(0, 0)' });
+
+      // Buyer decisions for Lemon + P_H
+      tree.addBranch(b_lemon_high.id, { action: '\\text{Buy}', type: 'terminal', payoff: '(P_H - c_L, v_L - P_H)' });
+      tree.addBranch(b_lemon_high.id, { action: '\\text{Reject}', type: 'terminal', payoff: '(0, 0)', isEquilibrium: true });
+
+      // Buyer decisions for Lemon + P_L
+      tree.addBranch(b_lemon_low.id, { action: '\\text{Buy}', type: 'terminal', payoff: '(P_L - c_L, v_L - P_L)' });
+      tree.addBranch(b_lemon_low.id, { action: '\\text{Reject}', type: 'terminal', payoff: '(0, 0)' });
+
+      // Buyer cannot observe car quality given price
+      tree.addInfoSet([b_peach_high.id, b_lemon_high.id], 'I_{P_H}');
+      tree.addInfoSet([b_peach_low.id, b_lemon_low.id], 'I_{P_L}');
+
+      tree.computeLayout();
+      return tree;
+    },
+
+    'kuhn-poker': () => {
+      const tree = new GameTreeModel();
+      tree.title = 'Kuhn Poker (Deal & Bluffing)';
+      tree.orientation = 'vertical';
+      tree.levelDistance = 85;
+      tree.siblingDistance = 65;
+
+      // Nature deals cards
+      const nature = tree.createNode({ type: 'chance', player: '\\mathcal{N}' });
+      tree.rootId = nature.id;
+
+      const dealK = tree.addBranch(nature.id, { action: '(\\text{K}, \\text{Q})', prob: '\\frac{1}{2}', type: 'decision', player: 'P_1' });
+      const dealQ = tree.addBranch(nature.id, { action: '(\\text{Q}, \\text{K})', prob: '\\frac{1}{2}', type: 'decision', player: 'P_1' });
+
+      // P1 with King: Bet or Check
+      const p2_k_bet = tree.addBranch(dealK.id, { action: '\\text{Bet}', type: 'decision', player: 'P_2', isEquilibrium: true });
+      const p2_k_check = tree.addBranch(dealK.id, { action: '\\text{Check}', type: 'decision', player: 'P_2' });
+
+      // P1 with Queen: Bet or Check
+      const p2_q_bet = tree.addBranch(dealQ.id, { action: '\\text{Bet}', type: 'decision', player: 'P_2' });
+      const p2_q_check = tree.addBranch(dealQ.id, { action: '\\text{Check}', type: 'decision', player: 'P_2', isEquilibrium: true });
+
+      // P2 after Bet (King vs Queen): Call or Fold
+      tree.addBranch(p2_k_bet.id, { action: '\\text{Call}', type: 'terminal', payoff: '(+2, -2)', isEquilibrium: true });
+      tree.addBranch(p2_k_bet.id, { action: '\\text{Fold}', type: 'terminal', payoff: '(+1, -1)' });
+
+      tree.addBranch(p2_q_bet.id, { action: '\\text{Call}', type: 'terminal', payoff: '(-2, +2)' });
+      tree.addBranch(p2_q_bet.id, { action: '\\text{Fold}', type: 'terminal', payoff: '(+1, -1)' });
+
+      // P2 after Check (King vs Queen): Bet or Check
+      const p1_call_k = tree.addBranch(p2_k_check.id, { action: '\\text{Bet}', type: 'decision', player: 'P_1' });
+      tree.addBranch(p2_k_check.id, { action: '\\text{Check}', type: 'terminal', payoff: '(+1, -1)' });
+
+      const p1_call_q = tree.addBranch(p2_q_check.id, { action: '\\text{Bet}', type: 'decision', player: 'P_1', isEquilibrium: true });
+      tree.addBranch(p2_q_check.id, { action: '\\text{Check}', type: 'terminal', payoff: '(-1, +1)' });
+
+      // P1 responds to P2's bet
+      tree.addBranch(p1_call_k.id, { action: '\\text{Call}', type: 'terminal', payoff: '(+2, -2)' });
+      tree.addBranch(p1_call_k.id, { action: '\\text{Fold}', type: 'terminal', payoff: '(-1, +1)' });
+
+      tree.addBranch(p1_call_q.id, { action: '\\text{Call}', type: 'terminal', payoff: '(-2, +2)' });
+      tree.addBranch(p1_call_q.id, { action: '\\text{Fold}', type: 'terminal', payoff: '(-1, +1)', isEquilibrium: true });
+
+      // Information Sets for P2: does not observe P1's private card
+      tree.addInfoSet([p2_k_bet.id, p2_q_bet.id], 'I_{\\text{Bet}}');
+      tree.addInfoSet([p2_k_check.id, p2_q_check.id], 'I_{\\text{Check}}');
+
+      tree.computeLayout();
+      return tree;
+    },
+
+    'gift-exchange': () => {
+      const tree = new GameTreeModel();
+      tree.title = 'Gift Exchange & Efficiency Wage (Fehr et al.)';
+      tree.orientation = 'vertical';
+      tree.levelDistance = 90;
+      tree.siblingDistance = 85;
+
+      // Employer chooses wage
+      const employer = tree.createNode({ type: 'decision', player: 'E' });
+      tree.rootId = employer.id;
+
+      const worker_high = tree.addBranch(employer.id, { action: 'w_H = 30', type: 'decision', player: 'W', isEquilibrium: true });
+      const worker_low = tree.addBranch(employer.id, { action: 'w_L = 10', type: 'decision', player: 'W' });
+
+      // Worker effort choices after High Wage
+      tree.addBranch(worker_high.id, { action: 'e_H', type: 'terminal', payoff: '(30, 20)', isEquilibrium: true });
+      tree.addBranch(worker_high.id, { action: 'e_L', type: 'terminal', payoff: '(-10, 30)' });
+
+      // Worker effort choices after Low Wage
+      tree.addBranch(worker_low.id, { action: 'e_H', type: 'terminal', payoff: '(40, 0)' });
+      tree.addBranch(worker_low.id, { action: 'e_L', type: 'terminal', payoff: '(10, 10)' });
+
+      tree.computeLayout();
+      return tree;
+    },
+
+    'chain-store': () => {
+      const tree = new GameTreeModel();
+      tree.title = 'Chain Store Paradox (Selten Reputation Model)';
+      tree.orientation = 'vertical';
+      tree.levelDistance = 88;
+      tree.siblingDistance = 85;
+
+      // Market 1 Entrant
+      const e1 = tree.createNode({ type: 'decision', player: 'E_1' });
+      tree.rootId = e1.id;
+
+      tree.addBranch(e1.id, { action: '\\text{Out}', type: 'terminal', payoff: '(0, 5, 2)' });
+      const inc1 = tree.addBranch(e1.id, { action: '\\text{In}', type: 'decision', player: 'I', isEquilibrium: true });
+
+      // Incumbent in Market 1: Fight or Accommodate
+      const e2_after_fight = tree.addBranch(inc1.id, { action: '\\text{Fight}', type: 'decision', player: 'E_2', isEquilibrium: true });
+      const e2_after_acc = tree.addBranch(inc1.id, { action: '\\text{Accom}', type: 'decision', player: 'E_2' });
+
+      // E2 after Fight (Tough reputation deterring entry)
+      tree.addBranch(e2_after_fight.id, { action: '\\text{Out}', type: 'terminal', payoff: '(-1, 4, 0)', isEquilibrium: true });
+      tree.addBranch(e2_after_fight.id, { action: '\\text{In}', type: 'terminal', payoff: '(-1, 0, -1)' });
+
+      // E2 after Accommodate (Weak reputation encourages entry)
+      tree.addBranch(e2_after_acc.id, { action: '\\text{Out}', type: 'terminal', payoff: '(2, 2, 0)' });
+      tree.addBranch(e2_after_acc.id, { action: '\\text{In}', type: 'terminal', payoff: '(2, 0, 2)' });
+
+      tree.computeLayout();
+      return tree;
+    },
+
+    'battle-sexes-sequential': () => {
+      const tree = new GameTreeModel();
+      tree.title = 'Battle of the Sexes (Sequential Commitment)';
+      tree.orientation = 'vertical';
+      tree.levelDistance = 90;
+      tree.siblingDistance = 90;
+
+      // Player 1 commits first
+      const p1 = tree.createNode({ type: 'decision', player: 'P_1' });
+      tree.rootId = p1.id;
+
+      const p2_opera = tree.addBranch(p1.id, { action: '\\text{Opera}', type: 'decision', player: 'P_2', isEquilibrium: true });
+      const p2_foot = tree.addBranch(p1.id, { action: '\\text{Football}', type: 'decision', player: 'P_2' });
+
+      // P2 after Opera
+      tree.addBranch(p2_opera.id, { action: '\\text{Opera}', type: 'terminal', payoff: '(3, 2)', isEquilibrium: true });
+      tree.addBranch(p2_opera.id, { action: '\\text{Football}', type: 'terminal', payoff: '(0, 0)' });
+
+      // P2 after Football
+      tree.addBranch(p2_foot.id, { action: '\\text{Opera}', type: 'terminal', payoff: '(0, 0)' });
+      tree.addBranch(p2_foot.id, { action: '\\text{Football}', type: 'terminal', payoff: '(2, 3)' });
+
+      tree.computeLayout();
+      return tree;
+    },
+
+    'inspection-game': () => {
+      const tree = new GameTreeModel();
+      tree.title = 'Tax Audit & Compliance Game (Imperfect Info)';
+      tree.orientation = 'vertical';
+      tree.levelDistance = 90;
+      tree.siblingDistance = 85;
+
+      // Taxpayer moves first
+      const taxpayer = tree.createNode({ type: 'decision', player: 'T' });
+      tree.rootId = taxpayer.id;
+
+      const auth_comply = tree.addBranch(taxpayer.id, { action: '\\text{Comply}', type: 'decision', player: 'A' });
+      const auth_evade = tree.addBranch(taxpayer.id, { action: '\\text{Evade}', type: 'decision', player: 'A' });
+
+      // Authority choices from Comply
+      tree.addBranch(auth_comply.id, { action: '\\text{Audit}', type: 'terminal', payoff: '(-t, t - c_A)' });
+      tree.addBranch(auth_comply.id, { action: '\\text{No Audit}', type: 'terminal', payoff: '(-t, t)' });
+
+      // Authority choices from Evade
+      tree.addBranch(auth_evade.id, { action: '\\text{Audit}', type: 'terminal', payoff: '(-t - F, t + F - c_A)' });
+      tree.addBranch(auth_evade.id, { action: '\\text{No Audit}', type: 'terminal', payoff: '(0, 0)' });
+
+      // Info set: Authority does not know whether taxpayer complied or evaded prior to audit
+      tree.addInfoSet([auth_comply.id, auth_evade.id], 'A');
+
+      tree.computeLayout();
+      return tree;
+    },
+
+    'pirate-game': () => {
+      const tree = new GameTreeModel();
+      tree.title = '3-Pirate Gold Division (Backward Induction)';
+      tree.orientation = 'horizontal';
+      tree.levelDistance = 110;
+      tree.siblingDistance = 65;
+
+      // Pirate 1 proposes allocation
+      const p1 = tree.createNode({ type: 'decision', player: 'P_1' });
+      tree.rootId = p1.id;
+
+      // P1 proposes: Greedy (99, 0, 1) or Fair (34, 33, 33)
+      const p2_greedy = tree.addBranch(p1.id, { action: '(99, 0, 1)', type: 'decision', player: 'P_2', isEquilibrium: true });
+      const p2_fair = tree.addBranch(p1.id, { action: '(34, 33, 33)', type: 'decision', player: 'P_2' });
+
+      // Under greedy proposal, P2 rejects (P2 gets 0), but P3 casts deciding vote!
+      const p3_vote = tree.addBranch(p2_greedy.id, { action: 'P_2: \\text{Reject}', type: 'decision', player: 'P_3', isEquilibrium: true });
+      tree.addBranch(p2_greedy.id, { action: 'P_2: \\text{Accept}', type: 'terminal', payoff: '(99, 0, 1)' });
+
+      // P3 gets 1 coin vs 0 if P1 thrown overboard, so P3 accepts!
+      tree.addBranch(p3_vote.id, { action: 'P_3: \\text{Accept}', type: 'terminal', payoff: '(99, 0, 1)', isEquilibrium: true });
+      // If P3 rejects, P1 overboard, P2 proposes (100, 0)
+      tree.addBranch(p3_vote.id, { action: 'P_3: \\text{Reject}', type: 'terminal', payoff: '(-, 100, 0)' });
+
+      // Fair proposal
+      tree.addBranch(p2_fair.id, { action: '\\text{Accept}', type: 'terminal', payoff: '(34, 33, 33)' });
+      tree.addBranch(p2_fair.id, { action: '\\text{Reject}', type: 'terminal', payoff: '(-, 100, 0)' });
+
+      tree.computeLayout();
+      return tree;
+    }
+  };
+
+  // Comprehensive Preset Metadata
+  const PresetMetadata = {
+    'market-entry': {
+      id: 'market-entry',
+      name: 'Market Entry Deterrence',
+      subtitle: 'Subgame Perfect Nash Equilibrium (SPNE)',
+      category: 'Industrial Organization & Competition',
+      players: ['Entrant (E)', 'Incumbent (I)'],
+      tags: ['Subgame Perfect', 'Backward Induction', 'Credible Threat'],
+      description: 'Classic two-stage entry game illustrating why non-credible threats (fighting price wars) fail backward induction.'
+    },
+    'stackelberg-duopoly': {
+      id: 'stackelberg-duopoly',
+      name: 'Stackelberg Sequential Duopoly',
+      subtitle: 'Quantity Leadership & First-Mover Advantage',
+      category: 'Industrial Organization & Competition',
+      players: ['Leader (L)', 'Follower (F)'],
+      tags: ['Commitment', 'First-Mover Advantage', 'Cournot'],
+      description: 'The market leader commits to production first; follower observes and best-responds, yielding higher profits for the leader.'
+    },
+    'chain-store': {
+      id: 'chain-store',
+      name: 'Chain Store Paradox',
+      subtitle: 'Predatory Pricing & Multi-Market Reputation',
+      category: 'Industrial Organization & Competition',
+      players: ['Entrant 1', 'Incumbent (I)', 'Entrant 2'],
+      tags: ['Reputation', 'Predation', 'Selten Paradox', 'Multi-Stage'],
+      description: 'Selten’s paradox exploring whether predatory pricing in an initial market successfully establishes deterrence in subsequent markets.'
+    },
+    'gift-exchange': {
+      id: 'gift-exchange',
+      name: 'Gift Exchange & Efficiency Wage',
+      subtitle: 'Labor Contracts & Reciprocity (Fehr et al.)',
+      category: 'Industrial Organization & Competition',
+      players: ['Employer (E)', 'Worker (W)'],
+      tags: ['Behavioral Economics', 'Efficiency Wages', 'Reciprocity'],
+      description: 'Firm offers generous wages expecting worker reciprocity through higher effort, contrasting standard selfish predictions.'
+    },
+    'spence-signaling': {
+      id: 'spence-signaling',
+      name: 'Spence Job Market Signaling',
+      subtitle: 'Costly Education with Information Sets',
+      category: 'Information Economics & Signaling',
+      players: ['Nature (N)', 'Worker (W)', 'Firm (F)'],
+      tags: ['Signaling', 'Information Sets', 'Adverse Selection', 'Bayesian'],
+      description: 'High-ability workers acquire education to signal their unseen productivity type to employers who cannot directly observe it.'
+    },
+    'lemon-market': {
+      id: 'lemon-market',
+      name: 'Akerlof Market for Lemons',
+      subtitle: 'Asymmetric Information & Market Adverse Selection',
+      category: 'Information Economics & Signaling',
+      players: ['Nature (N)', 'Seller (S)', 'Buyer (B)'],
+      tags: ['Adverse Selection', 'Information Sets', 'Nobel Classic'],
+      description: 'Sellers of poor-quality used cars crowd out peach cars due to the buyer’s inability to verify vehicle condition before sale.'
+    },
+    'beer-quiche': {
+      id: 'beer-quiche',
+      name: 'Beer-Quiche Signaling Game',
+      subtitle: 'Cho-Kreps Intuitive Criterion',
+      category: 'Information Economics & Signaling',
+      players: ['Nature (N)', 'Player 1', 'Player 2'],
+      tags: ['Intuitive Criterion', 'Refinements', 'Bayesian SPNE'],
+      description: 'The canonical signaling refinement game eliminating unreasonable pooling equilibria via belief restrictions out of equilibrium.'
+    },
+    'principal-agent': {
+      id: 'principal-agent',
+      name: 'Principal-Agent Moral Hazard',
+      subtitle: 'Incentive Contracts under Stochastic Output',
+      category: 'Information Economics & Signaling',
+      players: ['Principal', 'Agent', 'Nature (N)'],
+      tags: ['Moral Hazard', 'Stochastic / Nature', 'Incentives'],
+      description: 'Optimal wage contract design when agent effort is unobservable and final output is subject to random environmental shocks.'
+    },
+    'inspection-game': {
+      id: 'inspection-game',
+      name: 'Tax Audit & Inspection Game',
+      subtitle: 'Auditor vs Taxpayer Compliance',
+      category: 'Information Economics & Signaling',
+      players: ['Taxpayer (T)', 'Auditor (A)'],
+      tags: ['Imperfect Info', 'Compliance', 'Information Sets'],
+      description: 'Simultaneous extensive form where the regulatory authority audits with cost without observing taxpayer evasion ex-ante.'
+    },
+    'rubinstein-bargaining': {
+      id: 'rubinstein-bargaining',
+      name: 'Rubinstein Alternating-Offer Bargaining',
+      subtitle: '3-Stage Pie Division with Discount Factor δ',
+      category: 'Bargaining & Multistage Games',
+      players: ['Player 1', 'Player 2'],
+      tags: ['Alternating Offers', 'Discounting', 'Infinite Horizon SPNE'],
+      description: 'Sequential offers over a surplus with time discount factor δ, demonstrating immediate acceptance in subgame perfection.'
+    },
+    'ultimatum': {
+      id: 'ultimatum',
+      name: 'Ultimatum Bargaining Game',
+      subtitle: 'Take-It-Or-Leave-It Division',
+      category: 'Bargaining & Multistage Games',
+      players: ['Proposer (P1)', 'Responder (P2)'],
+      tags: ['Experiments', 'Fairness', 'Backward Induction'],
+      description: 'Proposer offers a split; responder either accepts or both get zero. Benchmark of economic experiments versus SPNE predictions.'
+    },
+    'centipede': {
+      id: 'centipede',
+      name: '4-Stage Centipede Game',
+      subtitle: 'Rosenthal Backward Induction Paradox',
+      category: 'Bargaining & Multistage Games',
+      players: ['Player 1', 'Player 2'],
+      tags: ['Paradox', 'Horizontal Layout', 'Cooperation'],
+      description: 'Players alternately decide whether to take a slightly larger pot or pass, highlighting tension between SPNE and mutual gain.'
+    },
+    'pirate-game': {
+      id: 'pirate-game',
+      name: '3-Pirate Gold Division',
+      subtitle: 'Strict Sequential Backward Induction',
+      category: 'Bargaining & Multistage Games',
+      players: ['Pirate 1', 'Pirate 2', 'Pirate 3'],
+      tags: ['Voting', 'Backward Induction', 'Puzzles'],
+      description: 'Senior pirate proposes a gold distribution with democratic voting; solved completely via rigorous backward induction.'
+    },
+    'sequential-dilemma': {
+      id: 'sequential-dilemma',
+      name: "Sequential Prisoner's Dilemma",
+      subtitle: 'Second-Mover Defection Advantage',
+      category: 'Classic Dilemmas & Experiments',
+      players: ['Player 1', 'Player 2'],
+      tags: ['Classic Dilemma', 'Subgame Perfect', 'Defection'],
+      description: 'Player 1 moves first; knowing Player 2 will defect against cooperation, backward induction uniquely selects mutual defection.'
+    },
+    'battle-sexes-sequential': {
+      id: 'battle-sexes-sequential',
+      name: 'Battle of the Sexes (Commitment)',
+      subtitle: 'Resolving Coordination by Moving First',
+      category: 'Classic Dilemmas & Experiments',
+      players: ['Player 1', 'Player 2'],
+      tags: ['First-Mover Advantage', 'Coordination', 'Commitment'],
+      description: 'How sequential commitment turns multiple simultaneous Nash equilibria into a unique subgame-perfect outcome.'
+    },
+    'matching-pennies-imperfect': {
+      id: 'matching-pennies-imperfect',
+      name: 'Matching Pennies (Imperfect Info)',
+      subtitle: 'Information Sets Emulating Simultaneous Play',
+      category: 'Classic Dilemmas & Experiments',
+      players: ['Player 1', 'Player 2'],
+      tags: ['Information Sets', 'Zero-Sum', 'Simultaneous'],
+      description: 'Representing simultaneous coin matching via extensive-form information sets connecting Player 2’s unobserved choice nodes.'
+    },
+    'trust-game': {
+      id: 'trust-game',
+      name: 'Trust / Investment Game (Berg et al.)',
+      subtitle: 'Endowment Tripling and Reciprocal Return',
+      category: 'Classic Dilemmas & Experiments',
+      players: ['Investor (P1)', 'Trustee (P2)'],
+      tags: ['Trust', 'Social Preferences', 'Behavioral'],
+      description: 'Investor risks capital which triples upon investment; trustee decides how much to return, testing reciprocal trust.'
+    },
+    'seltens-horse': {
+      id: 'seltens-horse',
+      name: "Selten's Horse",
+      subtitle: 'Iconic 3-Player Imperfect Information Game',
+      category: 'Classic Dilemmas & Experiments',
+      players: ['Player 1', 'Player 2', 'Player 3'],
+      tags: ['Information Sets', 'Trembling Hand', 'Subgame Perfection'],
+      description: 'Reinhard Selten’s famous 3-player counterexample highlighting the need for trembling-hand perfection and sequential equilibrium.'
+    },
+    'kuhn-poker': {
+      id: 'kuhn-poker',
+      name: 'Kuhn Poker (Deal & Bluffing)',
+      subtitle: 'Bayesian Chance Node & Card Bluffing',
+      category: 'Classic Dilemmas & Experiments',
+      players: ['Nature (N)', 'Player 1', 'Player 2'],
+      tags: ['Poker', 'Bluffing', 'Bayesian', 'Chance Nodes'],
+      description: 'Simplified poker model with private deals and imperfect observation, demonstrating optimal mixed bluffing and calling strategies.'
     }
   };
 
@@ -1422,5 +1871,6 @@
   window.GameTreeModel = GameTreeModel;
   window.GameTreeCanvasRenderer = GameTreeCanvasRenderer;
   window.GameTreePresets = Presets;
+  window.GameTreePresetMeta = PresetMetadata;
 
 })(window);

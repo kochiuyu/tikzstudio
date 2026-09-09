@@ -50,6 +50,16 @@
       font-size: 0.8rem;
       margin-bottom: 0.4rem;
     }
+    #tikz-output-code,
+    pre#tikz-output-code {
+      background: #0f172a !important;
+      color: #f8fafc !important;
+      border: none !important;
+      box-shadow: none !important;
+      font-family: 'JetBrains Mono', 'Fira Code', var(--font-mono), monospace !important;
+      user-select: text;
+      -webkit-user-select: text;
+    }
   </style>
 </head>
 <body>
@@ -115,23 +125,36 @@
           <optgroup label="Industrial Organization &amp; Competition">
             <option value="market-entry" selected>Market Entry Deterrence (Subgame Perfect)</option>
             <option value="stackelberg-duopoly">Stackelberg Sequential Duopoly</option>
+            <option value="chain-store">Chain Store Paradox (Predatory Pricing)</option>
+            <option value="gift-exchange">Gift Exchange &amp; Efficiency Wage (Fehr et al.)</option>
           </optgroup>
           <optgroup label="Information Economics &amp; Signaling">
             <option value="spence-signaling">Spence Job Market Signaling (Info Sets)</option>
+            <option value="lemon-market">Akerlof Market for Lemons (Adverse Selection)</option>
             <option value="beer-quiche">Beer-Quiche Signaling Game (Cho-Kreps)</option>
             <option value="principal-agent">Principal-Agent Contracting (Moral Hazard)</option>
+            <option value="inspection-game">Tax Audit &amp; Inspection Game (Imperfect Info)</option>
           </optgroup>
           <optgroup label="Bargaining &amp; Multistage Games">
             <option value="rubinstein-bargaining">Rubinstein Alternating-Offers (3 Stages)</option>
             <option value="ultimatum">Ultimatum Bargaining Game</option>
             <option value="centipede">4-Stage Centipede Game</option>
+            <option value="pirate-game">3-Pirate Gold Division (Backward Induction)</option>
           </optgroup>
-          <optgroup label="Classic Dilemmas &amp; Experiments">
+          <optgroup label="Classic Dilemmas, Coordination &amp; Poker">
             <option value="sequential-dilemma">Sequential Prisoner's Dilemma</option>
+            <option value="battle-sexes-sequential">Battle of the Sexes (Commitment)</option>
             <option value="matching-pennies-imperfect">Matching Pennies (Imperfect Info)</option>
             <option value="trust-game">Trust / Investment Game (Berg et al.)</option>
+            <option value="seltens-horse">Selten's Horse (3-Player Imperfect Info)</option>
+            <option value="kuhn-poker">Kuhn Poker (Deal &amp; Bluffing)</option>
           </optgroup>
         </select>
+
+        <button type="button" id="btn-browse-presets" class="btn-modern btn-modern-secondary" onclick="openPresetGallery();" title="Browse full library of 19 game models with descriptions and properties" style="font-size: 0.8rem; padding: 0.32rem 0.65rem; display: inline-flex; align-items: center; gap: 0.35rem;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Browse Library (19)
+        </button>
 
         <div style="height: 20px; width: 1px; background: var(--color-border); margin: 0 0.2rem;"></div>
 
@@ -375,15 +398,18 @@
         </div>
 
         <!-- LaTeX TikZ Output Box -->
-        <div class="latex-editor-container" style="background: #ffffff; border: 1px solid var(--color-border); border-radius: var(--radius-lg); overflow: hidden;">
+        <div class="latex-editor-container" style="background: #ffffff; border: 1px solid var(--color-border); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm);">
           <div class="latex-editor-header" style="background: #f8fafc; padding: 0.65rem 1.25rem; border-bottom: 1px solid var(--color-border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
-            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-              <span style="font-weight: 700; font-size: 0.9rem; color: var(--color-text-main);">TikZ LaTeX Code</span>
+            <div style="display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap;">
+              <span style="font-weight: 700; font-size: 0.9rem; color: var(--color-text-main); display: flex; align-items: center; gap: 0.4rem;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                TikZ LaTeX Code
+              </span>
               <div style="display: flex; gap: 0.25rem;">
-                <button type="button" id="btn-tree-standalone" class="node-type-btn active" style="padding: 0.15rem 0.5rem; font-size: 0.725rem;" onclick="setTreeExportMode(false);" title="Full compilable standalone LaTeX document">
+                <button type="button" id="btn-tree-standalone" class="node-type-btn active" style="padding: 0.2rem 0.55rem; font-size: 0.725rem;" onclick="setTreeExportMode(false);" title="Full compilable standalone LaTeX document">
                   Standalone Document
                 </button>
-                <button type="button" id="btn-tree-snippet" class="node-type-btn" style="padding: 0.15rem 0.5rem; font-size: 0.725rem;" onclick="setTreeExportMode(true);" title="tikzpicture environment snippet only">
+                <button type="button" id="btn-tree-snippet" class="node-type-btn" style="padding: 0.2rem 0.55rem; font-size: 0.725rem;" onclick="setTreeExportMode(true);" title="tikzpicture environment snippet only">
                   tikzpicture Only
                 </button>
               </div>
@@ -404,8 +430,8 @@
             </div>
           </div>
 
-          <div style="position: relative; max-height: 280px; overflow-y: auto; background: #0f172a; padding: 1rem;">
-            <pre id="tikz-output-code" style="margin: 0; font-family: 'JetBrains Mono', 'Fira Code', var(--font-mono); font-size: 0.8rem; color: #f8fafc; line-height: 1.5; white-space: pre-wrap;"></pre>
+          <div style="position: relative; background: #0f172a; padding: 1rem 1.25rem;">
+            <pre id="tikz-output-code" style="margin: 0; padding: 0; background: #0f172a !important; color: #f8fafc !important; border: none !important; box-shadow: none !important; font-family: 'JetBrains Mono', 'Fira Code', var(--font-mono), monospace; font-size: 0.825rem; line-height: 1.6; max-height: 280px; overflow: auto; white-space: pre; tab-size: 2; user-select: text; -webkit-user-select: text;"></pre>
           </div>
         </div>
 
@@ -666,6 +692,8 @@
       canvasRenderer.model = activeTreeModel;
       window.gameTreeModel = activeTreeModel;
 
+      $('#preset-select').val(key);
+
       $('#slider-level-dist').val(activeTreeModel.levelDistance);
       $('#slider-sibling-dist').val(activeTreeModel.siblingDistance);
       $('#val-level-dist').text(activeTreeModel.levelDistance + 'px');
@@ -841,6 +869,7 @@
 \\usepackage{amsmath,amssymb}
 \\usepackage{tikz}
 \\usetikzlibrary{calc,positioning}
+\\usepackage{xcolor}
 
 \\begin{document}
 
@@ -883,7 +912,157 @@ ${tikzCode}
       a.click();
       URL.revokeObjectURL(a.href);
     }
+
+    // Preset Gallery Modal Interactions
+    let currentPresetFilterCategory = 'All';
+    let currentPresetSearchTerm = '';
+
+    function openPresetGallery() {
+      const overlay = document.getElementById('preset-modal-overlay');
+      if (!overlay) return;
+      overlay.style.display = 'flex';
+      currentPresetSearchTerm = '';
+      $('#preset-search-input').val('');
+      renderPresetCards();
+      setTimeout(() => $('#preset-search-input').focus(), 50);
+    }
+
+    function closePresetGallery() {
+      const overlay = document.getElementById('preset-modal-overlay');
+      if (overlay) overlay.style.display = 'none';
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closePresetGallery();
+      }
+    });
+
+    function setPresetCategory(cat, btn) {
+      currentPresetFilterCategory = cat;
+      $('#preset-category-pills button').removeClass('active');
+      $(btn).addClass('active');
+      renderPresetCards();
+    }
+
+    function onSearchPreset(term) {
+      currentPresetSearchTerm = term.toLowerCase().trim();
+      renderPresetCards();
+    }
+
+    function renderPresetCards() {
+      const grid = document.getElementById('preset-card-grid');
+      if (!grid) return;
+
+      const metaList = Object.values(window.GameTreePresetMeta || {});
+      const filtered = metaList.filter(item => {
+        if (currentPresetFilterCategory !== 'All' && item.category !== currentPresetFilterCategory) {
+          return false;
+        }
+        if (currentPresetSearchTerm) {
+          const matchName = (item.name || '').toLowerCase().includes(currentPresetSearchTerm);
+          const matchSub = (item.subtitle || '').toLowerCase().includes(currentPresetSearchTerm);
+          const matchDesc = (item.description || '').toLowerCase().includes(currentPresetSearchTerm);
+          const matchTags = (item.tags || []).some(t => t.toLowerCase().includes(currentPresetSearchTerm));
+          const matchPlayers = (item.players || []).some(p => p.toLowerCase().includes(currentPresetSearchTerm));
+          return matchName || matchSub || matchDesc || matchTags || matchPlayers;
+        }
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 3rem 1rem; color: var(--color-text-muted);">
+            <p style="font-size: 0.95rem; font-weight: 600; margin: 0 0 0.35rem; color: var(--color-text-main);">No matching models found</p>
+            <p style="font-size: 0.8rem; margin: 0;">Try clearing the search query or selecting a different category filter.</p>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(item => {
+        const isCurrent = $('#preset-select').val() === item.id;
+        const tagsHtml = (item.tags || []).map(t => `<span style="font-size: 0.68rem; font-weight: 500; background: var(--color-surface-sunken, #f1f5f9); color: var(--color-text-muted); padding: 1px 6px; border-radius: 4px; border: 1px solid var(--color-border);">${t}</span>`).join(' ');
+        const playersHtml = (item.players || []).map(p => `<span style="font-size: 0.68rem; font-weight: 600; color: #1e3a8a; background: #dbeafe; padding: 1px 5px; border-radius: 3px;">${p}</span>`).join(' ');
+
+        return `
+          <div style="border: 1px solid ${isCurrent ? 'var(--color-primary, #2563eb)' : 'var(--color-border)'}; background: ${isCurrent ? 'rgba(37, 99, 235, 0.03)' : 'var(--color-surface, #ffffff)'}; border-radius: 8px; padding: 1rem; display: flex; flex-direction: column; justify-content: space-between; transition: all 0.15s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.35rem; gap: 0.5rem;">
+                <span style="font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: var(--color-text-muted);">${(item.category || '').split('&')[0].trim()}</span>
+                ${isCurrent ? '<span style="font-size: 0.68rem; font-weight: 700; background: #2563eb; color: #ffffff; padding: 1px 6px; border-radius: 999px;">Active</span>' : ''}
+              </div>
+              <h4 style="margin: 0; font-size: 0.95rem; font-weight: 700; color: var(--color-text-main); line-height: 1.3;">${item.name}</h4>
+              <div style="font-size: 0.75rem; font-weight: 600; color: var(--color-primary, #2563eb); margin: 0.2rem 0 0.4rem;">${item.subtitle}</div>
+              <p style="font-size: 0.78rem; color: var(--color-text-muted); line-height: 1.45; margin: 0 0 0.65rem;">${item.description}</p>
+              
+              <div style="margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap;">
+                <span style="font-size: 0.68rem; font-weight: 600; color: var(--color-text-muted);">Players:</span>
+                ${playersHtml}
+              </div>
+
+              <div style="display: flex; flex-wrap: wrap; gap: 0.25rem; margin-bottom: 0.85rem;">
+                ${tagsHtml}
+              </div>
+            </div>
+
+            <div>
+              <button type="button" class="btn-modern ${isCurrent ? 'btn-modern-secondary' : 'btn-modern-primary'}" onclick="selectModelFromGallery('${item.id}');" style="width: 100%; font-size: 0.8rem; padding: 0.4rem 0.6rem; justify-content: center; font-weight: 600;">
+                ${isCurrent ? 'Reload Active Model' : 'Load Model →'}
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectModelFromGallery(id) {
+      loadPreset(id);
+      closePresetGallery();
+      showFeedbackToast('Loaded ' + (window.GameTreePresetMeta[id]?.name || id));
+    }
   </script>
+
+  <!-- Preset Library Gallery Modal Dialog -->
+  <div id="preset-modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); z-index: 99999; align-items: center; justify-content: center; padding: 1rem;" onclick="if (event.target === this) closePresetGallery();">
+    <div style="background: var(--color-surface, #ffffff); border-radius: 12px; width: 100%; max-width: 1020px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35); border: 1px solid var(--color-border); overflow: hidden;">
+      <!-- Modal Header -->
+      <div style="padding: 1.2rem 1.5rem; border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; background: var(--color-surface-sunken, #f8fafc);">
+        <div>
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <h3 style="margin: 0; font-size: 1.15rem; font-weight: 700; color: var(--color-text-main);">Game Theory Model Library</h3>
+            <span style="font-size: 0.75rem; font-weight: 700; background: #e0e7ff; color: #3730a3; padding: 2px 8px; border-radius: 999px;">19 Extensive-Form Models</span>
+          </div>
+          <p style="margin: 0.35rem 0 0; font-size: 0.825rem; color: var(--color-text-muted);">
+            Explore canonical game-theoretic models across industrial organization, asymmetric information, signaling, bargaining, and experimental games.
+          </p>
+        </div>
+        <button type="button" onclick="closePresetGallery();" class="btn-modern btn-modern-secondary" style="padding: 0.4rem 0.65rem; font-size: 0.85rem;" title="Close gallery (Esc)">
+          ✕ Close
+        </button>
+      </div>
+
+      <!-- Search & Filters -->
+      <div style="padding: 0.85rem 1.5rem; border-bottom: 1px solid var(--color-border); background: var(--color-surface, #ffffff); display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; justify-content: space-between;">
+        <div style="position: relative; flex: 1; min-width: 240px; max-width: 360px;">
+          <input type="text" id="preset-search-input" oninput="onSearchPreset(this.value);" placeholder="Search game, theory concept, or tag..." class="input-modern" style="width: 100%; padding-left: 2rem; font-size: 0.825rem;" />
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--color-text-muted); pointer-events: none;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+
+        <div id="preset-category-pills" style="display: flex; gap: 0.35rem; flex-wrap: wrap;">
+          <button type="button" class="btn-modern btn-modern-secondary active" onclick="setPresetCategory('All', this);" style="font-size: 0.75rem; padding: 0.25rem 0.6rem;">All (19)</button>
+          <button type="button" class="btn-modern btn-modern-secondary" onclick="setPresetCategory('Industrial Organization & Competition', this);" style="font-size: 0.75rem; padding: 0.25rem 0.6rem;">Competition &amp; IO (4)</button>
+          <button type="button" class="btn-modern btn-modern-secondary" onclick="setPresetCategory('Information Economics & Signaling', this);" style="font-size: 0.75rem; padding: 0.25rem 0.6rem;">Signaling &amp; Info (5)</button>
+          <button type="button" class="btn-modern btn-modern-secondary" onclick="setPresetCategory('Bargaining & Multistage Games', this);" style="font-size: 0.75rem; padding: 0.25rem 0.6rem;">Bargaining (4)</button>
+          <button type="button" class="btn-modern btn-modern-secondary" onclick="setPresetCategory('Classic Dilemmas & Experiments', this);" style="font-size: 0.75rem; padding: 0.25rem 0.6rem;">Dilemmas &amp; Poker (6)</button>
+        </div>
+      </div>
+
+      <!-- Card Grid -->
+      <div id="preset-card-grid" style="padding: 1.25rem 1.5rem; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; flex: 1;">
+      </div>
+    </div>
+  </div>
 
 </body>
 </html>

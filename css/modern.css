@@ -703,13 +703,19 @@ a:hover {
   color: #f8fafc;
 }
 
-.code-viewport pre {
+.code-viewport pre,
+.latex-editor-container pre,
+#tikz-output-code,
+pre#tikz-output-code {
   margin: 0;
-  background: transparent;
-  border: none;
+  background: #0f172a !important;
+  border: none !important;
+  box-shadow: none !important;
   padding: 0;
-  color: inherit;
-  font-family: inherit;
+  color: #f8fafc !important;
+  font-family: 'JetBrains Mono', 'Fira Code', var(--font-mono), monospace !important;
+  user-select: text;
+  -webkit-user-select: text;
 }
 
 .code-viewport .token-cmd { color: #818cf8; font-weight: 600; }
