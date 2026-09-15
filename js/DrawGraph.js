@@ -599,7 +599,11 @@ function DrawGraph(isEample, customCanvas, scaleMultiplier) {
 
     var ansEl = document.getElementById("answer");
     if (ansEl) {
-        ansEl.innerHTML = finalTikz.trim() ? finalTikz : "% (Empty canvas - use toolbar to add shapes or enable axes)<br>";
+        if (typeof formatTikzHighlight === 'function') {
+            ansEl.innerHTML = finalTikz.trim() ? formatTikzHighlight(finalTikz) : '<span class="token-comment">% (Empty canvas - use toolbar to add shapes or enable axes)</span><br>';
+        } else {
+            ansEl.innerHTML = finalTikz.trim() ? finalTikz : "% (Empty canvas - use toolbar to add shapes or enable axes)<br>";
+        }
     }
 
     if (window.layerManager) {

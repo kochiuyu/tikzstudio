@@ -7,8 +7,8 @@
   <meta name="description" content="Interactive Flowchart, Finite State Machine (FSM), and Automata Builder for LaTeX TikZ diagrams." />
 
   <!-- Stylesheets -->
-  <link rel="stylesheet" href="css/modern.css">
   <link rel="stylesheet" href="css/latex.css">
+  <link rel="stylesheet" href="css/modern.css">
 
   <!-- Core Scripts -->
   <script type="text/javascript" src="js/jquery-1.11.0.min.js"></script>
@@ -109,10 +109,6 @@
         <li class="nav-item"><a href="Coordinate.html">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
           Coordinate Axis
-        </a></li>
-        <li class="nav-item"><a href="GameTree.html">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="3"/><circle cx="6" cy="19" r="3"/><circle cx="18" cy="19" r="3"/><line x1="12" y1="8" x2="6" y2="16"/><line x1="12" y1="8" x2="18" y2="16"/></svg>
-          Game Tree
         </a></li>
         <li class="nav-item"><a href="Venn.html">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="12" r="6"/><circle cx="15" cy="12" r="6"/></svg>
@@ -248,8 +244,13 @@
 
         <button class="btn-modern btn-modern-primary" onclick="openOverleaf();" title="Open in Overleaf">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-          Overleaf
+          Overleaf &rarr;
         </button>
+
+        <a href="Help.html#flowchart" class="btn-modern btn-modern-secondary" title="View Flowchart &amp; FSM documentation and guide" style="font-size: 0.8rem; padding: 0.32rem 0.65rem; display: inline-flex; align-items: center; gap: 0.35rem; text-decoration: none;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Docs
+        </a>
       </div>
     </div>
 
@@ -576,6 +577,23 @@
     </div>
 
   </main>
+
+  <!-- Modern Footer -->
+  <footer class="app-footer">
+    <div class="footer-inner">
+      <div>
+        <strong>TikZ Studio</strong> &mdash; Flowcharts, Process &amp; FSM State Machine Generator for LaTeX.
+      </div>
+      <div class="footer-nav">
+        <a href="index.html">Homepage</a>
+        <a href="Coordinate.html">Coordinate Axis</a>
+        <a href="Venn.html">Venn Diagrams</a>
+        <a href="Flowchart.html">Flowcharts &amp; FSM</a>
+        <a href="Timeline.html">Timeline</a>
+        <a href="Help.html">Docs &amp; Help</a>
+      </div>
+    </div>
+  </footer>
 
   <script>
     let model = null;

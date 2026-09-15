@@ -77,10 +77,6 @@
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
           Coordinate Axis
         </a></li>
-        <li class="nav-item"><a href="GameTree.html">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="3"/><circle cx="6" cy="19" r="3"/><circle cx="18" cy="19" r="3"/><line x1="12" y1="8" x2="6" y2="16"/><line x1="12" y1="8" x2="18" y2="16"/></svg>
-          Game Tree
-        </a></li>
         <li class="nav-item"><a href="Venn.html">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="12" r="6"/><circle cx="15" cy="12" r="6"/></svg>
           Venn Diagrams
@@ -110,7 +106,7 @@
         TikZ Studio Documentation
       </h1>
       <p style="color: var(--color-text-muted); font-size: 1.05rem; line-height: 1.6;">
-        The complete guide to creating publication-ready LaTeX TikZ figures. Browse instructions, visual workflows, interactive keyboard shortcuts, and Overleaf integration across all 5 studios.
+        The complete guide to creating publication-ready LaTeX TikZ figures. Browse instructions, visual workflows, interactive keyboard shortcuts, and Overleaf integration across all 4 studios.
       </p>
     </div>
 
@@ -118,7 +114,6 @@
     <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; margin-bottom: 2.5rem; position: sticky; top: 72px; z-index: 10; background: rgba(248, 250, 252, 0.92); backdrop-filter: blur(8px); padding: 0.6rem 0.75rem; border-radius: 9999px; border: 1px solid #e2e8f0; max-width: 960px; margin-left: auto; margin-right: auto;">
       <a href="#overview" class="help-tab-btn active" onclick="activateHelpTab(this)">Overview</a>
       <a href="#coordinate" class="help-tab-btn" onclick="activateHelpTab(this)">Coordinate Axis &amp; Curves</a>
-      <a href="#gametree" class="help-tab-btn" onclick="activateHelpTab(this)">Game Trees</a>
       <a href="#venn" class="help-tab-btn" onclick="activateHelpTab(this)">Venn Diagrams</a>
       <a href="#flowchart" class="help-tab-btn" onclick="activateHelpTab(this)">Flowcharts &amp; FSM</a>
       <a href="#timeline" class="help-tab-btn" onclick="activateHelpTab(this)">Timelines</a>
@@ -149,16 +144,6 @@
             </div>
             <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45; margin: 0;">
               Draw 2D curves, Bézier splines, 14 economics &amp; physics presets, shaded regions, and Z-index layers.
-            </p>
-          </a>
-
-          <a href="GameTree.html" style="text-decoration: none; display: block; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.1rem; transition: border-color 0.15s ease;">
-            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.4rem;">
-              <span style="color: #2563eb; font-size: 1.1rem;">🌳</span>
-              <strong style="color: #0f172a; font-size: 0.95rem;">Game Tree Studio</strong>
-            </div>
-            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45; margin: 0;">
-              Extensive-form game trees with decision nodes, information sets, player strategies, and payoff vectors.
             </p>
           </a>
 
@@ -234,47 +219,11 @@
         </div>
       </section>
 
-      <!-- SECTION 2: Game Tree Studio -->
-      <section id="gametree" class="help-section-card">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
-          <h2 style="font-size: 1.35rem; font-weight: 700; color: var(--color-text-main); margin: 0;">
-            2. Game Tree &amp; Decision Studio
-          </h2>
-          <span class="help-chip" style="background: #dbeafe; color: #1d4ed8;">GameTree.html</span>
-        </div>
-        <p style="font-size: 0.95rem; color: var(--color-text-muted); line-height: 1.6; margin-bottom: 1.25rem;">
-          Design extensive-form game trees for game theory, economics, and decision analysis. Includes backward induction paths, information sets, and payoffs:
-        </p>
-
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 1rem;">
-          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
-            <strong style="color: #2563eb; display: block; margin-bottom: 0.35rem;">Nodes &amp; Players</strong>
-            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45;">
-              Define root nodes, player decision turns (e.g. Player 1, Player 2, Nature), and terminal payoff vectors (e.g. <code style="font-family: monospace;">(3, 1)</code>).
-            </p>
-          </div>
-
-          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
-            <strong style="color: #7c3aed; display: block; margin-bottom: 0.35rem;">Information Sets</strong>
-            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45;">
-              Represent games with imperfect information by linking simultaneous decision nodes with dashed connectors.
-            </p>
-          </div>
-
-          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
-            <strong style="color: #059669; display: block; margin-bottom: 0.35rem;">Equilibrium Strategies</strong>
-            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.45;">
-              Highlight subgame-perfect Nash equilibrium branches with thicker lines, custom colors, and branch probability labels.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <!-- SECTION 3: Venn & Euler Diagrams Studio -->
+      <!-- SECTION 2: Venn & Euler Diagrams Studio -->
       <section id="venn" class="help-section-card">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
           <h2 style="font-size: 1.35rem; font-weight: 700; color: var(--color-text-main); margin: 0;">
-            3. Venn &amp; Euler Diagrams Studio
+            2. Venn &amp; Euler Diagrams Studio
           </h2>
           <span class="help-chip" style="background: #d1fae5; color: #065f46;">Venn.html</span>
         </div>
@@ -306,11 +255,11 @@
         </div>
       </section>
 
-      <!-- SECTION 4: Flowcharts & State Machines Studio -->
+      <!-- SECTION 3: Flowcharts & State Machines Studio -->
       <section id="flowchart" class="help-section-card">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
           <h2 style="font-size: 1.35rem; font-weight: 700; color: var(--color-text-main); margin: 0;">
-            4. Flowcharts, State Machines &amp; Automata
+            3. Flowcharts, State Machines &amp; Automata
           </h2>
           <span class="help-chip" style="background: #fef3c7; color: #b45309;">Flowchart.html</span>
         </div>
@@ -342,11 +291,11 @@
         </div>
       </section>
 
-      <!-- SECTION 5: Timeline Studio -->
+      <!-- SECTION 4: Timeline Studio -->
       <section id="timeline" class="help-section-card">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
           <h2 style="font-size: 1.35rem; font-weight: 700; color: var(--color-text-main); margin: 0;">
-            5. Timeline Studio
+            4. Timeline Studio
           </h2>
           <span class="help-chip" style="background: #fce7f3; color: #9d174d;">Timeline.html</span>
         </div>
@@ -516,7 +465,6 @@
       <div class="footer-nav">
         <a href="index.html">Homepage</a>
         <a href="Coordinate.html">Coordinate Axis</a>
-        <a href="GameTree.html">Game Tree</a>
         <a href="Venn.html">Venn Diagrams</a>
         <a href="Flowchart.html">Flowcharts &amp; FSM</a>
         <a href="Timeline.html">Timeline</a>

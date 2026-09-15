@@ -2194,9 +2194,157 @@
     }
   }
 
+  const VennPresetMeta = {
+    '2set-intersect': {
+      id: '2set-intersect',
+      name: 'Intersection of Two Sets',
+      subtitle: 'A ∩ B (Logical Conjunction / AND)',
+      category: '2-Set Operations',
+      description: 'Highlights the overlapping region shared simultaneously by sets A and B.',
+      sets: '2 Sets (A, B)',
+      tags: ['Intersection', 'Conjunction', 'AND', 'Joint Probability']
+    },
+    '2set-union': {
+      id: '2set-union',
+      name: 'Union of Two Sets',
+      subtitle: 'A ∪ B (Logical Disjunction / OR)',
+      category: '2-Set Operations',
+      description: 'Shades all elements contained in set A, set B, or both, illustrating the additive set rule.',
+      sets: '2 Sets (A, B)',
+      tags: ['Union', 'Disjunction', 'OR', 'Inclusion']
+    },
+    '2set-diff-ab': {
+      id: '2set-diff-ab',
+      name: 'Relative Complement / Difference',
+      subtitle: 'A \\ B (A without B / A ∩ Bᶜ)',
+      category: '2-Set Operations',
+      description: 'Shades the exclusive region belonging strictly to set A and excluding set B.',
+      sets: '2 Sets (A, B)',
+      tags: ['Difference', 'Relative Complement', 'Exclusion']
+    },
+    '2set-symdiff': {
+      id: '2set-symdiff',
+      name: 'Symmetric Difference',
+      subtitle: 'A Δ B = (A \\ B) ∪ (B \\ A)',
+      category: '2-Set Operations',
+      description: 'Highlights elements belonging to exactly one of the sets, corresponding to exclusive OR (XOR).',
+      sets: '2 Sets (A, B)',
+      tags: ['Symmetric Difference', 'XOR', 'Exclusive OR', 'Parity']
+    },
+    '2set-demorgan': {
+      id: '2set-demorgan',
+      name: "De Morgan's Duality Law",
+      subtitle: '(A ∪ B)ᶜ = Aᶜ ∩ Bᶜ',
+      category: '2-Set Operations',
+      description: 'Demonstrates universal complement outside the union, highlighting the bounding universe frame U.',
+      sets: '2 Sets + Universe U',
+      tags: ['De Morgan', 'Universal Set', 'Complements', 'Set Duality']
+    },
+    '2set-cond-prob': {
+      id: '2set-cond-prob',
+      name: 'Conditional Probability Partition',
+      subtitle: 'P(A | B) = P(A ∩ B) / P(B)',
+      category: 'Probability & Bayes',
+      description: 'Illustrates how conditioning on event B restricts the effective sample space to B.',
+      sets: '2 Events (A, B)',
+      tags: ['Conditional Probability', 'Sample Space', 'Bayes Rule', 'Statistics']
+    },
+    '2set-bayes-diagnostic': {
+      id: '2set-bayes-diagnostic',
+      name: "Medical Diagnostic Test & Bayes' Rule",
+      subtitle: 'True/False Positives & Negatives (TP/FP/TN/FN)',
+      category: 'Probability & Bayes',
+      description: 'Maps clinical test status against disease status to demonstrate base rate fallacy and diagnostic accuracy.',
+      sets: 'Disease vs Positive Test',
+      tags: ['Bayes Theorem', 'Sensitivity', 'Specificity', 'Biostatistics', 'False Positives']
+    },
+    '3set-triple-intersect': {
+      id: '3set-triple-intersect',
+      name: 'Triple Set Intersection',
+      subtitle: 'A ∩ B ∩ C (Simultaneous Core)',
+      category: '3-Set Logic',
+      description: 'Focuses on the central atomic intersection where all three sets overlap simultaneously.',
+      sets: '3 Sets (A, B, C)',
+      tags: ['Triple Intersection', '3-Way Overlap', 'Central Atom']
+    },
+    '3set-pairwise': {
+      id: '3set-pairwise',
+      name: 'Pairwise Intersections',
+      subtitle: '(A ∩ B) ∪ (B ∩ C) ∪ (A ∩ C)',
+      category: '3-Set Logic',
+      description: 'Shades all three dual overlapping regions among sets A, B, and C.',
+      sets: '3 Sets (A, B, C)',
+      tags: ['Pairwise', 'Combinatorics', 'Dual Overlaps']
+    },
+    '3set-boolean-query': {
+      id: '3set-boolean-query',
+      name: 'Boolean Search & Database Filter',
+      subtitle: '(A ∪ B) ∩ C (SQL Filter Logic)',
+      category: '3-Set Logic',
+      description: 'Models compound database queries combining OR disjunction with an obligatory AND constraint.',
+      sets: '3 Search Predicates',
+      tags: ['Database Query', 'SQL WHERE', 'Information Retrieval', 'Boolean Logic']
+    },
+    '3set-symmetric-diff': {
+      id: '3set-symmetric-diff',
+      name: '3-Set Symmetric Difference',
+      subtitle: 'A Δ B Δ C (Odd Membership Partitions)',
+      category: '3-Set Logic',
+      description: 'Partitions regions where an element belongs to an odd number of sets (1 or 3 sets).',
+      sets: '3 Sets (A, B, C)',
+      tags: ['XOR Partitions', 'Parity', 'Odd Multiplicity']
+    },
+    '3set-syllogism': {
+      id: '3set-syllogism',
+      name: 'Categorical Syllogism (S-M-P)',
+      subtitle: 'Major (P), Minor (S), and Middle (M) Terms',
+      category: '3-Set Logic',
+      description: 'Classical formal logic diagram used to test deductive arguments (e.g. Barbara, Celarent).',
+      sets: 'Subject, Predicate, Middle',
+      tags: ['Deductive Logic', 'Aristotelian Syllogism', 'Validity Proof', 'Philosophy']
+    },
+    '3set-inclusion-exclusion': {
+      id: '3set-inclusion-exclusion',
+      name: 'Inclusion-Exclusion Cardinalities',
+      subtitle: '|A ∪ B ∪ C| Principle with Counts',
+      category: '3-Set Logic',
+      description: 'Annotates exact numerical counts in each of the 8 disjoint regions to demonstrate cardinalities.',
+      sets: '3 Partitioned Sets',
+      tags: ['Inclusion-Exclusion', 'Cardinalities', 'Combinatorics', 'Probability Counts']
+    },
+    'euler-subset': {
+      id: 'euler-subset',
+      name: 'Proper Subset & Monotonic Inclusion',
+      subtitle: 'A ⊂ B (All A are B)',
+      category: 'Euler & Inclusion',
+      description: 'Visualizes strict hierarchical containment where circle A lies entirely inside circle B.',
+      sets: 'Concentric Containment',
+      tags: ['Subset', 'Containment', 'Type Hierarchy', 'Monotonicity']
+    },
+    'euler-partial': {
+      id: 'euler-partial',
+      name: 'Partial Overlap (Existential)',
+      subtitle: 'Some A are B, Some A are Not B',
+      category: 'Euler & Inclusion',
+      description: 'Eulerian non-symmetrical positioning showing partial intersection with clear separate sets.',
+      sets: '2 Asymmetric Sets',
+      tags: ['Euler Diagram', 'Partial Intersect', 'Existential Quantifier']
+    },
+    'euler-disjoint': {
+      id: 'euler-disjoint',
+      name: 'Disjoint & Mutually Exclusive Sets',
+      subtitle: 'A ∩ B = ∅ (Independent Sets)',
+      category: 'Euler & Inclusion',
+      description: 'Two completely separated non-overlapping circles illustrating mutual exclusivity.',
+      sets: '2 Separated Sets',
+      tags: ['Disjoint Sets', 'Mutually Exclusive', 'Zero Overlap', 'Independence']
+    }
+  };
+
   // Expose to window
   window.VennDiagramModel = VennDiagramModel;
   window.VennCanvasRenderer = VennCanvasRenderer;
   window.VennPresets = Presets;
+  window.VennPresetMeta = VennPresetMeta;
 
 })(window);

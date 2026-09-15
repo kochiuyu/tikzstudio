@@ -705,72 +705,6 @@
 
 
   /* ==========================================================================
-     GAME TREE STUDIO STATE SERIALIZER & RESTORER
-     ========================================================================== */
-
-  function captureGameTreeState() {
-    var m = window.gameTreeModel || window.model;
-    if (m && typeof m.toJSON === 'function') {
-      return m.toJSON();
-    }
-    return null;
-  }
-
-  function restoreGameTreeState(state) {
-    if (!state) return;
-    var m = window.gameTreeModel || window.model;
-    if (m && typeof m.fromJSON === 'function') {
-      m.fromJSON(state);
-      var r = window.gameTreeRenderer || window.renderer;
-      if (r) r.render();
-      if (typeof window.updateCodeDisplay === 'function') window.updateCodeDisplay();
-      if (typeof window.updateInspector === 'function') window.updateInspector();
-    }
-  }
-
-  function updateGameTreeButtonsUI(canUndo, canRedo, undoLabel, redoLabel) {
-    var undoBtns = [document.getElementById('btn-gametree-undo')];
-    var redoBtns = [document.getElementById('btn-gametree-redo')];
-
-    var undoTitle = canUndo ? ('Undo ' + (undoLabel || 'action') + ' (Ctrl+Z)') : 'Nothing to undo (Ctrl+Z)';
-    var redoTitle = canRedo ? ('Redo ' + (redoLabel || 'action') + ' (Ctrl+Y)') : 'Nothing to redo (Ctrl+Y)';
-
-    undoBtns.forEach(function (btn) {
-      if (!btn) return;
-      btn.disabled = !canUndo;
-      btn.title = undoTitle;
-      if (canUndo) btn.removeAttribute('disabled');
-      else btn.setAttribute('disabled', 'disabled');
-    });
-
-    redoBtns.forEach(function (btn) {
-      if (!btn) return;
-      btn.disabled = !canRedo;
-      btn.title = redoTitle;
-      if (canRedo) btn.removeAttribute('disabled');
-      else btn.setAttribute('disabled', 'disabled');
-    });
-  }
-
-  var gameTreeHistory = new UndoRedoManager({
-    name: 'GameTree',
-    storageKey: 'tikz_autosave_gametree',
-    maxHistory: 50,
-    capture: captureGameTreeState,
-    restore: restoreGameTreeState,
-    onUpdate: updateGameTreeButtonsUI
-  });
-
-  window.gameTreeHistory = gameTreeHistory;
-  window.gameTreeUndo = function () {
-    return gameTreeHistory.undo();
-  };
-  window.gameTreeRedo = function () {
-    return gameTreeHistory.redo();
-  };
-
-
-  /* ==========================================================================
      GLOBAL SHORTCUT LISTENER (Ctrl+Z, Ctrl+Y, Cmd+Z, Cmd+Shift+Z)
      ========================================================================== */
 
@@ -787,7 +721,6 @@
     var isTimelinePage = !!document.getElementById('btn-timeline-undo') || !!document.getElementById('beginTime');
     var isVennPage = !!document.getElementById('btn-venn-undo') || !!document.getElementById('vennCanvas');
     var isFlowchartPage = !!document.getElementById('btn-flowchart-undo') || !!document.getElementById('flowchartCanvas');
-    var isGameTreePage = !!document.getElementById('btn-gametree-undo') || !!document.getElementById('gameTreeCanvas');
 
     // If focused on an input element, only intercept if target isn't currently in native text editing
     var activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
@@ -820,11 +753,6 @@
           e.preventDefault();
           window.flowchartUndo();
         }
-      } else if (isGameTreePage && window.gameTreeHistory) {
-        if (window.gameTreeHistory.canUndo()) {
-          e.preventDefault();
-          window.gameTreeUndo();
-        }
       }
     } else if (isY || (isZ && e.shiftKey)) {
       // Redo
@@ -847,11 +775,6 @@
         if (window.flowchartHistory.canRedo()) {
           e.preventDefault();
           window.flowchartRedo();
-        }
-      } else if (isGameTreePage && window.gameTreeHistory) {
-        if (window.gameTreeHistory.canRedo()) {
-          e.preventDefault();
-          window.gameTreeRedo();
         }
       }
     }
@@ -941,13 +864,6 @@
     if (document.getElementById('flowchartCanvas') || document.getElementById('btn-flowchart-undo')) {
       setTimeout(function () {
         flowchartHistory.init();
-      }, 250);
-    }
-
-    // 5. If Game Tree Studio is present
-    if (document.getElementById('gameTreeCanvas') || document.getElementById('btn-gametree-undo')) {
-      setTimeout(function () {
-        gameTreeHistory.init();
       }, 250);
     }
   }

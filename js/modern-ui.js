@@ -21,6 +21,52 @@ function showToast(message) {
 
 window.tikzSnippetOnly = false;
 
+function toggleCodeFontSize() {
+  var viewports = document.querySelectorAll('.code-viewport, #tikz-output-code');
+  var isLarge = false;
+  viewports.forEach(function(vp) {
+    if (vp.classList.contains('code-font-lg')) {
+      vp.classList.remove('code-font-lg');
+      isLarge = false;
+    } else {
+      vp.classList.add('code-font-lg');
+      isLarge = true;
+    }
+  });
+  var btn = document.getElementById('btn-toggle-code-font');
+  if (btn) {
+    btn.textContent = isLarge ? 'Size: Large' : 'Size: Standard';
+  }
+}
+
+function formatTikzHighlight(rawTikz) {
+  if (!rawTikz) return "";
+  var lines = rawTikz.split(/<br\s*\/?>|\r?\n/gi);
+  return lines.map(function(line) {
+    if (!line.trim()) return "";
+    var commentIdx = line.indexOf("%");
+    var codePart = commentIdx >= 0 ? line.slice(0, commentIdx) : line;
+    var commentPart = commentIdx >= 0 ? line.slice(commentIdx) : "";
+
+    // Highlight LaTeX commands: \command
+    codePart = codePart.replace(/(\\[a-zA-Z]+)/g, '<span class="token-cmd">$1</span>');
+    // Highlight options: [...]
+    codePart = codePart.replace(/(\[[^\]]+\])/g, '<span class="token-opt">$1</span>');
+    // Highlight coordinates: (x,y)
+    codePart = codePart.replace(/(\([-0-9\.\s,a-zA-Z\+\*\/]+\))/g, '<span class="token-coord">$1</span>');
+    // Highlight math: $...$
+    codePart = codePart.replace(/(\$[^$]+\$)/g, '<span class="token-math">$1</span>');
+
+    if (commentPart) {
+      return codePart + '<span class="token-comment">' + commentPart + '</span>';
+    }
+    return codePart;
+  }).join("<br>\n");
+}
+
+window.formatTikzHighlight = formatTikzHighlight;
+window.toggleCodeFontSize = toggleCodeFontSize;
+
 function setTikzExportMode(snippetOnly) {
   window.tikzSnippetOnly = !!snippetOnly;
   
@@ -50,7 +96,16 @@ function setTikzExportMode(snippetOnly) {
 function getLatexCode(snippetOnly) {
   var useSnippet = typeof snippetOnly === 'boolean' ? snippetOnly : window.tikzSnippetOnly;
   var answerEl = document.getElementById('answer');
-  var innerTikz = answerEl ? (answerEl.innerText || answerEl.textContent || '').trim() : '';
+  var innerTikz = '';
+
+  if (answerEl) {
+    var clone = answerEl.cloneNode(true);
+    var brs = clone.querySelectorAll('br');
+    brs.forEach(function(br) {
+      br.replaceWith('\n');
+    });
+    innerTikz = (clone.textContent || '').trim();
+  }
 
   if (useSnippet) {
     return "\\begin{tikzpicture}\n" + innerTikz + "\n\\end{tikzpicture}";

@@ -2,13 +2,13 @@
 
 A web-based interactive visual editor and LaTeX code generator for scientific, academic, and technical diagrams.
 
-Designed for researchers, educators, students, and authors who need to quickly create publication-ready mathematical figures, extensive-form game trees, finite state machines, process flowcharts, Venn & Euler diagrams, and chronological timelines with immediate standard LaTeX `\begin{tikzpicture}` code export.
+Designed for researchers, educators, students, and authors who need to quickly create publication-ready mathematical figures, finite state machines, process flowcharts, Venn & Euler diagrams, and chronological timelines with immediate standard LaTeX `\begin{tikzpicture}` code export.
 
 ---
 
 ## The Studio Suite
 
-TikZ Diagram Generator provides five specialized studios accessible from the main landing page (`index.html`):
+TikZ Diagram Generator provides four specialized studios accessible from the main landing page (`index.html`):
 
 ### 1. 2D Coordinate Graph Studio (`Coordinate.html`)
 - **Interactive Canvas Drawing**:
@@ -26,21 +26,7 @@ TikZ Diagram Generator provides five specialized studios accessible from the mai
 - **Data & Export**:
   - Standard LaTeX TikZ code, high-resolution PNG export, CSV coordinate data import/export, and JSON diagram save/load.
 
-### 2. Game Tree Studio (`GameTree.html`)
-- **Extensive-Form Game Theory Trees**:
-  - Supports **Decision Nodes** (custom player colors and labels), **Chance / Nature Nodes** ($\mathcal{N}$) with branch probabilities, and **Terminal Nodes** with payoff vectors.
-  - **Information Sets**: Render dashed curves linking nodes to represent imperfect information and simultaneous moves.
-  - **Equilibrium Paths**: Highlight subgame-perfect Nash equilibria (SPNE) or backward induction paths with bold colored strokes and custom styling.
-  - Automatic tree layout calculation with customizable level and sibling distances; supports both horizontal and vertical tree orientations.
-- **Categorized Game Theory Presets (11 Models)**:
-  - *Industrial Organization*: Market Entry Deterrence, Stackelberg Sequential Duopoly.
-  - *Information Economics & Signaling*: Spence Job Market Signaling, Beer-Quiche Signaling Game (Cho-Kreps), Principal-Agent Contracting (Moral Hazard).
-  - *Bargaining & Multistage*: Rubinstein Alternating-Offer Bargaining, Ultimatum Bargaining Game, 4-Stage Centipede Game.
-  - *Classic Dilemmas & Experiments*: Sequential Prisoner's Dilemma, Matching Pennies (Imperfect Info), Trust / Investment Game (Berg et al.).
-- **TikZ Code Export**:
-  - Generates clean standard TikZ code and modern `forest` package syntax for compact LaTeX representation.
-
-### 3. Flowchart & State Machine Studio (`Flowchart.html`)
+### 2. Flowchart & State Machine Studio (`Flowchart.html`)
 - **Automata & Process Diagramming**:
   - **Finite State Machines (FSM)**: Initial states with entry arrows, standard states, and double-circle accepting/terminal states.
   - **Algorithm & Process Flowcharts**: Start/End terminals, process boxes, decision diamonds, and input/output parallelograms.
@@ -52,7 +38,7 @@ TikZ Diagram Generator provides five specialized studios accessible from the mai
 - **TikZ Library Integration**:
   - Generates TikZ code utilizing `automata`, `positioning`, and `shapes.geometric` libraries.
 
-### 4. Venn & Euler Diagram Studio (`Venn.html`)
+### 3. Venn & Euler Diagram Studio (`Venn.html`)
 - **Set Theory & Logic Diagrams**:
   - Supports **2-Set Venn**, **3-Set Venn**, and **Euler Diagrams** (subsets and disjoint configurations).
   - **Interactive Region Shading**: Click any bounded region to toggle shading, select custom fill colors, and adjust transparency.
@@ -65,7 +51,7 @@ TikZ Diagram Generator provides five specialized studios accessible from the mai
 - **TikZ Scope Generation**:
   - Outputs robust TikZ `\begin{scope}` clipping paths to ensure accurate, artifact-free shaded regions in standard LaTeX engines (pdfLaTeX, XeLaTeX, LuaLaTeX).
 
-### 5. Timeline Studio (`Timeline.html`)
+### 4. Timeline Studio (`Timeline.html`)
 - **Chronological Sequence Visualizer**:
   - Generates horizontal and vertical chronological timelines for history, science, technology, and project milestones.
   - Configurable start and end years, custom tick step intervals, alternating milestone chips, and customizable theme palettes.
@@ -100,7 +86,7 @@ A unified **Docs & Help Center** (`Help.html`) is accessible from the top naviga
 | **`O`** | Circle Tool (click center and drag radius) | Coordinate |
 | **`R`** | Rectangle / Shaded Area Tool | Coordinate |
 | **`P`** | Labeled Coordinate Point Tool | Coordinate |
-| **`S`** | Select / Move / Inspect Tool | Coordinate, Flowchart, GameTree, Venn |
+| **`S`** | Select / Move / Inspect Tool | Coordinate, Flowchart, Venn |
 | **`G`** | Toggle Grid Snapping on/off | Coordinate |
 | **`Enter`** | Confirm active shape candidate | Coordinate |
 | **`Esc`** | Cancel active tool or deselect item | All Studios |
@@ -120,9 +106,6 @@ Copy the generated TikZ code from the editor's code panel into your LaTeX docume
 
 % --- Required TikZ Libraries (Flowcharts, Automata, Positioning, Math) ---
 \usetikzlibrary{arrows.meta, positioning, calc, automata, shapes.geometric}
-
-% --- Forest Package (Recommended for Game Trees) ---
-\usepackage{forest}
 
 % --- Color Support ---
 \usepackage{xcolor}

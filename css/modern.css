@@ -694,34 +694,95 @@ a:hover {
 }
 
 .code-viewport {
-  padding: 0.75rem 0.85rem;
-  max-height: 240px;
+  padding: 1rem 1.25rem !important;
+  max-height: 280px;
   overflow: auto;
-  font-family: var(--font-mono);
-  font-size: 0.825rem;
-  line-height: 1.55;
-  color: #f8fafc;
+  background: #0f172a !important;
+  font-family: 'JetBrains Mono', 'Fira Code', var(--font-mono), monospace !important;
+  font-size: 0.85rem !important;
+  line-height: 1.65 !important;
+  letter-spacing: 0.015em;
+  color: #f8fafc !important;
+  text-shadow: none !important;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  box-sizing: border-box;
+}
+
+.code-viewport.code-font-lg {
+  font-size: 0.95rem !important;
+  line-height: 1.7 !important;
+}
+
+.code-viewport.code-font-sm {
+  font-size: 0.775rem !important;
+  line-height: 1.55 !important;
 }
 
 .code-viewport pre,
+.code-viewport pre[class*="language-"],
 .latex-editor-container pre,
 #tikz-output-code,
 pre#tikz-output-code {
-  margin: 0;
-  background: #0f172a !important;
+  margin: 0 !important;
+  background: transparent !important;
   border: none !important;
   box-shadow: none !important;
-  padding: 0;
+  padding: 0 !important;
   color: #f8fafc !important;
+  text-shadow: none !important;
   font-family: 'JetBrains Mono', 'Fira Code', var(--font-mono), monospace !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+  white-space: pre !important;
+  word-break: normal !important;
+  word-wrap: normal !important;
   user-select: text;
   -webkit-user-select: text;
 }
 
-.code-viewport .token-cmd { color: #818cf8; font-weight: 600; }
-.code-viewport .token-brace { color: #cbd5e1; }
-.code-viewport .token-pkg { color: #38bdf8; }
-.code-viewport .token-body { color: #34d399; }
+.code-viewport pre.line-numbers {
+  padding-left: 0 !important;
+}
+
+.code-viewport code,
+.code-viewport code[class*="language-"] {
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #f8fafc !important;
+  text-shadow: none !important;
+  font-family: inherit !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+  display: block !important;
+  white-space: pre !important;
+}
+
+.code-viewport #answer,
+#answer,
+span#answer {
+  display: inline !important;
+  color: #f8fafc !important;
+  text-shadow: none !important;
+  font-family: inherit !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+  background: transparent !important;
+  font-weight: 400 !important;
+}
+
+/* Syntax tokens inside LaTeX viewer */
+.code-viewport .token-cmd { color: #a5b4fc !important; font-weight: 600; text-shadow: none !important; }
+.code-viewport .token-brace { color: #cbd5e1 !important; text-shadow: none !important; }
+.code-viewport .token-pkg { color: #38bdf8 !important; text-shadow: none !important; }
+.code-viewport .token-body { color: #34d399 !important; text-shadow: none !important; }
+.code-viewport .token-opt { color: #7dd3fc !important; text-shadow: none !important; }
+.code-viewport .token-coord { color: #fbbf24 !important; text-shadow: none !important; }
+.code-viewport .token-math { color: #4ade80 !important; text-shadow: none !important; }
+.code-viewport .token-comment,
+.code-viewport .token.comment { color: #94a3b8 !important; font-style: italic; text-shadow: none !important; }
 
 /* Modern Footer */
 .app-footer {

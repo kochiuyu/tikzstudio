@@ -7,8 +7,8 @@
   <meta name="description" content="Interactive chronological timeline generator for LaTeX TikZ diagrams." />
 
   <!-- Stylesheets -->
-  <link rel="stylesheet" href="css/modern.css">
   <link rel="stylesheet" href="css/latex.css">
+  <link rel="stylesheet" href="css/modern.css">
 
   <!-- Core Scripts -->
   <script type="text/javascript" src="js/jquery-1.11.0.min.js"></script>
@@ -38,10 +38,6 @@
         <li class="nav-item"><a href="Coordinate.html">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
           Coordinate Axis
-        </a></li>
-        <li class="nav-item"><a href="GameTree.html">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="3"/><circle cx="6" cy="19" r="3"/><circle cx="18" cy="19" r="3"/><line x1="12" y1="8" x2="6" y2="16"/><line x1="12" y1="8" x2="18" y2="16"/></svg>
-          Game Tree
         </a></li>
         <li class="nav-item"><a href="Venn.html">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="12" r="6"/><circle cx="15" cy="12" r="6"/></svg>
@@ -93,6 +89,10 @@
             <option value="product-lifecycle">Agile Software Product Release (2019–2025)</option>
           </optgroup>
         </select>
+        <button type="button" id="btn-browse-timeline-presets" class="btn-modern btn-modern-secondary btn-modern-sm" onclick="openTimelineGallery();" title="Browse library of 7 timeline models" style="display: inline-flex; align-items: center; gap: 0.35rem;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Browse Library (7)
+        </button>
         <button type="button" class="btn-modern btn-modern-secondary btn-modern-sm" onclick="clearAllEvents(); draw();" title="Remove all events">
           Clear Events
         </button>
@@ -125,7 +125,11 @@
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
           Overleaf &rarr;
         </button>
-        <button type="button" class="btn-modern btn-modern-danger" onclick="location.reload(true)" title="Reset entire page">
+        <a href="Help.html#timeline" class="btn-modern btn-modern-secondary" title="View Timeline documentation and guide" style="font-size: 0.8rem; padding: 0.32rem 0.65rem; display: inline-flex; align-items: center; gap: 0.35rem; text-decoration: none;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Docs
+        </a>
+        <button type="button" class="btn-modern btn-modern-danger" onclick="confirmResetTimeline()" title="Reset timeline to default preset">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
           Reset
         </button>
@@ -368,6 +372,9 @@
                 <button type="button" id="btn-tikz-snippet" class="node-type-btn" style="padding: 0.15rem 0.5rem; font-size: 0.725rem;" onclick="setTikzExportMode(true);" title="tikzpicture environment snippet only">
                   tikzpicture Only
                 </button>
+                <button type="button" id="btn-toggle-code-font" class="node-type-btn" style="padding: 0.15rem 0.5rem; font-size: 0.725rem;" onclick="toggleCodeFontSize();" title="Toggle code font size between standard and large">
+                  Size: Standard
+                </button>
               </div>
             </div>
             <div class="code-actions">
@@ -379,7 +386,7 @@
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                 Download .tex
               </button>
-              <button type="button" class="btn-copy" onclick="openInOverleaf()" title="Compile and edit directly in Overleaf" style="background: rgba(99, 102, 241, 0.12); color: #4f46e5; border-color: #c7d2fe;">
+              <button type="button" class="btn-copy" onclick="openInOverleaf()" title="Compile and edit directly in Overleaf" style="background: rgba(99, 102, 241, 0.2); color: #c7d2fe; border-color: #6366f1;">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                 Overleaf &rarr;
               </button>
@@ -394,8 +401,8 @@
             </div>
           </div>
 
-          <div class="code-viewport">
-            <pre class="line-numbers language-Tex"><code class="language-Tex"><span class="tikz-preamble-wrapper"><span class="token-cmd">\documentclass</span>[border=8pt,tikz]<span class="token-brace">{</span><span class="token-pkg">standalone</span><span class="token-brace">}</span>
+          <div class="code-viewport" id="timeline-code-viewport">
+            <pre class="code-pre"><code class="code-block" id="tikz-code-container"><span class="tikz-preamble-wrapper"><span class="token-cmd">\documentclass</span>[border=8pt,tikz]<span class="token-brace">{</span><span class="token-pkg">standalone</span><span class="token-brace">}</span>
 <span class="token-cmd">\usepackage</span><span class="token-brace">{</span><span class="token-pkg">tikz</span><span class="token-brace">}</span>
 <span class="token-cmd">\usetikzlibrary</span><span class="token-brace">{</span><span class="token-pkg">arrows.meta, positioning, calc</span><span class="token-brace">}</span>
 <span class="token-cmd">\usepackage</span><span class="token-brace">{</span><span class="token-pkg">xcolor</span><span class="token-brace">}</span>
@@ -424,7 +431,6 @@
       <div class="footer-nav">
         <a href="index.html">Homepage</a>
         <a href="Coordinate.html">Coordinate Axis</a>
-        <a href="GameTree.html">Game Tree</a>
         <a href="Venn.html">Venn Diagrams</a>
         <a href="Flowchart.html">Flowcharts &amp; FSM</a>
         <a href="Timeline.html">Timeline</a>
@@ -600,6 +606,10 @@
         for (var i = 0; i < myyears.length; i++) {
           drawPointy(myyears[i].innerHTML, mydescs[i].innerHTML, i);
         }
+      }
+
+      if (typeof formatTikzHighlight === 'function' && answer) {
+        answer.innerHTML = formatTikzHighlight(answer.textContent || answer.innerText);
       }
     }
 
@@ -1114,6 +1124,218 @@
         }
       }, 100);
     });
+
+    // Timeline Presets Metadata & Modal Gallery
+    window.TimelinePresetMeta = {
+      '20th-century': {
+        id: '20th-century',
+        name: '20th Century Global Milestones',
+        subtitle: '1910 – 2000 (Modern History)',
+        category: 'History & Civilization',
+        description: 'World wars, United Nations foundation, moon landing, and the dawn of the internet era.',
+        span: '1910 – 2000 (90 yrs)',
+        tags: ['World Wars', 'Cold War', 'UN Charter', 'Moon Landing', '20th Century']
+      },
+      'space-race': {
+        id: 'space-race',
+        name: 'Space Exploration & Astronomy',
+        subtitle: '1955 – 2025 (Cosmic Missions)',
+        category: 'History & Civilization',
+        description: 'From Sputnik and Apollo 11 to Hubble, Curiosity rover, and the James Webb Space Telescope.',
+        span: '1955 – 2025 (70 yrs)',
+        tags: ['Sputnik', 'Apollo 11', 'Voyager', 'Hubble', 'JWST', 'Artemis']
+      },
+      'monetary-econ': {
+        id: 'monetary-econ',
+        name: 'Global Monetary & Financial History',
+        subtitle: '1940 – 2025 (Macroeconomics & Banking)',
+        category: 'Economics & Finance',
+        description: 'Bretton Woods, Nixon gold shock, Plaza Accord, Euro creation, 2008 GFC, and CBDC evolution.',
+        span: '1940 – 2025 (85 yrs)',
+        tags: ['Bretton Woods', 'Nixon Shock', 'Plaza Accord', 'Euro', '2008 Crisis', 'Central Banks']
+      },
+      'ai-history': {
+        id: 'ai-history',
+        name: 'History of Artificial Intelligence',
+        subtitle: '1950 – 2025 (AI & Deep Learning)',
+        category: 'Computer Science & AI',
+        description: 'Turing test paper, Dartmouth workshop, expert systems, Deep Blue, ImageNet, Transformers, and LLMs.',
+        span: '1950 – 2025 (75 yrs)',
+        tags: ['Turing Test', 'Dartmouth 1956', 'Deep Blue', 'AlexNet', 'Transformers', 'Generative AI']
+      },
+      'computing-evolution': {
+        id: 'computing-evolution',
+        name: 'Computing & Internet Revolution',
+        subtitle: '1965 – 2015 (Digital Age)',
+        category: 'Computer Science & AI',
+        description: 'ARPANET birth, Apple II personal computer, World Wide Web, Linux kernel, iPhone, and Cloud infrastructure.',
+        span: '1965 – 2015 (50 yrs)',
+        tags: ['ARPANET', 'Personal Computer', 'World Wide Web', 'Linux', 'Smartphones']
+      },
+      'phd-roadmap': {
+        id: 'phd-roadmap',
+        name: 'PhD Research & Dissertation Roadmap',
+        subtitle: '2021 – 2025 (Graduate Milestones)',
+        category: 'Academic & Project Management',
+        description: 'Coursework, qualifying exams, proposal defense, empirical data collection, journal submission, and final defense.',
+        span: '2021 – 2025 (4 yrs)',
+        tags: ['Doctoral', 'Quals', 'Dissertation', 'Peer Review', 'Academic Defense']
+      },
+      'product-lifecycle': {
+        id: 'product-lifecycle',
+        name: 'Agile Software Product Release',
+        subtitle: '2019 – 2025 (Software Engineering)',
+        category: 'Academic & Project Management',
+        description: 'Proof of concept, seed funding, MVP launch, enterprise SOC2 compliance, scale-up, and major v2.0 refactor.',
+        span: '2019 – 2025 (6 yrs)',
+        tags: ['MVP Launch', 'Agile', 'Enterprise Compliance', 'Scale', 'Refactor']
+      }
+    };
+
+    let currentTimelineCategory = 'All';
+    let currentTimelineSearch = '';
+
+    function openTimelineGallery() {
+      var overlay = document.getElementById('timeline-modal-overlay');
+      if (!overlay) return;
+      overlay.style.display = 'flex';
+      renderTimelineCards();
+      setTimeout(function() {
+        var inp = document.getElementById('timeline-preset-search-input');
+        if (inp) inp.focus();
+      }, 50);
+    }
+
+    function closeTimelineGallery() {
+      var overlay = document.getElementById('timeline-modal-overlay');
+      if (overlay) overlay.style.display = 'none';
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeTimelineGallery();
+    });
+
+    function setTimelineCategory(cat, btn) {
+      currentTimelineCategory = cat;
+      var pills = document.querySelectorAll('#timeline-category-pills button');
+      pills.forEach(function(p) { p.classList.remove('active'); });
+      if (btn) btn.classList.add('active');
+      renderTimelineCards();
+    }
+
+    function onSearchTimelinePreset(term) {
+      currentTimelineSearch = (term || '').trim().toLowerCase();
+      renderTimelineCards();
+    }
+
+    function renderTimelineCards() {
+      var grid = document.getElementById('timeline-preset-card-grid');
+      if (!grid || !window.TimelinePresetMeta) return;
+
+      var items = Object.values(window.TimelinePresetMeta);
+      var filtered = items.filter(function(item) {
+        var matchesCategory = currentTimelineCategory === 'All' || item.category === currentTimelineCategory;
+        var matchesSearch = !currentTimelineSearch || 
+          item.name.toLowerCase().indexOf(currentTimelineSearch) !== -1 ||
+          item.subtitle.toLowerCase().indexOf(currentTimelineSearch) !== -1 ||
+          item.description.toLowerCase().indexOf(currentTimelineSearch) !== -1 ||
+          (item.tags && item.tags.some(function(t) { return t.toLowerCase().indexOf(currentTimelineSearch) !== -1; }));
+        return matchesCategory && matchesSearch;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 2.5rem 1rem; color: var(--color-text-muted);">' +
+          '<p style="font-size: 0.95rem; margin-bottom: 0.5rem; font-weight: 600;">No timeline models found matching "' + currentTimelineSearch + '"</p>' +
+          '<button class="btn-modern btn-modern-secondary" onclick="document.getElementById(\'timeline-preset-search-input\').value=\'\'; onSearchTimelinePreset(\'\');">Clear Search</button>' +
+        '</div>';
+        return;
+      }
+
+      grid.innerHTML = filtered.map(function(item) {
+        var tagsHtml = (item.tags || []).map(function(t) { 
+          return '<span style="font-size: 0.68rem; background: var(--color-surface-sunken, #f1f5f9); color: var(--color-text-muted); padding: 1px 6px; border-radius: 4px; border: 1px solid var(--color-border);">' + t + '</span>';
+        }).join('');
+
+        return '<div style="background: var(--color-surface, #ffffff); border: 1px solid var(--color-border); border-radius: 8px; padding: 1rem; display: flex; flex-direction: column; justify-content: space-between; transition: all 0.2s ease; box-shadow: var(--shadow-sm);" onmouseenter="this.style.borderColor=\'var(--color-primary, #2563eb)\'; this.style.boxShadow=\'var(--shadow-md)\';" onmouseleave="this.style.borderColor=\'var(--color-border)\'; this.style.boxShadow=\'var(--shadow-sm)\';">' +
+          '<div>' +
+            '<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.35rem; gap: 0.5rem;">' +
+              '<span style="font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: var(--color-text-muted);">' + item.category + '</span>' +
+              '<span style="font-size: 0.68rem; font-weight: 600; color: #0284c7; background: #e0f2fe; padding: 1px 6px; border-radius: 4px;">' + item.span + '</span>' +
+            '</div>' +
+            '<h4 style="margin: 0; font-size: 0.95rem; font-weight: 700; color: var(--color-text-main); line-height: 1.3;">' + item.name + '</h4>' +
+            '<div style="font-size: 0.75rem; font-weight: 600; color: var(--color-primary, #2563eb); margin: 0.2rem 0 0.4rem;">' + item.subtitle + '</div>' +
+            '<p style="font-size: 0.78rem; color: var(--color-text-muted); line-height: 1.45; margin: 0 0 0.65rem;">' + item.description + '</p>' +
+            '<div style="display: flex; flex-wrap: wrap; gap: 0.25rem; margin-bottom: 0.85rem;">' + tagsHtml + '</div>' +
+          '</div>' +
+          '<div>' +
+            '<button type="button" class="btn-modern btn-modern-primary" onclick="selectTimelineFromGallery(\'' + item.id + '\');" style="width: 100%; font-size: 0.8rem; padding: 0.4rem 0.6rem; justify-content: center; font-weight: 600;">' +
+              'Load Timeline &rarr;' +
+            '</button>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    function selectTimelineFromGallery(id) {
+      var sel = document.getElementById('select-timeline-preset');
+      if (sel) sel.value = id;
+      loadTimelinePreset(id);
+      closeTimelineGallery();
+      if (typeof showToast === 'function') {
+        showToast('Loaded ' + (window.TimelinePresetMeta[id]?.name || id));
+      }
+    }
+
+    function confirmResetTimeline() {
+      if (confirm('Reset timeline to default configuration (20th Century Milestones)?')) {
+        loadTimelinePreset('20th-century');
+        if (typeof showToast === 'function') {
+          showToast('Timeline reset to default template');
+        }
+      }
+    }
+  </script>
+
+  <!-- Timeline Preset Library Gallery Modal Dialog -->
+  <div id="timeline-modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); z-index: 99999; align-items: center; justify-content: center; padding: 1rem;" onclick="if (event.target === this) closeTimelineGallery();">
+    <div style="background: var(--color-surface, #ffffff); border-radius: 12px; width: 100%; max-width: 1020px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35); border: 1px solid var(--color-border); overflow: hidden;">
+      <!-- Modal Header -->
+      <div style="padding: 1.2rem 1.5rem; border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; background: var(--color-surface-sunken, #f8fafc);">
+        <div>
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <h3 style="margin: 0; font-size: 1.15rem; font-weight: 700; color: var(--color-text-main);">Chronological Timeline Library</h3>
+            <span style="font-size: 0.75rem; font-weight: 700; background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 999px;">7 Curated Models</span>
+          </div>
+          <p style="margin: 0.35rem 0 0; font-size: 0.825rem; color: var(--color-text-muted);">
+            Explore academic, scientific, economic, and technological milestones with automated multi-tier layout spacing and customizable color schemes.
+          </p>
+        </div>
+        <button type="button" onclick="closeTimelineGallery();" class="btn-modern btn-modern-secondary" style="padding: 0.4rem 0.65rem; font-size: 0.85rem;" title="Close gallery (Esc)">
+          ✕ Close
+        </button>
+      </div>
+
+      <!-- Search & Filters -->
+      <div style="padding: 0.85rem 1.5rem; border-bottom: 1px solid var(--color-border); background: var(--color-surface, #ffffff); display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; justify-content: space-between;">
+        <div style="position: relative; flex: 1; min-width: 240px; max-width: 360px;">
+          <input type="text" id="timeline-preset-search-input" oninput="onSearchTimelinePreset(this.value);" placeholder="Search era, milestone, or topic..." class="input-modern" style="width: 100%; padding-left: 2rem; font-size: 0.825rem;" />
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--color-text-muted); pointer-events: none;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+
+        <div id="timeline-category-pills" style="display: flex; gap: 0.35rem; flex-wrap: wrap;">
+          <button type="button" class="btn-modern btn-modern-secondary active" onclick="setTimelineCategory('All', this);" style="font-size: 0.75rem; padding: 0.25rem 0.6rem;">All (7)</button>
+          <button type="button" class="btn-modern btn-modern-secondary" onclick="setTimelineCategory('History & Civilization', this);" style="font-size: 0.75rem; padding: 0.25rem 0.6rem;">History (2)</button>
+          <button type="button" class="btn-modern btn-modern-secondary" onclick="setTimelineCategory('Economics & Finance', this);" style="font-size: 0.75rem; padding: 0.25rem 0.6rem;">Economics &amp; Finance (1)</button>
+          <button type="button" class="btn-modern btn-modern-secondary" onclick="setTimelineCategory('Computer Science & AI', this);" style="font-size: 0.75rem; padding: 0.25rem 0.6rem;">CS &amp; AI (2)</button>
+          <button type="button" class="btn-modern btn-modern-secondary" onclick="setTimelineCategory('Academic & Project Management', this);" style="font-size: 0.75rem; padding: 0.25rem 0.6rem;">Academic &amp; Project (2)</button>
+        </div>
+      </div>
+
+      <!-- Card Grid -->
+      <div id="timeline-preset-card-grid" style="padding: 1.25rem 1.5rem; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; flex: 1;">
+      </div>
+    </div>
+  </div>
   </script>
 
 </body>
